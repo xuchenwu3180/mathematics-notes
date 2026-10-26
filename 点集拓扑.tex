@@ -1,0 +1,2241 @@
+\documentclass[11pt,a4paper]{scrartcl}
+\usepackage[margin=22mm,headheight=18pt]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\IfFontExistsTF{Songti SC}{\setCJKmainfont{Songti SC}}{\setCJKmainfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf]}
+\IfFontExistsTF{Heiti SC}{\setCJKsansfont{Heiti SC}}{\setCJKsansfont{FandolHei-Regular.otf}[BoldFont=FandolHei-Bold.otf]}
+\usepackage{amsmath,amssymb,mathtools,mathrsfs,bm,cancel}
+\usepackage{mathpazo}
+\setmainfont{texgyrepagella-regular.otf}[BoldFont=texgyrepagella-bold.otf,ItalicFont=texgyrepagella-italic.otf,BoldItalicFont=texgyrepagella-bolditalic.otf]
+\usepackage[normalem]{ulem}
+\usepackage[svgnames,table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,matrix,patterns,decorations.markings,shapes.geometric}
+\usepackage{enumitem,booktabs,longtable,array,tabularx,multicol}
+\usepackage{microtype,fancyhdr}
+\definecolor{ChapterBlue}{RGB}{20,60,120}
+\definecolor{NoteRed}{RGB}{179,0,0}
+\definecolor{AnnotationBlue}{RGB}{30,65,135}
+\setkomafont{section}{\Large\bfseries\color{ChapterBlue}}
+\setkomafont{subsection}{\large\bfseries\color{ChapterBlue}}
+\setlist{nosep,leftmargin=*,topsep=3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\linespread{1.12}
+\allowdisplaybreaks
+\emergencystretch=3em
+\widowpenalty=10000
+\clubpenalty=10000
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+% Original scan boundaries are internal anchors only; no visible page labels.
+\newcommand{\sourcepage}[1]{\par\phantomsection\label{source:#1}}
+\newif\ifchapterstart
+\newcommand{\noteschapter}[1]{\clearpage\section{#1}\global\chapterstarttrue}
+\newcommand{\notessection}[1]{\ifchapterstart\global\chapterstartfalse\else\clearpage\fi\subsection{#1}}
+\renewcommand{\sectionmark}[1]{\markboth{}{}}
+\renewcommand{\subsectionmark}[1]{\markboth{\thesubsection\quad #1}{}}
+\renewcommand{\contentsname}{目录}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\newcommand{\unclear}[2]{\textnormal{\textcolor{NoteRed}{［无法辨认 #1］}}}
+\newcommand{\ann}[1]{{\color{AnnotationBlue}#1}}
+\newcommand{\redann}[1]{{\color{NoteRed}#1}}
+\newcommand{\circled}[1]{\mbox{\textcircled{\scriptsize #1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\inner}[2]{\langle #1,#2\rangle}
+\newcommand{\floor}[1]{\lfloor #1\rfloor}
+\newcommand{\ceil}[1]{\lceil #1\rceil}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\sgn}{sgn}
+\newtcolorbox{noteblock}[1]{enhanced,breakable,colback=ChapterBlue!2,colframe=ChapterBlue!60,title={#1},fonttitle=\bfseries,boxrule=0.4pt,arc=1mm}
+\newenvironment{proof}{\par\textbf{Proof.}\ }{\par}
+\tikzset{vertex/.style={circle,draw,inner sep=2pt},edge/.style={thick},dedge/.style={thick,-Stealth}}
+
+% Clickable contents and PDF outline.
+\usepackage[unicode,hidelinks,bookmarksnumbered,bookmarksopen,linktoc=all]{hyperref}
+\hypersetup{pdftitle={点集拓扑},pdfsubject={完整转录，含可点击目录},pdfauthor={芬达不带气儿}}
+
+\newcommand{\eps}{\varepsilon}
+\DeclareMathOperator{\supp}{supp}
+\newcommand{\BV}{\mathrm{B.V.}}
+
+\pdfstringdefDisableCommands{\def\infty{∞}\def\R{ℝ}}
+
+\DeclareMathOperator{\Int}{int}
+\DeclareMathOperator{\Cl}{cl}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\suppTopo}{supp}
+\newcommand{\T}{\mathcal T}
+\newcommand{\B}{\mathcal B}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\CP}{\mathbb{CP}}
+
+% Coordinate system: x and y are per-mille of original 1415x2000 preview image.
+% Approximate each original baseline as (pixel_x/1.415,pixel_y/2).
+% Width is also in per-mille of the original image width.
+\newlength{\handunit}\setlength{\handunit}{0.194mm}
+\newlength{\handyunit}\setlength{\handyunit}{0.265mm}
+\newsavebox{\handbox}
+\newcommand{\handtext}[6]{%
+  \node[anchor=base west,inner sep=0pt,outer sep=0pt] at (#1,#2)
+    {{\normalfont\fontsize{#4}{#4}\selectfont\color{#5}%
+      \sbox{\handbox}{#6}%
+      \ifdim\wd\handbox>#3\handunit\resizebox{#3\handunit}{!}{\usebox{\handbox}}\else\usebox{\handbox}\fi}};}
+\newcommand{\handline}[5][black]{\handtext{#2}{#3}{#4}{10.5}{#1}{#5}}
+\newcommand{\handtitle}[4]{\handtext{#1}{#2}{#3}{13}{black}{\bfseries #4}}
+\newcommand{\handnote}[5][AnnotationBlue]{\handtext{#2}{#3}{#4}{7.2}{#1}{#5}}
+\newcommand{\handarrow}[5][AnnotationBlue]{\draw[->,color=#1,line width=.35pt] (#2,#3)--(#4,#5);}
+\newcommand{\handdiagram}[5]{\node[anchor=north west,inner sep=0pt] at (#1,#2)
+ {\resizebox{#3\handunit}{#4\handyunit}{\begin{tikzpicture}[x=1cm,y=1cm]#5\end{tikzpicture}}};}
+\newcommand{\handchapterentry}[1]{\refstepcounter{section}\setcounter{subsection}{0}\addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}}
+\newcommand{\handsectionentry}[1]{\refstepcounter{subsection}\addcontentsline{toc}{subsection}{\protect\numberline{\thesubsection}#1}}
+\newcommand{\handregister}[1]{\ifcsname handentry@#1\endcsname\csname handentry@#1\endcsname\fi}
+\newenvironment{handpage}[1]{\clearpage\thispagestyle{fancy}\markboth{\csname handheader@#1\endcsname}{}\null\handregister{#1}%
+ \begin{tikzpicture}[remember picture,overlay]
+ \begin{scope}[shift={([xshift=8mm,yshift=-13mm]current page.north west)},x=0.194mm,y=-0.265mm]
+}{\end{scope}\end{tikzpicture}\par}
+
+\fancyhead[C]{\sbox{\handbox}{\small\nouppercase{\leftmark}}\ifdim\wd\handbox>\textwidth\resizebox{\textwidth}{!}{\usebox{\handbox}}\else\usebox{\handbox}\fi}
+\expandafter\def\csname handheader@1\endcsname{1.1\quad Open and closed set}
+\expandafter\def\csname handentry@1\endcsname{\setcounter{section}{0}\handchapterentry{Metric Spaces}\setcounter{section}{1}\setcounter{subsection}{0}\handsectionentry{Open and closed set}}
+\expandafter\def\csname handheader@2\endcsname{1.1\quad Open and closed set}
+\expandafter\def\csname handentry@2\endcsname{}
+\expandafter\def\csname handheader@3\endcsname{1.1\quad Open and closed set}
+\expandafter\def\csname handentry@3\endcsname{}
+\expandafter\def\csname handheader@4\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@4\endcsname{\setcounter{section}{1}\setcounter{subsection}{1}\handsectionentry{Completeness}}
+\expandafter\def\csname handheader@5\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@5\endcsname{}
+\expandafter\def\csname handheader@6\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@6\endcsname{}
+\expandafter\def\csname handheader@7\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@7\endcsname{}
+\expandafter\def\csname handheader@8\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@8\endcsname{}
+\expandafter\def\csname handheader@9\endcsname{1.2\quad Completeness}
+\expandafter\def\csname handentry@9\endcsname{}
+\expandafter\def\csname handheader@10\endcsname{1.3\quad The real line}
+\expandafter\def\csname handentry@10\endcsname{\setcounter{section}{1}\setcounter{subsection}{2}\handsectionentry{The real line}}
+\expandafter\def\csname handheader@11\endcsname{1.4\quad Products of metric spaces}
+\expandafter\def\csname handentry@11\endcsname{\setcounter{section}{1}\setcounter{subsection}{3}\handsectionentry{Products of metric spaces}}
+\expandafter\def\csname handheader@12\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@12\endcsname{\setcounter{section}{1}\setcounter{subsection}{4}\handsectionentry{Compactness}}
+\expandafter\def\csname handheader@13\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@13\endcsname{}
+\expandafter\def\csname handheader@14\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@14\endcsname{}
+\expandafter\def\csname handheader@15\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@15\endcsname{}
+\expandafter\def\csname handheader@16\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@16\endcsname{}
+\expandafter\def\csname handheader@17\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@17\endcsname{}
+\expandafter\def\csname handheader@18\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@18\endcsname{}
+\expandafter\def\csname handheader@19\endcsname{1.5\quad Compactness}
+\expandafter\def\csname handentry@19\endcsname{}
+\expandafter\def\csname handheader@20\endcsname{1.6\quad Continuous functions}
+\expandafter\def\csname handentry@20\endcsname{\setcounter{section}{1}\setcounter{subsection}{5}\handsectionentry{Continuous functions}}
+\expandafter\def\csname handheader@21\endcsname{1.6\quad Continuous functions}
+\expandafter\def\csname handentry@21\endcsname{}
+\expandafter\def\csname handheader@22\endcsname{1.6\quad Continuous functions}
+\expandafter\def\csname handentry@22\endcsname{}
+\expandafter\def\csname handheader@23\endcsname{1.6\quad Continuous functions}
+\expandafter\def\csname handentry@23\endcsname{}
+\expandafter\def\csname handheader@24\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@24\endcsname{\setcounter{section}{1}\setcounter{subsection}{6}\handsectionentry{Normed linear spaces}}
+\expandafter\def\csname handheader@25\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@25\endcsname{}
+\expandafter\def\csname handheader@26\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@26\endcsname{}
+\expandafter\def\csname handheader@27\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@27\endcsname{}
+\expandafter\def\csname handheader@28\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@28\endcsname{}
+\expandafter\def\csname handheader@29\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@29\endcsname{}
+\expandafter\def\csname handheader@30\endcsname{1.7\quad Normed linear spaces}
+\expandafter\def\csname handentry@30\endcsname{}
+\expandafter\def\csname handheader@31\endcsname{2.1\quad Topological spaces}
+\expandafter\def\csname handentry@31\endcsname{\setcounter{section}{1}\handchapterentry{Topological Spaces}\setcounter{section}{2}\setcounter{subsection}{0}\handsectionentry{Topological spaces}}
+\expandafter\def\csname handheader@32\endcsname{2.1\quad Topological spaces}
+\expandafter\def\csname handentry@32\endcsname{}
+\expandafter\def\csname handheader@33\endcsname{2.1\quad Topological spaces}
+\expandafter\def\csname handentry@33\endcsname{}
+\expandafter\def\csname handheader@34\endcsname{2.1\quad Topological spaces}
+\expandafter\def\csname handentry@34\endcsname{}
+\expandafter\def\csname handheader@35\endcsname{2.2\quad Subspaces}
+\expandafter\def\csname handentry@35\endcsname{\setcounter{section}{2}\setcounter{subsection}{1}\handsectionentry{Subspaces}}
+\expandafter\def\csname handheader@36\endcsname{2.3\quad Continuous functions}
+\expandafter\def\csname handentry@36\endcsname{\setcounter{section}{2}\setcounter{subsection}{2}\handsectionentry{Continuous functions}}
+\expandafter\def\csname handheader@37\endcsname{2.3\quad Continuous functions}
+\expandafter\def\csname handentry@37\endcsname{}
+\expandafter\def\csname handheader@38\endcsname{2.4\quad Base for a topology}
+\expandafter\def\csname handentry@38\endcsname{\setcounter{section}{2}\setcounter{subsection}{3}\handsectionentry{Base for a topology}}
+\expandafter\def\csname handheader@39\endcsname{2.4\quad Base for a topology}
+\expandafter\def\csname handentry@39\endcsname{}
+\expandafter\def\csname handheader@40\endcsname{2.4\quad Base for a topology}
+\expandafter\def\csname handentry@40\endcsname{}
+\expandafter\def\csname handheader@41\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@41\endcsname{\setcounter{section}{2}\setcounter{subsection}{4}\handsectionentry{Separation axioms}}
+\expandafter\def\csname handheader@42\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@42\endcsname{}
+\expandafter\def\csname handheader@43\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@43\endcsname{}
+\expandafter\def\csname handheader@44\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@44\endcsname{}
+\expandafter\def\csname handheader@45\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@45\endcsname{}
+\expandafter\def\csname handheader@46\endcsname{2.5\quad Separation axioms}
+\expandafter\def\csname handentry@46\endcsname{}
+\expandafter\def\csname handheader@47\endcsname{2.6\quad Compctness}
+\expandafter\def\csname handentry@47\endcsname{\setcounter{section}{2}\setcounter{subsection}{5}\handsectionentry{Compctness}}
+\expandafter\def\csname handheader@48\endcsname{2.6\quad Compctness}
+\expandafter\def\csname handentry@48\endcsname{}
+\expandafter\def\csname handheader@49\endcsname{2.7\quad Locally compact spaces}
+\expandafter\def\csname handentry@49\endcsname{\setcounter{section}{2}\setcounter{subsection}{6}\handsectionentry{Locally compact spaces}}
+\expandafter\def\csname handheader@50\endcsname{2.7\quad Locally compact spaces}
+\expandafter\def\csname handentry@50\endcsname{}
+\expandafter\def\csname handheader@51\endcsname{2.7\quad Locally compact spaces}
+\expandafter\def\csname handentry@51\endcsname{}
+\expandafter\def\csname handheader@52\endcsname{2.8\quad Connectedness}
+\expandafter\def\csname handentry@52\endcsname{\setcounter{section}{2}\setcounter{subsection}{7}\handsectionentry{Connectedness}}
+\expandafter\def\csname handheader@53\endcsname{2.8\quad Connectedness}
+\expandafter\def\csname handentry@53\endcsname{}
+\expandafter\def\csname handheader@54\endcsname{2.8\quad Connectedness}
+\expandafter\def\csname handentry@54\endcsname{}
+\expandafter\def\csname handheader@55\endcsname{2.8\quad Connectedness}
+\expandafter\def\csname handentry@55\endcsname{}
+\expandafter\def\csname handheader@56\endcsname{2.9\quad Path connectedness}
+\expandafter\def\csname handentry@56\endcsname{\setcounter{section}{2}\setcounter{subsection}{8}\handsectionentry{Path connectedness}}
+\expandafter\def\csname handheader@57\endcsname{2.10\quad Finite product spaces}
+\expandafter\def\csname handentry@57\endcsname{\setcounter{section}{2}\setcounter{subsection}{9}\handsectionentry{Finite product spaces}}
+\expandafter\def\csname handheader@58\endcsname{2.10\quad Finite product spaces}
+\expandafter\def\csname handentry@58\endcsname{}
+\expandafter\def\csname handheader@59\endcsname{2.10\quad Finite product spaces}
+\expandafter\def\csname handentry@59\endcsname{}
+\expandafter\def\csname handheader@60\endcsname{2.10\quad Finite product spaces}
+\expandafter\def\csname handentry@60\endcsname{}
+\expandafter\def\csname handheader@61\endcsname{2.11\quad Set Theory and Zorn's Lemma}
+\expandafter\def\csname handentry@61\endcsname{\setcounter{section}{2}\setcounter{subsection}{10}\handsectionentry{Set Theory and Zorn's Lemma}}
+\expandafter\def\csname handheader@62\endcsname{2.11\quad Set Theory and Zorn's Lemma}
+\expandafter\def\csname handentry@62\endcsname{}
+\expandafter\def\csname handheader@63\endcsname{2.12\quad Infinite product spaces}
+\expandafter\def\csname handentry@63\endcsname{\setcounter{section}{2}\setcounter{subsection}{11}\handsectionentry{Infinite product spaces}}
+\expandafter\def\csname handheader@64\endcsname{2.12\quad Infinite product spaces}
+\expandafter\def\csname handentry@64\endcsname{}
+\expandafter\def\csname handheader@65\endcsname{2.12\quad Infinite product spaces}
+\expandafter\def\csname handentry@65\endcsname{}
+\expandafter\def\csname handheader@66\endcsname{2.12\quad Infinite product spaces}
+\expandafter\def\csname handentry@66\endcsname{}
+\expandafter\def\csname handheader@67\endcsname{2.13\quad Quotient Space}
+\expandafter\def\csname handentry@67\endcsname{\setcounter{section}{2}\setcounter{subsection}{12}\handsectionentry{Quotient Space}}
+\expandafter\def\csname handheader@68\endcsname{2.13\quad Quotient Space}
+\expandafter\def\csname handentry@68\endcsname{}
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{empty}
+\null
+\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=center,inner sep=0pt] at ([yshift=-0.382\paperheight]current page.north)
+  {{\sffamily\bfseries\fontsize{40}{50}\selectfont 点集拓扑}};
+\node[anchor=center,inner sep=0pt] at ([yshift=-0.618\paperheight]current page.north)
+  {{\rmfamily\fontsize{24}{32}\selectfont By 芬达不带气儿}};
+\end{tikzpicture}
+\end{titlepage}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\pagestyle{plain}
+\renewcommand{\contentsname}{目录}
+{\small\setlength{\parskip}{0pt}\tableofcontents}
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+% SOURCE PAGE 001
+% CHAPTER: 1 | Metric Spaces
+% SECTION: 1.1 | Open and closed set
+\begin{handpage}{1}
+\handtitle{72}{99}{856}{Chapter 1 Metric Spaces}
+\handtitle{72}{128}{856}{\S1.1 Open and closed set}
+\handline{72}{157}{856}{\textbf{Def.} $X$：集合，$d$：度量，$(X,d)$：度量空间.}
+\handline{72}{184}{856}{$d:X\times X\to\R_{\ge0}$，满足}
+\handline{72}{214}{856}{\circled{1} $d(x,y)=0\Longleftrightarrow x=y$ \circled{2} $d(x,y)=d(y,x)$ \circled{3} $d(x,y)+d(y,z)\ge d(x,z)$.}
+\handline{72}{242}{856}{\textbf{Ex.} \circled{1} $\R^n$，$d(x,y):=\bigl(\sum_{i=1}^n(x_i-y_i)^2\bigr)^{\frac12}$ \ann{欧氏度量}}
+\handline{72}{272}{856}{\circled{2} $X$：集合，$d(x,y):=\begin{cases}1&x=y\\0&x\ne y\end{cases}$ \ann{称为离散度量（discrete metric）}}
+\handline{72}{300}{856}{\circled{3} $Y\subseteq X$，$(X,d)$：度量空间}
+\handline{72}{331}{856}{$d_Y:=\left.d\right|_{Y\times Y}$，则 $(Y,d_Y)$ 是 $(X,d)$ 的子空间.}
+\handline{72}{363}{856}{\circled{4} $S^1=\{(x,y)\mid x^2+y^2=1\}$.}
+\handline{72}{394}{856}{$p,q\in S^1$，$d(p,q):=p,q$ 之间的劣弧长度.}
+\handline{72}{425}{856}{但它不是标准欧氏空间 $\R^2$ 的子空间，$(S^1,d)$ 的度量不是由 $\R^2$ 诱导的.}
+\handline{72}{459}{856}{\circled{5} $M$：正定实对称阵，$\R^n$.}
+\handline{72}{489}{856}{$d(x,y):=(x-y)^{\mathsf T}M(x-y)$.}
+\handline{72}{525}{856}{\textbf{Def.} $(X,d)$：度量空间，$a\in X$，$r>0$.}
+\handline{72}{556}{856}{\circled{1} $B(a,r):=\{x\in X\mid d(a,x)<r\}$，称为以 $a$ 为中心，$r$ 为半径的开集.}
+\handline{72}{588}{856}{\circled{2} $Y\subseteq X$ 子集，$p\in Y$，若 $\exists r>0$，s.t. $B(p,r)\subseteq Y$，则称 $p$ 是 $Y$ 的内点.}
+\handline{72}{621}{856}{$Y$ 的内点构成的集合记为 $\Int Y$，显然 $\Int Y\subseteq Y$.}
+\handline{72}{653}{856}{\circled{3} 若 $Y=\Int Y$，则称 $Y$ 是开集.}
+\handline{72}{686}{856}{\textbf{Thm.} $(X,d)$：度量空间，$a\in X$，$r>0$，则 $B(a,r)$ 是开集.}
+\handline{72}{719}{856}{\textbf{Pf.} $\forall p\in B(a,r)$，$d(p,a)<r$. 取 $r_1\in(0,r-d(p,a))$.}
+\handline{72}{754}{856}{则 $\forall x\in B(p,r_1)$，$d(x,a)\le d(x,p)+d(p,a)<r_1+d(p,a)<r$.}
+\handline{72}{788}{856}{$\therefore x\in B(a,r)\Rightarrow B(p,r_1)\subseteq B(a,r)$.}
+\handline{72}{821}{856}{$\therefore B(a,r)$ 是开集.}
+\end{handpage}
+
+% SOURCE PAGE 002
+\begin{handpage}{2}
+\handline{72}{133}{856}{\textbf{Thm.} $Y\subseteq X$，则 $\Int Y=\Int(\Int Y)$，即 $\Int Y$ 是开集.}
+\handline{72}{160}{856}{\textbf{Pf.} 只需证 $\Int Y\subseteq\Int(\Int Y)$.}
+\handline{72}{189}{856}{$\forall p\in\Int Y$，$\exists r>0$，s.t. $B(p,r)\subseteq Y$.}
+\handline{72}{216}{856}{$\forall x\in B(p,r)$，由于 $B(p,r)$ 开，故 $\exists r_x>0$，s.t. $B(x,r_x)\subseteq B(p,r)\subseteq Y$，$\therefore x\in\Int Y$.}
+\handline{72}{245}{856}{$\therefore B(p,r)\subseteq\Int Y$，$\therefore p\in\Int(\Int Y)$. $\therefore\Int Y\subseteq\Int(\Int Y)$.}
+\handline{72}{274}{856}{故 $\Int Y=\Int(\Int Y)$.}
+\handline{72}{304}{856}{\textbf{Thm.} $\{E_\alpha\}_{\alpha\in\Lambda}$ 是 $X$ 的开集族，则 $E=\bigcup_{\alpha\in\Lambda}E_\alpha$ 是开集.}
+\handline{72}{333}{856}{\textbf{Pf.} $\forall p\in E$，$\exists\alpha\in\Lambda$ s.t. $p\in E_\alpha$，$\therefore\exists r>0$ s.t. $B(p,r)\subseteq E_\alpha\subseteq E$.}
+\handline{72}{361}{856}{$\therefore E$ 是开集.}
+\handline{72}{389}{856}{\textbf{Thm.} $E_j$ 是开集，则 $E=\bigcap_{j=1}^nE_j$ 是开集.}
+\handline{72}{418}{856}{\textbf{Pf.} $\forall p\in E$，$p\in E_j$，$1\le j\le n$. $\exists r_j>0$ s.t. $B(p,r_j)\subseteq E_j$.}
+\handline{72}{448}{856}{取 $r=\min_{1\le j\le n}r_j$，则 $B(p,r)\subseteq E_j$，$1\le j\le n$.}
+\handline{72}{479}{856}{$\therefore B(p,r)\subseteq E$，$\therefore E$ 是开集.}
+\handline[NoteRed]{72}{509}{856}{开集的任意并、有限交都是开集，但无限交不一定是开集.}
+\handline{72}{540}{856}{\textbf{Ex.} $I_n=(-\frac1n,\frac1n)$，则 $\bigcap_{n=1}^\infty I_n=\{0\}$. 单点集是闭集（$\R$ 中）.}
+\handline{72}{571}{856}{\textbf{Thm.} $Y\subseteq X$ 开集 $\Longleftrightarrow Y$ 是开球的并集.}
+\handline{72}{601}{856}{\textbf{Pf.} ``$\Leftarrow$'' trivial.}
+\handline{72}{632}{856}{``$\Rightarrow$'' $\forall p\in Y$，$\exists r(p)>0$，s.t. $B(p,r)\subseteq Y$.}
+\handline{72}{663}{856}{则 $Y=\bigcup_{p\in Y}B(p,r)$，为开球之并.}
+\handline[Teal]{72}{694}{856}{$(X,d)$ 是度量空间，$(Y,d_Y)$ 是子空间.}
+\handline[Teal]{72}{725}{856}{则 $B_Y(p,r)=\{x\in Y\mid d(x,p)<r\}=B_X(p,r)\cap Y$.}
+\handline{72}{757}{856}{\textbf{Thm.} $(X,d)$ 度量空间，$(Y,d)$ 是子空间.}
+\handline{72}{788}{856}{则 $V\subseteq Y$ 是开集 $\Longleftrightarrow\exists U\subseteq X$ 是开集，$V=U\cap Y$.}
+\handline{72}{818}{856}{\textbf{Pf.} ``$\Rightarrow$'' $V\subseteq Y$ 是开集，$y\in V$，$\exists B_Y(y,r_y)\subseteq V$. 令 $U=\bigcup_{y\in V}B_X(y,r_y)$ 是 $X$ 中开集.}
+\handline{72}{849}{856}{易验证 $V=X\cap Y$.}
+\handline{72}{879}{856}{``$\Leftarrow$'' 设 $U\subseteq X$ 开集，$V=U\cap Y$.}
+\handline{72}{911}{856}{$y\in V\subseteq U$，$\therefore\exists B_X(y,r_y)\subseteq U$，$\therefore B_Y(y,r_y)=B_X(y,r_y)\cap Y\subseteq U\cap Y=V$.}
+\handline{72}{941}{856}{$\therefore V$ 是 $Y$ 中开集.}
+\end{handpage}
+
+% SOURCE PAGE 003
+\begin{handpage}{3}
+\handline{72}{139}{856}{\textbf{Def.} \circled{1} $(X,d)$ 是度量空间，$E\subseteq X$，$p\in E$}
+\handline{72}{169}{856}{若 $\forall r>0$，$B(p,r)\cap E\ne\varnothing$，则称 $p$ 是 $E$ 的接触点.}
+\handline{72}{197}{856}{\circled{2} $E$ 的接触点全体记为 $\overline E$，称为 $E$ 的闭包. 显然 $E\subseteq\overline E$.}
+\handline{72}{226}{856}{\circled{3} 若 $E=\overline E$，则称 $E$ 是闭集.}
+\handline{72}{256}{856}{\textbf{Thm.} $Y\subseteq X$，$(X,d)$ 是度量空间，则 $\overline Y=\overline{\overline Y}$，即 $\overline Y$ 是闭集.}
+\handline{72}{284}{856}{\textbf{Pf.} $\overline Y\subseteq\overline{\overline Y}$ trivial，下证 $\overline{\overline Y}\subseteq\overline Y$.}
+\handline{72}{313}{856}{$\forall p\in\overline{\overline Y}$，$\forall r>0$，$B(p,r)\cap\overline Y\ne\varnothing$.}
+\handline{72}{342}{856}{设 $q\in B(p,r)\cap\overline Y$，由 $q\in B(p,r)\Rightarrow\exists0<\delta<r$，s.t. $B(q,\delta)\subseteq B(p,r)$.}
+\handline{72}{371}{856}{$q\in\overline Y\Rightarrow\exists y\in Y$ s.t. $y\in B(q,\delta)$.}
+\handline{72}{400}{856}{$\therefore d(p,y)\le d(p,q)+d(q,y)<r+\delta<2r$.}
+\handline{72}{428}{856}{$\therefore B(p,2r)\cap Y\ne\varnothing$，$\therefore p\in\overline Y$，$\therefore\overline{\overline Y}\subseteq\overline Y$.}
+\handline{72}{458}{856}{故 $\overline Y=\overline{\overline Y}$.}
+\handline{72}{487}{856}{\textbf{Thm.} $E\subseteq X$ 是开集 $\Longleftrightarrow E^c=X\setminus E$ 是闭集.}
+\handline{72}{516}{856}{\textbf{Pf.} ``$\Rightarrow$'' $\forall p\in E$，$\exists r>0$，s.t. $B(p,r)\subseteq E$.}
+\handline{72}{546}{856}{$\therefore B(p,r)\cap E^c=\varnothing$，$\therefore p\notin\overline{E^c}$，$\therefore\overline{E^c}\subseteq E^c$，$\therefore E^c=\overline{E^c}$，$\therefore E^c$ 是闭集.}
+\handline{72}{577}{856}{``$\Leftarrow$'' $\forall p\in E$，即 $p\notin E^c$，故 $\exists r>0$，s.t. $B(p,r)\cap E^c=\varnothing$.}
+\handline{72}{605}{856}{$\therefore B(p,r)\subseteq E$，$\therefore E$ 是开集.}
+\handline{72}{635}{856}{\textbf{Cor.} 闭集的任意交和有限并仍是闭集.}
+\handline{72}{664}{856}{\textbf{Def.} $\{x_n\}\subseteq X$，$p\in X$，若 $\lim_{n\to\infty}d(x_n,p)=0$，则称 $\{x_n\}$ 收敛到 $p$.}
+\handline{72}{694}{856}{记为 $\lim_{n\to\infty}x_n=p$，或 $x_n\to p$.}
+\handline{72}{725}{856}{\textbf{Thm.} 若 $\{x_n\}$ 收敛于某点，则该极限唯一.}
+\handline{72}{756}{856}{若极限为 $p,q$.}
+\handline{72}{788}{856}{$\forall\varepsilon>0$，$\exists n_0\in\N$，s.t. $n>n_0$，$d(x_n,p),d(x_n,q)<\frac\varepsilon2$.}
+\handline{72}{819}{856}{$\Rightarrow d(p,q)\le d(p,x_n)+d(x_n,q)<\varepsilon$，$\therefore d(p,q)=0$，$\therefore p=q$.}
+\handline{72}{851}{856}{\textbf{Thm.} $E\subseteq X$，则 $p\in\overline E\Longleftrightarrow\exists\{x_n\}\subseteq E$，s.t. $x_n\to p$.}
+\handline{72}{883}{856}{\textbf{Pf.} ``$\Rightarrow$'' $p\in\overline E\Rightarrow\forall n\in\N$，$B(p,\frac1n)\cap E\ne\varnothing$.}
+\handline{72}{915}{856}{$\therefore\exists x_n\in B(p,\frac1n)\cap E\subseteq E$，s.t. $d(p,x_n)<\frac1n\Rightarrow x_n\to p$.}
+\handline{72}{944}{856}{``$\Leftarrow$'' $\forall r>0$，由 $x_n\to p$，$\exists n_0$ s.t. $n>n_0$ 时 $d(p,x_n)<r$，即 $x_n\in E$.}
+\handline{72}{971}{856}{$\therefore x_n\in B(p,r)\cap E$，$\therefore B(p,r)\cap E\ne\varnothing$，$\therefore p\in\overline E$.}
+\end{handpage}
+
+% SOURCE PAGE 004
+% SECTION: 1.2 | Completeness
+\begin{handpage}{4}
+\handtitle{72}{127}{856}{\S1.2 Completeness}
+\handline{72}{150}{856}{\textbf{Def.} \circled{1} $\forall\eps>0$，$\exists N$，s.t. $m,n>N$，$d(x_m,x_n)<\eps$}
+\handline{72}{173}{856}{则 $\{x_n\}$ 称为 Cauchy 列.}
+\handline{72}{199}{856}{\circled{2} 若 $X$ 中的任意 Cauchy 列都收敛，则称 $X$ 是完备度量空间.}
+\handline{72}{249}{856}{\textbf{Thm.} $(X,d)$：度量空间，$\{x_n\}$：Cauchy 列.}
+\handline{72}{274}{856}{若 $\{x_{n_j}\}$ 是 $\{x_n\}$ 的子列，且收敛到 $x$，则 $\{x_n\}$ 收敛到 $x$.}
+\handline{72}{299}{856}{\textbf{Pf.} $\forall\eps>0$，$\exists n_0\in\N$，$\forall n,m>n_0$，$d(x_m,x_n)<\frac\eps2$.}
+\handline{72}{325}{856}{$\exists j_0\in\N$，s.t. $j\geq j_0$ 时，$d(x_{n_j},x)<\frac\eps2$.}
+\handline{72}{350}{856}{不妨设 $n_{j_0}>n_0$. $\therefore n>n_0$ 时}
+\handline{72}{377}{856}{$d(x_n,x)\leq d(x_n,x_{n_{j_0}})+d(x_{n_{j_0}},x)<\frac\eps2+\frac\eps2=\eps$.}
+\handline{72}{403}{856}{$\therefore\lim_{n\to\infty}x_n=x$.}
+\handline{72}{431}{856}{\textbf{Thm.} $(X,d)$ 是度量空间，$Y$ 是完备子空间，则 $Y$ 是 $X$ 中的闭集.}
+\handline{72}{459}{856}{\textbf{Pf.} $\forall p\in\overline Y$，$\exists\{x_n\}\subseteq Y$，s.t. $x_n\to p$. 由于 $Y$ 是完备的，$\therefore p\in Y$. $\therefore\overline Y\subseteq Y$.}
+\handline{72}{487}{856}{$\therefore Y=\overline Y$，故 $Y$ 是闭集.}
+\handline{72}{515}{856}{\textbf{Thm.} $(X,d)$：完备度量空间，$Y\subseteq X$ 是闭集，则 $(Y,d)$ 完备.}
+\handline{72}{544}{856}{\textbf{Pf.} $\forall\{x_n\}$ Cauchy 列 $\subseteq Y\subseteq X$. $\exists p\in X$，s.t. $x_n\to p$.}
+\handline{72}{573}{856}{由于 $Y$ 是闭集 $\Rightarrow p\in Y$. $\therefore(Y,d)$ 完备.}
+\handline{72}{602}{856}{\textbf{Def.} \circled{1} 若 $\forall\eps>0$，$\exists n_0\in\N$，s.t. $\forall n,m>N$，$\forall s\in S$，$d(f_n(s),f_m(s))<\eps$}
+\handline{72}{632}{856}{则称 $\{f_n\}$ 是 $S$ 上的 Cauchy 函数列（$f_n:S\to X$）.}
+\handline{72}{666}{856}{\circled{2} $\forall\eps>0$，$\exists n_0\in\N$，s.t. $n>n_0$，$\forall s\in S$，$d(f_n(s),f(s))<\eps$}
+\handline{72}{696}{856}{则称 $\{f_n\}$ 一致收敛到 $f$.}
+\handline{72}{728}{856}{\textbf{Thm.} $(X,d)$：完备度量空间，$S$：集合，$f_n:S\to X$.}
+\handline{72}{761}{856}{若 $\{f_n\}$ 是 $S$ 上的 Cauchy 列，则 $\exists f:S\to X$，s.t. $\{f_n\}$ 一致收敛到 $f$.}
+\handline{72}{794}{856}{\textbf{Pf.} $\forall s\in S$，$\{f_n(s)\}$ 是 $X$ 中的 Cauchy 列. 故 $\exists f(s)\in X$，s.t. $f_n(s)\to f(s)$.}
+\handline{72}{828}{856}{$\forall\eps>0$，$\exists n_0>0$，$n,m>n_0$，$\forall s\in S$，$d(f_n(s),f_m(s))<\eps$.}
+\handline{72}{861}{856}{$\therefore d(f_n(s),f(s))\leq d(f_n(s),f_m(s))+d(f_m(s),f(s))<\eps+d(f_m(s),f(s))$.}
+\handline{72}{891}{856}{令 $m\to\infty\Rightarrow d(f_n(s),f(s))\leq\eps$.}
+\handline{72}{921}{856}{$\Rightarrow f_n\rightrightarrows f$.}
+\end{handpage}
+
+% SOURCE PAGE 005
+\begin{handpage}{5}
+\handline{72}{141}{856}{\textbf{Def.} $E\subseteq X$，若 $\overline E=X$，则称 $E$ 在 $X$ 中稠密.}
+\handline[Teal]{72}{168}{856}{$\Leftrightarrow\forall x\in X$，$\forall\eps>0$，$\exists p\in E$，s.t. $d(x,p)<\eps$.}
+\handline[Teal]{72}{194}{856}{$\Leftrightarrow\forall x\in X$，$\exists\{x_n\}\subseteq E$，s.t. $x_n\to x$.}
+\handline[Teal]{72}{220}{856}{$\Leftrightarrow\forall x\in X$，$V$ 是 $x$ 的任意一个开邻域，则 $V\cap E\ne\varnothing$.}
+\handline{72}{247}{856}{\textbf{Thm.} \ann{(Baire Category Theorem)}}
+\handline{72}{273}{856}{$(X,d)$：完备度量空间，$U_j\subseteq X$ 是稠密开集，则 $\bigcap_{j=1}^{\infty}U_j$ 也稠密.}
+\handline{72}{300}{856}{\textbf{Pf.} $\forall p\in X$，设 $W$ 是 $p$ 的任意一个开邻域.}
+\handline{72}{328}{856}{要证 $(\bigcap_{j=1}^{\infty}U_j)\cap W\ne\varnothing$.}
+\handline{72}{357}{856}{由于 $U_1$ 稠密 $\Rightarrow W\cap U_1\ne\varnothing$. $\exists x_1\in W\cap U_1$.}
+\handline{72}{385}{856}{$W\cap U_1$ 开 $\Rightarrow\exists r_1\in(0,1)$，s.t. $\overline{B(x_1,r_1)}\subseteq W\cap U_1$.}
+\handline{72}{416}{856}{由于 $U_2$ 稠密 $\Rightarrow B(x_1,r_1)\cap U_2\ne\varnothing$. $\exists x_2\in B(x_1,r_1)\cap U_2$.}
+\handline{72}{445}{856}{$\therefore\exists0<r_2<\min(\frac12,r_1)$，s.t. $B(x_2,r_2)\subseteq\overline{B(x_2,r_2)}\subseteq B(x_1,r_1)\cap U_2$.}
+\handline{72}{471}{856}{$\cdots\cdots$}
+\handline{72}{500}{856}{$\exists x_n\in B(x_{n-1},r_{n-1})\cap U_n$.}
+\handline{72}{531}{856}{$\exists0<r_n<\min(\frac1n,r_{n-1})$，s.t. $B(x_n,r_n)\subseteq\overline{B(x_n,r_n)}\subseteq B(x_{n-1},r_{n-1})\cap U_n$.}
+\handline{72}{560}{856}{考虑 $\{x_n\}\subseteq X$.}
+\handline{72}{591}{856}{$\forall m>n$，$x_m,x_n\in B(x_n,r_n)$.}
+\handline{72}{623}{856}{$\therefore d(x_n,x_m)<2r_n<\frac2n\to0$. $\therefore\{x_n\}$ 是 Cauchy 列.}
+\handline{72}{655}{856}{$\therefore x_n\to a\in X$.}
+\handline{72}{688}{856}{由于 $B(x_n,r_n)\subseteq B(x_{n-1},r_{n-1})$.}
+\handline{72}{719}{856}{故 $\forall n\in\N$，当 $k>n$ 时，$x_k\in B(x_n,r_n)$，令 $k\to\infty\Rightarrow a\in\overline{B(x_n,r_n)}$.}
+\handline{72}{749}{856}{$\therefore a\in\overline{B(x_n,r_n)}\subseteq B(x_{n-1},r_{n-1})\cap U_n\subseteq W\cap U_n$.}
+\handline{72}{781}{856}{$\Rightarrow a\in W\cap(\bigcap_{j=1}^{\infty}U_j)$.}
+\handline{72}{813}{856}{$\therefore\bigcap_{j=1}^{\infty}U_j$ 在 $X$ 中稠密.}
+\end{handpage}
+
+% SOURCE PAGE 006
+\begin{handpage}{6}
+\handline{72}{129}{856}{\textbf{Def.} $E\subseteq X$，若 $\Int(\overline E)=\varnothing$，则称 $E$ 无处稠密.}
+\handline[Teal]{72}{156}{856}{$E$ 稠密 $\Leftrightarrow\overline E=X\Leftrightarrow\Int(X-E)=\varnothing$.}
+\handline[Teal]{72}{183}{856}{$E$ 无处稠密 $\Leftrightarrow\Int(\overline E)=\varnothing\Leftrightarrow X-\overline E$ 稠密.}
+\handline{72}{209}{856}{\textbf{Thm.} $(X,d)$ 完备，$E_k\subseteq X$，$k=1,2,\ldots$，无处稠密，则 $\Int(\bigcup_{k=1}^{\infty}\overline{E_k})=\varnothing$.}
+\handline{72}{236}{856}{\textbf{Pf.} $E_k$ 无处稠密 $\Rightarrow X-\overline{E_k}$ 稠密. 且 $X-\overline{E_k}$ 为开集.}
+\handline{72}{263}{856}{$\therefore$ 由贝尔纲定理，$\bigcap_{k=1}^{\infty}(X-\overline{E_k})$ 稠密.}
+\handline{72}{289}{856}{$\therefore\Int\bigl(X-\bigcap_{k=1}^{\infty}(X-\overline{E_k})\bigr)=\Int(\bigcup_{k=1}^{\infty}\overline{E_k})=\varnothing$.}
+\handline{72}{318}{856}{\textbf{Def.} $(X,d)$：度量空间，$E\subseteq X$.}
+\handline{72}{346}{856}{\circled{1} 若 $E=\bigcup_{k=1}^{\infty}E_k$，$E_k$ 无处稠密，则称 $E$ 是第一纲集.}
+\handline{72}{374}{856}{\circled{2} 若 $E$ 不是第一纲集，则称为第二纲集.}
+\handline[Teal]{72}{403}{856}{对于完备度量空间 $(X,d)$，$X$ 本身为第二纲集.}
+\handline[Teal]{72}{431}{856}{若 $X=\bigcup_{k=1}^{\infty}E_k$，$E_k$ 无处稠密，则由于 $\overline{E_k}\subseteq X$，$\therefore X=\bigcup_{k=1}^{\infty}\overline{E_k}$.}
+\handline[Teal]{72}{461}{856}{$\therefore\Int(X)=\Int(\bigcup_{k=1}^{\infty}\overline{E_k})=\varnothing$，而 $X$ 是开集. $\therefore X=\Int(X)=\varnothing$，矛盾！}
+\handline[AnnotationBlue]{72}{491}{856}{\textbf{Ex.} $\R^2$ 是否可以写成可数条直线的并？}
+\handline[AnnotationBlue]{72}{524}{856}{设 $L_k$ 为直线，则 $L_k$ 是无处稠密的. 而 $(\R^2,d)$ 完备，$\therefore\R^2$ 是第二纲集.}
+\handline[AnnotationBlue]{72}{556}{856}{$\therefore\R^2\ne\bigcup_{k=1}^{\infty}L_k$.}
+\handline{72}{589}{856}{\textbf{Def.} \circled{1} $(X,d)$：度量空间.}
+\handline{72}{621}{856}{若 $\exists E\subseteq X$，s.t. $\overline E=X$，且 $E$ 可数，则称 $X$ 可分.}
+\handline{72}{653}{856}{\circled{2} 若 $(X,d)$ 可分，且 $\exists$ 一个与 $d$ 等价的度量 $\rho$，s.t. $(X,\rho)$ 完备，}
+\handline{72}{686}{856}{则称 $(X,d)$ 为波兰空间 \ann{(polish space)}.}
+\end{handpage}
+
+% SOURCE PAGE 007
+\begin{handpage}{7}
+\handtitle{72}{132}{856}{度量空间的完备化}
+\handline[NoteRed]{72}{163}{856}{仿照实数理论中，由有理数出发定义无理数的思想，将任一度量空间进行完备化.}
+\handline{72}{192}{856}{\textbf{Def.} 设 $(X_1,d_1)$、$(X_2,d_2)$ 是两个度量空间，若 $\exists\varphi:X_1\to X_2$，s.t.}
+\handline{72}{220}{856}{\circled{1} $\varphi$ 是满射 \circled{2} $d_1(x,y)=d_2(\varphi x,\varphi y)$，$\forall x,y\in X_1$.}
+\handline{72}{248}{856}{则称 $(X_1,d_1)$ 与 $(X_2,d_2)$ 是等距同构的，$\varphi$ 为等距同构映射.}
+\handline[AnnotationBlue]{72}{275}{856}{事实上，由 \circled{2} 可知 $\varphi$ 是单射. 若 $\varphi x=\varphi y$，则 $d_2(\varphi x,\varphi y)=0=d_1(x,y)$. $\therefore x=y$，故 $\varphi$ 是双射.}
+\handline[Teal]{72}{304}{856}{今后不再区分等距同构的两个度量空间，若 $(X_1,d_1)$ 与 $(X_2,d_2)$ 的子空间 $(X_0,d_2)$ 同构}
+\handline[Teal]{72}{334}{856}{则称 $(X_1,d_1)$ 可以等距嵌入 $(X_2,d_2)$，在等距同构意义下，将 $(X_1,d_1)$ 视为 $(X_2,d_2)$}
+\handline[Teal]{72}{363}{856}{的子空间，并记作 $(X_1,d_1)\subseteq(X_2,d_2)$.}
+\handline{72}{394}{856}{\textbf{Def.} 设 $(X,d)$ 是度量空间，$E\subseteq X$，若 $\forall x\in X$，$\forall\eps>0$，$\exists z\in E$，s.t. $\rho(x,z)<\eps$.}
+\handline{72}{424}{856}{则称 $E$ 是 $X$ 的稠密子集，\ann{$\Leftrightarrow\forall x\in X$，$\exists\{x_n\}\subseteq E$，s.t. $x_n\to x$（$n\to\infty$）}.}
+\handline{72}{454}{856}{\textbf{Ex.} $P[a,b]$ 表示 $[a,b]$ 上的多项式全体，则 $P[a,b]$ 在 $C[a,b]$ 中稠密 \ann{(Weierstrass 逼近定理)}.}
+\handline{72}{483}{856}{\textbf{Def.} 包含给定度量空间 $(X,d)$ 的最小完备度量空间，称为 $X$ 的完备化空间.}
+\handline[AnnotationBlue]{72}{512}{856}{最小：任一以 $(X,d)$ 为子空间的完备空间都以 $X$ 的完备化空间为子空间.}
+\handline{72}{542}{856}{\textbf{Prop.} 若 $(X_1,d_1)$ 是一个以 $(X,d)$ 为子空间的完备度量空间，且 $d_1|_{X\times X}=d$.}
+\handline{72}{574}{856}{$X$ 在 $X_1$ 中稠密，则 $(X_1,d_1)$ 是 $(X,d)$ 的完备化空间.}
+\handline{72}{605}{856}{\textbf{Pf.} 设 $(X_2,d_2)$ 是一个以 $(X,d)$ 为子空间的完备度量空间，$d_2|_{X\times X}=d$.}
+\handline{72}{635}{856}{下证 $(X_1,d_1)$ 是 $(X_2,d_2)$ 的子空间.}
+\handline{72}{671}{856}{设 $\xi\in X_1$，则 $\exists\{x_n\}\subseteq X$，s.t. $\lim_{n\to\infty}d(x_n,\xi)=0$.}
+\handline{72}{705}{856}{由 $d_1|_{X\times X}=d_2|_{X\times X}=d$，$\therefore d_2(x_n,x_m)=d_1(x_n,x_m)=d(x_n,x_m)$.}
+\handline{72}{739}{856}{$\therefore\{x_n\}$ 是 $(X_2,d_2)$ 中的 Cauchy 列. $\therefore\exists\widehat\xi\in X_2$，s.t. $x_n\to\widehat\xi$（$n\to\infty$）.}
+\handline{72}{772}{856}{构造映射 $T:X_1\to X_2:\xi\mapsto\widehat\xi$，下证 $T$ 是等距的.}
+\handline{72}{806}{856}{$\forall\xi,\eta\in X_1$，$\exists\{x_n\},\{y_n\}\subseteq X$，s.t. $x_n\to\xi$，$y_n\to\eta$.}
+\handline{72}{843}{856}{$\therefore d_1(\xi,\eta)=\lim_{n\to\infty}d_1(x_n,y_n)=\lim_{n\to\infty}d_2(x_n,y_n)=d_2(\widehat\xi,\widehat\eta)=d_2(T\xi,T\eta)$.}
+\handline{72}{878}{856}{$\therefore(X_1,d_1)$ 是 $(X_2,d_2)$ 的子空间.}
+\end{handpage}
+
+% SOURCE PAGE 008
+\begin{handpage}{8}
+\handline{72}{140}{856}{\textbf{Thm.} 每一个度量空间都有一个完备化空间.}
+\handline{72}{167}{856}{\textbf{Pf.} 设 $(X,d)$ 是一个度量空间.}
+\handline{72}{193}{856}{\textbf{Step 1.} 将 $(X,d)$ 中的基本列分类，对基本列 $\{x_n\},\{y_n\}$，若 $\lim_{n\to\infty}d(x_n,y_n)=0$，则称 $\{x_n\},\{y_n\}$ 等价.}
+\handline{72}{218}{856}{将一个等价类视为一点，用 $\overline X_1$ 表示所有等价类构成的集合.}
+\handline{72}{244}{856}{在 $\overline X_1$ 上定义 $d_1:\overline X_1\to\R_{\ge0}$，$\xi,\eta\in\overline X_1$，$\{x_n\},\{y_n\}$ 分别为 $\xi,\eta$ 的代表元.}
+\handline{72}{270}{856}{$d_1(\xi,\eta):=\lim_{n\to\infty}d(x_n,y_n)$.}
+\handline[AnnotationBlue]{72}{295}{856}{下证 $d_1$ 是良好定义的，且 $(\overline X_1,d_1)$ 是一个度量空间.}
+\handline[NoteRed]{72}{327}{856}{\circled{1} $\lim_{n\to\infty}d(x_n,y_n)$ 一定存在.}
+\handline[Teal]{72}{353}{856}{设 $\{x_n\},\{y_n\}$ 为 $(X,d)$ 中的 Cauchy 列.}
+\handline[Teal]{72}{378}{856}{$\therefore\ \forall\eps>0,\ \exists N\in\N,\ \text{s.t. }n>m>N\text{ 时，}\ d(x_n,x_m),d(y_n,y_m)<\frac\eps2$.}
+\handline[Teal]{72}{405}{856}{$\therefore\ d(x_n,y_n)\le d(x_n,x_m)+d(x_m,y_m)+d(y_m,y_n)<d(x_m,y_m)+\eps$.}
+\handline[Teal]{72}{432}{856}{同理 $d(x_m,y_m)\le d(x_n,y_n)+\eps$，$\therefore\ |d(x_n,y_n)-d(x_m,y_m)|<\eps$.}
+\handline[Teal]{72}{464}{856}{$\therefore\ \{d(x_n,y_n)\}$ 是 $\R$ 中的 Cauchy 列，$\therefore\ \lim_{n\to\infty}d(x_n,y_n)$ 存在.}
+\handline[NoteRed]{72}{497}{856}{\circled{2} 不依赖代表元的选取.}
+\handline[Teal]{72}{525}{856}{设 $\{x_n^{(1)}\},\{x_n^{(2)}\}\in\xi$，$\{y_n^{(1)}\},\{y_n^{(2)}\}\in\eta$.}
+\handline[Teal]{72}{557}{856}{下证 $\lim_{n\to\infty}d(x_n^{(1)},y_n^{(1)})=\lim_{n\to\infty}d(x_n^{(2)},y_n^{(2)})$.}
+\handline[Teal]{72}{589}{856}{$d(x_n^{(1)},y_n^{(1)})\le d(x_n^{(1)},x_n^{(2)})+d(x_n^{(2)},y_n^{(2)})+d(y_n^{(2)},y_n^{(1)})$.}
+\handline[Teal]{72}{617}{856}{令 $n\to\infty\Rightarrow\lim_{n\to\infty}d(x_n^{(1)},y_n^{(1)})\le\lim_{n\to\infty}d(x_n^{(2)},y_n^{(2)})$.}
+\handline[Teal]{72}{649}{856}{同理 $\lim_{n\to\infty}d(x_n^{(2)},y_n^{(2)})\le\lim_{n\to\infty}d(x_n^{(1)},y_n^{(1)})$.}
+\handline[Teal]{72}{682}{856}{$\therefore\ \lim_{n\to\infty}d(x_n^{(1)},y_n^{(1)})=\lim_{n\to\infty}d(x_n^{(2)},y_n^{(2)})$.}
+\handline[NoteRed]{72}{716}{856}{\circled{3} $(\overline X_1,d_1)$ 是一个度量空间.}
+\handline[Teal]{72}{749}{856}{设 $\xi,\eta,\zeta\in\overline X_1$，$\{x_n\}\in\xi$，$\{y_n\}\in\eta$，$\{z_n\}\in\zeta$.}
+\handline[Teal]{72}{785}{856}{$1^\circ\ d_1(\xi,\eta)=0\Leftrightarrow\lim_{n\to\infty}d(x_n,y_n)=0\Leftrightarrow\{x_n\},\{y_n\}\text{ 等价}\Leftrightarrow\xi=\eta$.}
+\handline[Teal]{72}{821}{856}{$2^\circ\ d_1(\xi,\eta)=d_1(\eta,\xi)$ 显然.}
+\handline[Teal]{72}{857}{856}{$3^\circ\ d(x_n,y_n)\le d(x_n,z_n)+d(z_n,y_n)$，令 $n\to\infty\Rightarrow d_1(\xi,\eta)\le d_1(\xi,\zeta)+d_1(\zeta,\eta)$.}
+\end{handpage}
+
+% SOURCE PAGE 009
+\begin{handpage}{9}
+\handline{72}{135}{856}{\textbf{Step 2.} $\forall x\in X$，定义 $\xi_x\in\overline X_1$，表示包含 $(x,x,\ldots,x,\ldots)$ 的等价类.}
+\handline{72}{163}{856}{记 $\overline X'=\{\xi_x\in\overline X_1\mid x\in X\}$，则 $\overline X'\subseteq\overline X_1$.}
+\handline{72}{192}{856}{定义映射 $T:(X,d)\to(\overline X',d_1)$.}
+\handline{72}{219}{856}{$x\longmapsto Tx=\xi_x$.}
+\handline{72}{248}{856}{\circled{1} $T$ 是满射 \circled{2} $d(x,y)=d_1(\xi_x,\xi_y)$，$\therefore\ (X,d)$ 与 $(\overline X',d_1)$ 等距同构.}
+\handline{72}{277}{856}{$\therefore\ (X,d)$ 是 $(\overline X_1,d_1)$ 的子空间.}
+\handline[AnnotationBlue]{72}{307}{856}{下证 $(\overline X',d_1)$ 在 $(\overline X_1,d_1)$ 中稠密.}
+\handline[Teal]{72}{337}{856}{设 $\forall\xi\in\overline X_1$，$\xi$ 的一个代表元为 $\{x_n\}$.}
+\handline[Teal]{72}{366}{856}{定义 $\xi_n=\xi_{x_n}$ 即包含 $(x_n,x_n,\ldots,x_n,\ldots)$ 的等价类.}
+\handline[Teal]{72}{397}{856}{则 $\lim_{n\to\infty}d_1(\xi_n,\xi)=\lim_{n\to\infty}\lim_{m\to\infty}d(x_n,x_m)$.}
+\handline[Teal]{72}{426}{856}{而 $\{x_n\}$ 是 $(X,d)$ 中的 Cauchy 列，$\therefore\ \lim_{n\to\infty}\lim_{m\to\infty}d(x_n,x_m)=0$.}
+\handline[Teal]{72}{456}{856}{$\therefore\ \forall\xi\in\overline X_1,\ \exists\{\xi_n\}\subseteq\overline X',\ \text{s.t. }\lim_{n\to\infty}d_1(\xi_n,\xi)=0$.}
+\handline[Teal]{72}{487}{856}{$\therefore\ (\overline X',d_1)$ 在 $(\overline X_1,d_1)$ 中稠密.}
+\handline{72}{519}{856}{\textbf{Step 3.} \ann{下证 $(\overline X_1,d_1)$ 是完备的.}}
+\handline[Teal]{72}{550}{856}{设 $\{\xi_n\}$ 是 $(\overline X_1,d_1)$ 中的 Cauchy 列.}
+\handline[Teal]{72}{583}{856}{Case I: 若 $\{\xi_n\}\subseteq\overline X'$，则令 $x_n=T^{-1}\xi_n$.}
+\handline[Teal]{72}{616}{856}{而 $T$ 是等距同构，$\therefore\ \{x_n\}$ 是 $(X,d)$ 中的 Cauchy 列.}
+\handline[Teal]{72}{648}{856}{设 $\{x_n\}$ 所在的等价类为 $\xi\in\overline X_1$.}
+\handline[Teal]{72}{681}{856}{则 $\lim_{n\to\infty}d_1(\xi_n,\xi)=\lim_{n\to\infty}\lim_{m\to\infty}d(x_n,x_m)=0$，$\therefore\ \xi_n\to\xi\ (n\to\infty)$.}
+\handline[Teal]{72}{716}{856}{Case II: 由于 $(\overline X',d_1)$ 在 $(\overline X_1,d_1)$ 中稠密.}
+\handline[Teal]{72}{752}{856}{$\therefore\ \forall n\in\N$，对于 $\xi_n\in\overline X_1$，$\exists\overline\xi_n\in\overline X'$，s.t. $d_1(\xi_n,\overline\xi_n)<\frac1n$.}
+\handline[Teal]{72}{786}{856}{对于 $\{\overline\xi_n\}\subseteq\overline X'$，易证它是 $(\overline X',d_1)$ 的 Cauchy 列.}
+\handline[Teal]{72}{822}{856}{$\therefore$ 由 Case I 得，$\exists\xi\in\overline X_1$，s.t. $\overline\xi_n\to\xi\ (n\to\infty)$，$\therefore\ \xi_n\to\xi\ (n\to\infty)$.}
+\handline{72}{857}{856}{结合 Step 1,2,3，可得 $(X,d)$ 的完备化空间是 $(\overline X_1,d_1)$.}
+\end{handpage}
+
+% SOURCE PAGE 010
+% SECTION: 1.3 | The real line
+\begin{handpage}{10}
+\handtitle{72}{144}{856}{\S1.3 The real line}
+\handline{72}{174}{856}{Least Upper Bounded Axiom}
+\handline{72}{201}{856}{$E\subseteq\R$ 有界，则 $E$ 的最小上界存在，称为 $E$ 的上确界，记为 $\sup E$.}
+\handline{72}{230}{856}{\textbf{Thm.} $(\R,|\cdot|)$ 是完备度量空间.}
+\handline{72}{256}{856}{\textbf{Pf.} 设 $\{x_n\}$ 是 $\R$ 中的 Cauchy 列.}
+\handline{72}{285}{856}{令 $E=\{x\in\R\mid\text{严格小于 }x\text{ 的在 }\{x_n\}\text{ 中只有有限个}\}$.}
+\handline{72}{313}{856}{不难注意到若 $a\in E$ 则 $(-\infty,a]\subseteq E$.}
+\handline{72}{342}{856}{$\forall\eps>0,\ \exists n_0\in\N,\ \text{s.t. }n,m\ge n_0,\ |x_n-x_m|<\eps$.}
+\handline{72}{371}{856}{$\therefore\ \forall n\ge n_0,\quad |x_n-x_{n_0}|<\eps$.}
+\handline{72}{398}{856}{$\Rightarrow\quad x_{n_0}-\eps<x_n<x_{n_0}+\eps\quad(n\ge n_0)$.}
+\handline{72}{428}{856}{$\Rightarrow\quad x_{n_0}-\eps\in E,\quad x_{n_0}+\eps\notin E$.}
+\handline{72}{458}{856}{$\Rightarrow\quad(-\infty,x_{n_0}-\eps]\subseteq E$，且 $x_{n_0}+\eps$ 是 $E$ 的一个上界.}
+\handline{72}{489}{856}{由确界原理，设 $p=\sup E$.}
+\handline{72}{519}{856}{则 $x_{n_0}-\eps\le p\le x_{n_0}+\eps$.}
+\handline{72}{552}{856}{即 $|p-x_{n_0}|\le\eps$.}
+\handline{72}{584}{856}{$n\ge n_0$ 时，$|x_n-p|\le|p-x_{n_0}|+|x_n-x_{n_0}|<2\eps$.}
+\handline{72}{618}{856}{$\therefore\ \lim_{n\to\infty}x_n=p$，$\therefore\ (\R,|\cdot|)$ 是完备的.}
+\handline[NoteRed]{72}{652}{856}{在实数公理中，确界存在原理作为一条公理假设而存在.}
+\handline[NoteRed]{72}{689}{856}{而在其他实数构造方法（如 Dedekind 分割）中，}
+\handline[NoteRed]{72}{722}{856}{确界原理是可以被推出的.}
+\end{handpage}
+
+% SOURCE PAGE 011
+% SECTION: 1.4 | Products of metric spaces
+\begin{handpage}{11}
+\handtitle{72}{120}{856}{\S1.4 Products of metric spaces.}
+\handline{72}{145}{856}{\textbf{Def.} $(X_j,d_j)$：度量空间，$1\le j\le n$，令 $X=X_1\times X_2\cdots\times X_n$.}
+\handline{72}{172}{856}{在 $X$ 上定义度量 $d$，$(X,d)$ 称为乘积度量空间.}
+\handline{72}{198}{856}{其中 $d$ 满足：\circled{1} $\{x^{(k)}\}\subseteq X$ 收敛于 $x=(x_1,\ldots,x_n)\in X$.}
+\handline{72}{224}{856}{$\Leftrightarrow\quad x_j^{(k)}\to x_j\in X_j,\quad 1\le j\le n$.}
+\handline{72}{251}{856}{\redann{（}\circled{2} $d_j(x_j,y_j)\le d(x,y),\quad1\le j\le n$ \redann{）第二条不是必须的.}}
+\handline[AnnotationBlue]{72}{280}{856}{\textbf{Ex.} $d(x,y)=\bigl(\sum_{j=1}^n d_j^2(x_j,y_j)\bigr)^{1/2}$.}
+\handline[AnnotationBlue]{72}{305}{856}{$\overline d(x,y)=\max(d_1(x_1,y_1),\ldots,d_n(x_n,y_n))$.}
+\handline[AnnotationBlue]{72}{332}{856}{$\widehat d(x,y)=d_1(x_1,y_1)+\cdots+d_n(x_n,y_n)$.}
+\handline{72}{360}{856}{\textbf{Thm.} $X=X_1\times\cdots\times X_n$，若 \circled{1} 成立，则 $X$ 中的开集 $U$ 具有形式}
+\handline{72}{387}{856}{$U=U_1\times\cdots\times U_n$，$U_j\subseteq X_j$ 是开集.}
+\handline{72}{417}{856}{\textbf{Pf.} $1^\circ$ 若 $C_j\subseteq X_j$ 是闭集，则 $C=C_1\times C_2\times\cdots\times C_n$ 是 $X$ 中闭集.}
+\handline{72}{446}{856}{若 $x^{(k)}\in C$，$x_j^{(k)}\in C_j$，$x^{(k)}\to x\in X\quad(1\le j\le n)$.}
+\handline{72}{475}{856}{则由 \circled{1} 得 $x_j^{(k)}\to x_j\in C_j$，$\Rightarrow x=(x_1,\ldots,x_n)\in C$.}
+\handline{72}{503}{856}{$\therefore\ C$ 是闭集.}
+\handline{72}{534}{856}{$2^\circ$ 若 $V_j\subseteq X_j$ 是开集，则由 $1^\circ$ 得 $X_1\times\cdots\times(X_j\setminus V_j)\times\cdots\times X_n$ 是闭集.}
+\handline{72}{564}{856}{$\therefore\ U_j=X_1\times\cdots\times(V_j)\times\cdots\times X_n$ 是开集.}
+\handline{72}{596}{856}{$\therefore\ U_1\cap\cdots\cap U_n=V_1\times\cdots\times V_n$ 是开集.}
+\handline{72}{625}{856}{$3^\circ\quad x\in U\subseteq X$，$U$ 是开集，$x=(x_1,\ldots,x_n)$.}
+\handline{72}{657}{856}{若 $\forall m\in\N,\quad x\in B(x_1,\frac1m)\times\cdots\times B(x_n,\frac1m)\not\subset U$.}
+\handline{72}{688}{856}{则 $\exists x^{(m)}\in B(x_1,\frac1m)\times\cdots\times B(x_n,\frac1m)$，但 $x^{(m)}\notin U$.}
+\handline{72}{721}{856}{而 $x_j,x_j^{(m)}\in B(x_j,\frac1m)\Rightarrow x_j^{(m)}\to x_j$（在 $X_j$ 中）.}
+\handline{72}{753}{856}{$\therefore\ x^{(m)}\to x$（在 $X$ 中），由 $X\setminus U$ 闭 $\Rightarrow x\in X\setminus U$，与 $x\in U$ 矛盾.}
+\handline{72}{785}{856}{$\Rightarrow\ \forall x\in U,\ \exists m\in\N,\ \text{s.t. }x\in B(x_1,\frac1m)\times\cdots\times B(x_n,\frac1m)$.}
+\handline{72}{817}{856}{从而 $U$ 可由开球乘积生成.}
+\handline{72}{859}{856}{\textbf{Thm.} $(X_j,d_j)$ 完备，若 $d$ 满足 \circled{1}\circled{2}，则 $(X,d)$ 也完备.}
+\handline{72}{889}{856}{\textbf{Pf.} 若 $\{x^{(k)}\}\subseteq X$ 是 Cauchy 列，由 \circled{2} $\Rightarrow\{x_j^{(k)}\}$ 是 Cauchy 列 $\Rightarrow x_j^{(k)}\to x_j\in X_j$.}
+\handline{72}{917}{856}{再由 \circled{1} $\Rightarrow x^{(k)}\to x=(x_1,\ldots,x_n)\in X$，$\therefore\ (X,d)$ 完备.}
+\handline{72}{944}{856}{\textbf{Cor.} $\R^n=\R\times\cdots\times\R$ 也是完备的.}
+\end{handpage}
+
+% SOURCE PAGE 012
+% SECTION: 1.5 | Compactness
+\begin{handpage}{12}
+\handtitle{72}{128}{856}{\S1.5 Compactness}
+\handline{72}{154}{856}{\textbf{Def.} $(X,d)$ 是度量空间，$A\subseteq X$.}
+\handline{72}{180}{856}{\circled{1} 若 $\exists x_0\in X,\ r>0$，s.t. $A\subseteq B(x_0,r)$，则称 $A$ 是有界的.}
+\handline{72}{206}{856}{\circled{2} 若 $A$ 中任意点列在 $X$ 中有一个收敛子列，则称 $A$ 是列紧的.}
+\handline{72}{231}{856}{\circled{3} 若这个子列收敛到 $A$ 中的点，则称 $A$ 是自列紧的.}
+\handline{72}{257}{856}{\circled{4} 若 $X$ 是列紧的，则 $(X,d)$ 称为列紧空间. \redann{（一定是完备空间）}}
+\handline{72}{286}{856}{\circled{5} $\{U_\alpha\}_{\alpha\in\Lambda}$，$U_\alpha$ 开集，$A\subseteq\bigcup_{\alpha\in\Lambda}U_\alpha$，则 $\{U_\alpha\}_{\alpha\in\Lambda}$ 称为 $A$ 的一个开覆盖.}
+\handline{72}{313}{856}{\circled{6} 若 $A$ 的任意开覆盖存在有限子覆盖，则称 $A$ 是紧集.}
+\handline{72}{339}{856}{\circled{7} $B\subseteq A$，若 $\forall\eps>0,\ \forall x\in A,\ \exists y\in B$，s.t. $d(x,y)<\eps$，则称 $B$ 是 $A$ 的一个 $\eps$ 网.}
+\handline{72}{366}{856}{若 $\operatorname{Card}(B)<\infty$，则称 $B$ 是有穷 $\eps$ 网.}
+\handline{72}{393}{856}{\circled{8} 若 $\forall\eps>0$，$A$ 都存在一个有穷 $\eps$ 网，则称 $A$ 是完全有界的.}
+\handline{72}{420}{856}{\circled{9} 若 $(X,d)$ 有可数的稠密子集，则称 $(X,d)$ 是可分的.}
+\handline{72}{449}{856}{\circled{10} $\B$ 是 $(X,d)$ 的开集族，若 $X$ 中的开集都可以写成 $\B$ 中开集之并，则称 $\B$ 是开集的基.}
+\handline{72}{477}{856}{\circled{11} 若 $(X,d)$ 有一个至多可数的基 $\B$，则称 $(X,d)$ 是第二可数的，记为 $C_2$ 空间.}
+\handline[Teal]{72}{503}{856}{本节的主定理是 Heine-Borel 的推广：}
+\handline{72}{534}{856}{\textbf{Thm.} $(X,d)$ 是度量空间，TFAE:}
+\handline{72}{563}{856}{(I) $X$ 是紧的.}
+\handline{72}{591}{856}{(II) $X$ 是列紧的.}
+\handline{72}{622}{856}{(III) $X$ 是完备且完全有界的.}
+\handline{72}{654}{856}{\textbf{Lemma} \ann{$((\mathrm I)\Rightarrow(\mathrm{II}))$}}
+\handline{72}{686}{856}{不妨设 $\{y_j\}_{j=1}^\infty\subseteq X$ 有无穷多个不同的点.}
+\handline{72}{719}{856}{若 $\forall x\in X,\ \exists\delta_x>0$，s.t. $B(x,\delta_x)$ 中只包含有限个 $\{y_j\}$ 中的点.}
+\handline{72}{753}{856}{$\Rightarrow X=\bigcup_{x\in X}B(x,\delta_x)$，由紧性 $\Rightarrow X=\bigcup_{k=1}^l B(x_k,\delta_k)\Rightarrow X$ 中也只有有限个 $\{y_j\}$ 中的点，矛盾!}
+\handline{72}{785}{856}{$\therefore\ \exists p\in X,\ \forall r>0$，$B(p,r)$ 中有无穷个 $\{y_j\}_{j=1}^\infty$ 中的点.}
+\handline{72}{815}{856}{不妨设 $\{y_j\}$ 中只有有限个点为 $p$.}
+\handline{72}{848}{856}{取 $y_{l_1}\ne p\in B(p,1)$，令 $r_2=\min(d(y_{l_1},p),\frac12)>0$.}
+\handline{72}{883}{856}{再取 $y_{l_2}\ne p\in B(p,r_2)$，其中 $l_2>l_1$，令 $r_3=\min(d(y_{l_2},p),\frac13)>0$.}
+\handline{72}{919}{856}{$\cdots\cdots\Rightarrow$ 得到 $\{y_{l_k}\}_{k=1}^\infty\subseteq\{y_j\}_{j=1}^\infty$，$d(p,y_{l_k})\le\frac1k\Rightarrow y_{l_k}\to p\ (k\to\infty)$.}
+\end{handpage}
+
+% SOURCE PAGE 013
+\begin{handpage}{13}
+\handline{72}{98}{856}{\textbf{Thm.} \ann{$(\mathrm{II})\Leftrightarrow(\mathrm{III})$ (Hausdorff)}}
+\handline{72}{126}{856}{$(X,d)$ 是度量空间，$M\subseteq X$，则 $M$ 列紧 $\Rightarrow M$ 完全有界.}
+\handline{72}{154}{856}{进一步，若 $(X,d)$ 完备，则 $M$ 列紧 $\Leftrightarrow M$ 完全有界. \ann{从而 $(X,d)$ 列紧 $\Leftrightarrow (X,d)$ 完全有界且完备.}}
+\handline{72}{182}{856}{\textbf{Pf.} ``$\Rightarrow$'' \redann{（这个方向无需完备性）}}
+\handline{72}{211}{856}{反证，若 $\exists\eps_0>0$，s.t. $M$ 没有有穷 $\eps_0$ 网.}
+\handline{72}{239}{856}{$\therefore\ \forall x_1\in M,\ \exists x_2\in M\setminus B(x_1,\eps_0)$.}
+\handline{72}{270}{856}{对于 $\{x_1,x_2\}$，$\exists x_3\in M\setminus(B(x_1,\eps_0)\cup B(x_2,\eps_0))$.}
+\handline{72}{300}{856}{$\cdots\cdots$ 对于 $\{x_1,\ldots,x_n\}$，$\exists x_{n+1}\in M\setminus\bigl(\bigcup_{k=1}^n B(x_k,\eps_0)\bigr)$，$\cdots\cdots$.}
+\handline{72}{332}{856}{$\therefore\ \{x_n\}\subseteq M,\ \forall n,m\in\N,\ d(x_n,x_m)\ge\eps_0$，故没有收敛子列! 与列紧矛盾!}
+\handline{72}{362}{856}{``$\Leftarrow$'' \redann{（对角线法则）} \ann{若 $(X,d)$ 完备.}}
+\handline{72}{392}{856}{设 $\{x_n\}\subseteq M$ 为无穷点列.}
+\handline{72}{424}{856}{对于 $1$-网，$\forall n\in\N,\ \exists y\in N_1$，s.t. $d(x_n,y)<1$.}
+\handline{72}{455}{856}{$N_1$ 是有限集，$\therefore\ \exists y_1\in N_1$，s.t. $\{n\in\N\mid d(x_n,y_1)<1\}$ 是无穷集.}
+\handline{72}{486}{856}{$\therefore\ \exists$ 子列 $\{x_n^{(1)}\}\subseteq\{x_n\}$，s.t. $\{x_n^{(1)}\}\subseteq B(y_1,1)$.}
+\handline{72}{519}{856}{对于 $\frac12$-网，重复上述操作，$\exists y_2\in N_2$，以及子列 $\{x_n^{(2)}\}\subseteq\{x_n^{(1)}\}$，s.t. $\{x_n^{(2)}\}\subseteq B(y_2,\frac12)$.}
+\handline{72}{541}{856}{$\cdots\cdots$}
+\handline{72}{578}{856}{对于 $\frac1k$-网，$\exists y_k\in N_k$，及子列 $\{x_n^{(k)}\}\subseteq\{x_n^{(k-1)}\}$，s.t. $\{x_n^{(k)}\}\subseteq B(y_k,\frac1k)$.}
+\handline{72}{604}{856}{$\cdots\cdots$}
+\handline{72}{642}{856}{取对角线的元素作为 $\{x_n\}$ 的子列：$\{x_n^{(n)}\}_{n=1}^\infty$.}
+\handline{72}{678}{856}{$\forall\eps>0$，取 $N>\frac2\eps$，当 $n>m>N$ 时，$x_n^{(n)}\in\{x_n^{(m)}\}\subseteq B(y_m,\frac1m)$.}
+\handline{72}{714}{856}{$\therefore\ d(x_n^{(n)},x_m^{(m)})\le d(x_n^{(n)},y_m)+d(x_m^{(m)},y_m)\le\frac2m<\eps$.}
+\handline{72}{747}{856}{由 $(X,d)$ 完备，$\{x_n^{(n)}\}_{n=1}^\infty$ 是 Cauchy 列.}
+\handline{72}{783}{856}{故 $\{x_n^{(n)}\}$ 收敛，$\therefore\ M$ 是列紧的.}
+\handline[NoteRed]{72}{820}{856}{为了由 $(\mathrm{II})(\mathrm{III})\Rightarrow(\mathrm I)$，先进行一些准备工作.}
+\end{handpage}
+
+% SOURCE PAGE 014
+\begin{handpage}{14}
+\handline{72}{147}{856}{\textbf{Prop.} \circled{1} $\R^n$ 中任意有界集是列紧集，任意有界闭集是自列紧集.}
+\handline{72}{175}{856}{\circled{2} 列紧空间内任意子集都是列紧集，闭子集都是自列紧集.}
+\handline{72}{200}{856}{\circled{3} 列紧空间一定是完备空间.}
+\handline{72}{229}{856}{\textbf{Prop.} $(X,d)$ 是度量空间，$X$ 完全有界 $\Rightarrow X$ 有界.}
+\handline{72}{257}{856}{\textbf{Pf.} 令 $\eps=1$，$\exists x_1,\ldots,x_k$，s.t. $X=\bigcup_{j=1}^k B(x_j,1)$.}
+\handline{72}{286}{856}{$\forall a,b\in X,\quad a\in B(x_{j_1},1),\quad b\in B(x_{j_2},1)$.}
+\handline{72}{314}{856}{$d(a,b)\le d(x_{j_1},a)+d(x_{j_1},x_{j_2})+d(b,x_{j_2})$.}
+\handline{72}{341}{856}{$\le2+\max_{1\le i,j\le k}d(x_i,x_j)$.}
+\handline{72}{370}{856}{$\therefore\ (X,d)$ 有界.}
+\handline[Teal]{72}{400}{856}{有界 $\nRightarrow$ 完全有界.\quad $(X,d)$，$d(x,y)=\begin{cases}0,&x=y,\\1,&x\ne y.\end{cases}$}
+\handline[Teal]{72}{428}{856}{$\forall x,y\in X,\quad d(x,y)<2\Rightarrow(X,d)$ 有界.}
+\handline[Teal]{72}{458}{856}{取 $\eps=\frac12,\ \forall x\in X,\ B(x,\frac12)=\{x\}$.}
+\handline[Teal]{72}{488}{856}{当 $X$ 为无穷集时，有限个半径为 $\frac12$ 的开集的并是有限集.}
+\handline[Teal]{72}{518}{856}{故不存在有穷 $\frac12$-网. 故 $(X,d)$ 不是完全有界的.}
+\handline{72}{551}{856}{\textbf{Prop.} $(X,d)$ 完全有界，$E\subseteq X$ 为子空间，则 $(E,d)$ 也完全有界.}
+\handline{72}{584}{856}{\textbf{Pf.} $\forall\eps>0,\ \exists x_1,x_2,\ldots,x_l\in X$，s.t. $X=\bigcup_{j=1}^l B(x_j,\eps)$.}
+\handline{72}{617}{856}{$\therefore\ E\subseteq\bigcup_{j=1}^l B(x_j,\eps)$.}
+\handline{72}{651}{856}{不妨设 $E\cap B(x_j,\eps)\ne\varnothing\quad1\le j\le m$，$E\cap B(x_j,\eps)=\varnothing\quad m\le j\le l$.}
+\handline{72}{685}{856}{取 $y_j\in E\cap B(x_j,\eps)\quad1\le j\le m$.}
+\handline{72}{718}{856}{则 $B(x_j,\eps)\subseteq B(y_j,2\eps)$.}
+\handline{72}{751}{856}{$\therefore\ E\subseteq\bigcup_{j=1}^m B(x_j,\eps)\subseteq\bigcup_{j=1}^m B(y_j,2\eps)$.}
+\handline{72}{783}{856}{$\therefore\ E$ 是完全有界的.}
+\end{handpage}
+
+% SOURCE PAGE 015
+\begin{handpage}{15}
+\handline[AnnotationBlue]{72}{135}{856}{但是在欧氏空间中有界 $\Leftrightarrow$ 完全有界，据此可得 Heine--Borel 定理.}
+\handline{72}{167}{856}{\textbf{Thm.} $E\subseteq\R^n$，$d$ 为欧氏度量.}
+\handline{72}{194}{856}{则 $E$ 有界 $\Leftrightarrow E$ 完全有界.}
+\handline{72}{221}{856}{\textbf{Pf.} 只需证“$\Rightarrow$”.}
+\handline{72}{250}{856}{$E$ 有界，$\therefore\exists M>0$，s.t. $E\subseteq[-M,M]^n$.}
+\handline{72}{278}{856}{$\forall\eps>0$，在每个坐标轴上取出距原点为 $\eps$ 的整数倍的点，}
+\handline{72}{305}{856}{并向其他坐标轴作平行线.}
+\handline{72}{335}{856}{$\exists N\in\N$，s.t. $N\eps>M$，$(N-1)\eps\le M$.}
+\handline{72}{365}{856}{取 $[-N\eps,N\eps]^n$ 中平行线交出来的格点（有限个），}
+\handline{72}{394}{856}{记为 $\{y_j\}_{j=1}^k\subseteq[-N\eps,N\eps]^n$.}
+\handline{72}{424}{856}{则 $[-N\eps,N\eps]^n\subseteq\bigcup_{j=1}^k B(y_j,\sqrt n\eps)$.}
+\handline{72}{455}{560}{因为每个 $n$ 维立方体一定会被某个 $B(y_j,\sqrt n\eps)$ 覆盖.}
+\handline{72}{486}{560}{$\therefore[-N\eps,N\eps]^n$ 是完全有界的.}
+\handline{72}{520}{560}{$\therefore E\subseteq[-M,M]^n\subseteq[-N\eps,N\eps]^n$ 是完全有界的.}
+\handdiagram{650}{438}{230}{145}{\draw[step=.8,gray] (0,0) grid (2.4,2.4);\foreach \x in {0,.8,1.6,2.4}{\draw[thick] (\x,-.2)--(\x,2.6);}\foreach \y in {0,.8,1.6,2.4}{\draw[thick] (-.2,\y)--(2.6,\y);}\foreach \x in {.4,1.2,2}{\foreach \y in {.4,1.2,2}{\draw[gray] (\x,\y) circle (.7);}}}
+\handline[NoteRed]{72}{620}{856}{这一定理充分运用了欧氏空间的几何特性，这是一般度量空间不具备的.}
+\handline{72}{656}{856}{\textbf{Thm.} \ann{(Heine--Borel)}}
+\handline{72}{689}{856}{$E\subseteq\R^n$，则 TFAE}
+\handline{72}{722}{856}{\circled{1} $E$ 是紧集.}
+\handline{72}{757}{856}{\circled{2} $E$ 是自列紧集.}
+\handline{72}{793}{856}{\circled{3} $E$ 是有界闭集.}
+\handline[Teal]{72}{831}{856}{相当于把主定理中 \circled{3} 的完备换成了闭，完全有界换成了有界.}
+\end{handpage}
+
+% SOURCE PAGE 016
+\begin{handpage}{16}
+\handline{72}{159}{856}{\textbf{Prop.} 可分度量空间的子空间也是可分的.}
+\handline{72}{187}{856}{\textbf{Pf.} $(Y,d)\subseteq(X,d)$，$\{x_k\}_{k=1}^\infty$ 在 $X$ 中稠密且可数.}
+\handline{72}{214}{856}{考虑 $B(x_k,\frac1n)$，$n\in\N$，由 $\{x_k\}$ 与 $\N$ 可数.}
+\handline{72}{242}{856}{$\Rightarrow B(x_k,\frac1n)$ 为可数个开球.}
+\handline{72}{270}{856}{考虑 $B(x_k,\frac1n)\cap Y\ne\varnothing$，取 $y_{k,n}\in B(x_k,\frac1n)\cap Y$.}
+\handline{72}{297}{856}{则 $\{y_{k,n}\}_{k,n\in\N}$ 为至多可数集.}
+\handline{72}{325}{856}{$\forall\eps>0$，$\forall y\in Y$，取 $n\in\N$，s.t. $\frac2n<\eps$.}
+\handline{72}{353}{856}{由 $\{x_k\}$ 稠密 $\Rightarrow\exists x_k$ s.t. $y\in B(x_k,\frac1n)$.}
+\handline{72}{381}{856}{$\therefore B(x_k,\frac1n)\cap Y\ne\varnothing$，取 $y_{k,n}$，则 $y,y_{k,n}\in B(x_k,\frac1n)$.}
+\handline{72}{409}{856}{则 $d(y,y_{k,n})\le\frac2n<\eps$.}
+\handline{72}{437}{856}{$\therefore\{y_{k,n}\}$ 在 $Y$ 中稠密.}
+\handline[NoteRed]{72}{462}{856}{注意 $y_{k,n}$ 中的 $k,n$ 是双下标，而不是先取 $k$，再取与 $Y$ 交集不为空的 $n$.}
+\handline{72}{494}{856}{\textbf{Prop.} $(X,d)$ 完全有界，则 $X$ 可分.}
+\handline{72}{522}{856}{\textbf{Pf.} $\forall n\in\N$，$\exists$ 有穷 $\frac1n$-网：$\{x_{n,1},x_{n,2},\cdots,x_{n,j_n}\}$.}
+\handline{72}{553}{856}{$X=\bigcup_{j=1}^{j_n}B(x_{n,j},\frac1n)$.}
+\handline{72}{580}{856}{考虑 $\{x_{n,p}\}_{n=1}^{\infty}\,{}_{p=1}^{j_n}$ 为至多可数集.}
+\handline{72}{610}{856}{$\forall\eps>0$，$\forall x\in X$，取 $n\in\N$，s.t. $\frac1n<\eps$.}
+\handline{72}{639}{856}{由于 $X=\bigcup_{j=1}^{j_n}B(x_{n,j},\frac1n)$，$\therefore\exists1\le j\le j_n$，s.t. $x\in B(x_{n,j},\frac1n)$.}
+\handline{72}{671}{856}{$\therefore d(x_{n,j},x)<\frac1n<\eps$.}
+\handline{72}{700}{856}{$\therefore\{x_{n,p}\}_{n=1}^{\infty}\,{}_{p=1}^{j_n}$ 在 $X$ 中稠密，$\therefore X$ 可分.}
+\handline{72}{733}{856}{\textbf{Prop.} $(X,d)$ 是度量空间，\redann{（事实上只要是拓扑空间 $(X,\T)$ 即可）.}}
+\handline{72}{765}{856}{$\B$ 是基 $\Leftrightarrow x\in X$，$U$ 开集 $x\in U$，则 $\exists V\in\B$ s.t. $x\in V\subseteq U$.}
+\handline{72}{798}{856}{\textbf{Pf.} “$\Rightarrow$” $U=\bigcup_\alpha V_\alpha$，$V_\alpha\in\B$，$\therefore x\in U\Rightarrow\exists\alpha$ s.t. $x\in V_\alpha\in\B$，且 $V_\alpha\subseteq U$.}
+\handline{72}{829}{856}{“$\Leftarrow$” $\forall U\subseteq X$ 为开集.}
+\handline{72}{860}{856}{$\forall x\in U$，$\exists V_x\in\B$，s.t. $x\in V_x\subseteq U$.}
+\handline{72}{897}{856}{$\therefore U=\bigcup_{x\in U}V_x$，$\therefore\B$ 是基.}
+\end{handpage}
+
+% SOURCE PAGE 017
+\begin{handpage}{17}
+\handline{72}{124}{856}{\textbf{Thm.} $(X,d)$ 是度量空间.}
+\handline{72}{150}{856}{$X$ 是第二可数的 $\Leftrightarrow X$ 是可分的.}
+\handline{72}{179}{856}{\textbf{Pf.} “$\Rightarrow$”：$\B$ 是基，且 $\B$ 可数，$\B=\{U_k\}_{k=1}^\infty$，$U_k$ 为开集.}
+\handline{72}{206}{856}{取 $x_k\in U_k$，则 $\{x_k\}_{k=1}^\infty$ 构成一个可数点列.}
+\handline{72}{234}{856}{$X$ 中的任意非空开集 $V=\bigcup_\alpha U_\alpha$，$\therefore x_\alpha\in U_\alpha\subseteq V$.}
+\handline{72}{263}{856}{于是 $V$ 与 $\{x_k\}$ 交集非空，故 $\{x_k\}$ 稠密.}
+\handline{72}{292}{856}{$\therefore X$ 是可分的.}
+\handline{72}{319}{856}{“$\Leftarrow$” 若 $\{x_k\}_{k=1}^\infty$ 是 $X$ 的稠子集.}
+\handline{72}{348}{856}{令 $\B=\{B(x_k,\frac1n)\mid k,n\in\N\}$，则 $\B$ 是可数集.}
+\handline{72}{377}{856}{$\forall U\subseteq X$，是开集，$x\in U$，$\exists n\in\N$，s.t. $B(x,\frac2n)\subseteq U$.}
+\handline{72}{407}{856}{由 $\{x_k\}$ 稠密，$\therefore\exists x_k$ s.t. $x_k\in B(x,\frac1n)$.}
+\handline{72}{436}{856}{$\therefore x_k\in B(x_k,\frac1n)=V\in\B$.}
+\handline{72}{465}{856}{且 $V=B(x_k,\frac1n)\subseteq B(x,\frac2n)\subseteq U$.}
+\handline{72}{493}{856}{$\therefore\B$ 是一个基，$\therefore X$ 是第二可数的.}
+\handline{72}{532}{856}{\textbf{Thm.} \ann{(Lindelöf)}}
+\handline{72}{562}{856}{$(X,d)$ 是度量空间且第二可数，则 $X$ 的任意开覆盖存在可数子覆盖.}
+\handline{72}{594}{856}{\textbf{Pf.} $X=\bigcup_{\alpha\in\Lambda}U_\alpha$ 是一个开覆盖.}
+\handline{72}{624}{856}{$x\in X$，$\exists\alpha\in\Lambda$ s.t. $x\in U_\alpha$.}
+\handline{72}{655}{856}{$\therefore\exists V_x\in\B$，s.t. $x\in V_x\subseteq U_\alpha$.}
+\handline{72}{688}{856}{从 $\{U_\alpha\}_{\alpha\in\Lambda}$ 中选一个 $U_\alpha$，记为 $U_{\alpha(x)}$，s.t. $V_x\subseteq U_{\alpha(x)}$.}
+\handline{72}{720}{856}{现每个 $V_x$ 对应一个 $U_{\alpha(x)}$，而 $\B$ 可数，$\therefore\{V_x\}_{x\in X}$ 至多可数.}
+\handline{72}{754}{856}{$\therefore\{U_{\alpha(x)}\}_{x\in X}$ 至多可数.}
+\handline{72}{791}{856}{$\therefore X=\bigcup_{x\in X}V_x=\bigcup_{x\in X}U_{\alpha(x)}$ 为可数子覆盖.}
+\handline[NoteRed]{72}{856}{856}{事实上这个定理对拓扑空间 $(X,\T)$ 也成立，不依赖于度量空间.}
+\end{handpage}
+
+% SOURCE PAGE 018
+\begin{handpage}{18}
+\handline{72}{145}{856}{最后回到本节主定理，\ann{$(\mathrm{II})(\mathrm{III})\Rightarrow(\mathrm{I})$}.}
+\handline{72}{173}{856}{\textbf{Pf.} 设 $X=\bigcup_{\alpha\in\Lambda}U_\alpha$ 为一个开覆盖.}
+\handline{72}{201}{856}{$(X,d)$ 是完全有界且完备的. \ann{$(\mathrm{III})$}}
+\handline{72}{230}{856}{$\Rightarrow(X,d)$ 可分 $\Leftrightarrow(X,d)$ 第二可数，$\therefore X=\bigcup_{k=1}^\infty U_k$，为可数子覆盖.}
+\handline{72}{260}{856}{若不存在有限子覆盖 $\Rightarrow\forall m\in\N$，$X\ne\bigcup_{k=1}^m U_k$.}
+\handline{72}{289}{856}{令 $C_m=X\setminus\bigl(\bigcup_{k=1}^m U_k\bigr)$，则 $C_m$ 是闭集，$\forall m\in\N$，$C_m$ 非空.}
+\handline{72}{317}{856}{取 $x_m\in C_m\Rightarrow\{x_m\}_{m=1}^\infty$.}
+\handline{72}{346}{856}{显然：$\forall k\ge m$，$x_k\in C_m$.}
+\handline{72}{375}{856}{$(X,d)$ 是列紧的 \ann{$(\mathrm{II})$}.}
+\handline{72}{404}{856}{故 $\{x_m\}$ 有收敛子列 $\{x_{m_j}\}_{j=1}^\infty$.}
+\handline{72}{434}{856}{设 $x_{m_j}\to p$，由于 $\forall m\in\N$，当 $j$ 充分大时 $x_{m_j}\in C_m$.}
+\handline{72}{466}{856}{$\therefore p\in C_m$，$\therefore p\in\bigcap_{m=1}^\infty C_m=X\setminus\bigl(\bigcup_{m=1}^\infty(X\setminus C_m)\bigr)=X\setminus\bigl(\bigcup_{m=1}^\infty(\bigcup_{k=1}^m U_k)\bigr)=X\setminus X=\varnothing$.}
+\handline{72}{493}{856}{矛盾，$\therefore X$ 有有限子覆盖.}
+\handline[Teal]{72}{522}{856}{总结：}
+\handline[Teal]{72}{551}{856}{$(X,d)$ 为度量空间：}
+\handline[Teal]{72}{581}{856}{对于 $X$ 而言，紧 $\Leftrightarrow$ 列紧 $\Leftrightarrow$ 完备 $+$ 完全有界.}
+\handline[Teal]{72}{610}{856}{完全有界 $\Rightarrow$ 可分 $\Leftrightarrow$ 第二可数.}
+\handline[Teal]{72}{640}{856}{可传递到子空间的性质：可分，完全有界，列紧.}
+\handline[Teal]{72}{671}{856}{若 $M\subseteq X$ 为子集.}
+\handline[Teal]{72}{703}{856}{则对于 $M$ 而言：紧 $\Leftrightarrow$ 自列紧 $\Leftrightarrow$ 列紧 $+$ 闭集.}
+\handline[Teal]{72}{736}{856}{若 $(X,d)$ 完备，则自列紧 $\Leftrightarrow$ 闭集 $+$ 完全有界 $\Leftrightarrow$ 紧.}
+\handline[Teal]{72}{767}{856}{若 $(X,d)$ 为欧氏空间，则自列紧 $\Leftrightarrow$ 闭集 $+$ 有界 $\Leftrightarrow$ 紧.}
+\handline[AnnotationBlue]{72}{799}{856}{列紧空间的闭子集是自列紧的.}
+\handline[AnnotationBlue]{72}{831}{856}{完备空间的闭子集是完备的.}
+\handline[AnnotationBlue]{72}{864}{856}{度量空间的完备子空间是闭集.}
+\end{handpage}
+
+% SOURCE PAGE 019
+\begin{handpage}{19}
+\handline[AnnotationBlue]{72}{96}{856}{从另一个角度证明 $M\subseteq X$，紧 $\Leftrightarrow$ 自列紧.}
+\handline{72}{122}{856}{\textbf{Thm.} $(X,d)$ 是度量空间，$M\subseteq X$，则 $M$ 紧 $\Leftrightarrow$ 自列紧.}
+\handline{72}{149}{856}{\textbf{Pf.} “$\Rightarrow$” 若 $M$ 是紧集，由于列紧 $+$ 闭 $\Rightarrow$ 自列紧，故分两步证明.}
+\handline{72}{177}{856}{$1^\circ\ M$ 是闭集.}
+\handline{72}{207}{856}{$\forall x_0\in X\setminus M$，$M\subseteq\bigcup_{x\in M}B(x,\frac12d(x,x_0))$.}
+\handline{72}{237}{856}{由紧 $\Rightarrow M\subseteq\bigcup_{k=1}^n B(x_k,\frac12d(x_k,x_0))$.}
+\handline{72}{265}{856}{令 $\delta=\min_{1\le k\le n}\frac12d(x_k,x_0)$，则 $\delta>0$.}
+\handline{72}{294}{856}{$\forall x\in B(x_0,\delta)$，$d(x,x_k)\ge d(x_k,x_0)-d(x_0,x)>\delta$.}
+\handline{72}{323}{856}{$\therefore B(x_0,\delta)\cap M=\varnothing$，$\therefore B(x_0,\delta)\subseteq X\setminus M$，$\therefore X\setminus M$ 是开集，$M$ 是闭集.}
+\handline{72}{350}{856}{$2^\circ\ M$ 是列紧的.}
+\handline{72}{378}{856}{若 $\exists\{x_n\}\subseteq M$ 无收敛子列，不妨设 $\{x_n\}$ 两两不同.}
+\handline{72}{408}{856}{令 $S_n=\{x_k\}_{k=1}^\infty\setminus\{x_n\}$，由于 $S_n$ 中每个点都是孤立点，故 $S_n$ 为闭集.}
+\handline{72}{437}{856}{$\therefore X\setminus S_n$ 为开集.}
+\handline{72}{468}{856}{而 $\bigcup_{n=1}^\infty(X\setminus S_n)=X\setminus\bigcap_{n=1}^\infty S_n=X\setminus\varnothing=X$.}
+\handline{72}{499}{856}{$\therefore M\subseteq\bigcup_{n=1}^\infty(X\setminus S_n)$，由紧性 $\Rightarrow M\subseteq\bigcup_{n=1}^N(X\setminus S_n)=X\setminus\{x_n\}_{n=N+1}^\infty$.}
+\handline{72}{530}{856}{而 $x_{N+1}\in M$，$x_{N+1}\notin X\setminus\{x_n\}_{n=N+1}^\infty$，矛盾！$\therefore M$ 是列紧的.}
+\handline{72}{560}{856}{“$\Leftarrow$” 若 $M$ 是自列紧的.}
+\handline{72}{590}{856}{若 $\exists$ 开覆盖 $\bigcup_{\lambda\in\Lambda}G_\lambda\supset M$，不能取出 $M$ 的有限子覆盖.}
+\handline{72}{622}{856}{$M$ 是列紧的，故 $M$ 完全有界，$\therefore\forall n\in\N$，$\exists$ 有穷 $\frac1n$ 网，$N_n=\{x_1^{(n)},\cdots,x_{k(n)}^{(n)}\}$.}
+\handline{72}{653}{856}{显然 $M\subseteq\bigcup_{y\in N_n}B(y,\frac1n)$.}
+\handline{72}{685}{856}{由假设 $\Rightarrow\forall n\in\N$，$\exists y_n\in N_n$ s.t. $B(y_n,\frac1n)$ 不能被有限个 $G_\lambda$ 覆盖.}
+\handline{72}{715}{856}{由自列紧 $\Rightarrow\{y_n\}$ 有收敛子列 $\{y_{n_k}\}$ 收敛到一点 $y_0\in M$.}
+\handline{72}{746}{856}{$\exists\lambda_0\in\Lambda$ s.t. $y_0\in G_{\lambda_0}$.}
+\handline{72}{778}{856}{$G_{\lambda_0}$ 为开集，$\therefore\exists\delta>0$，s.t. $B(y_0,\delta)\subseteq G_{\lambda_0}$.}
+\handline{72}{810}{856}{$\exists K\in\N$，s.t. $k>K$ 时 $d(y_{n_k},y_0)<\frac\delta2$ 且 $n_k>\frac2\delta$.}
+\handline{72}{842}{856}{$\therefore\forall x\in B(y_{n_k},\frac1{n_k})$，$d(x,y_0)\le d(x,y_{n_k})+d(y_{n_k},y_0)\le\frac1{n_k}+\frac\delta2<\delta$.}
+\handline{72}{873}{856}{$\therefore x\in B(y_0,\delta)$，$\therefore B(y_{n_k},\frac1{n_k})\subseteq B(y_0,\delta)\subseteq G_{\lambda_0}$.}
+\handline{72}{905}{856}{与每个 $B(y_n,\frac1n)$ 不能被有限个 $G_\lambda$ 覆盖矛盾！}
+\end{handpage}
+
+% SOURCE PAGE 020
+% SECTION: 1.6 | Continuous functions
+\begin{handpage}{20}
+\handtitle{72}{126}{856}{\S1.6 Continuous functions}
+\handline{72}{154}{856}{\textbf{Def.} $(X,d_X)$，$(Y,d_Y)$ 为两个度量空间，$f:X\to Y$.}
+\handline{72}{181}{856}{\circled{1} $p\in X$，若 $\forall\{x_n\}\subseteq X$，$x_n\to p$，有 $f(x_n)\to f(p)$.}
+\handline{72}{208}{856}{则称 $f$ 在 $p$ 处连续.}
+\handline{72}{235}{856}{\circled{2} 若 $f$ 在 $X$ 的任意点处连续，则称 $f$ 在 $X$ 上连续，$f$ 是从 $X$ 到 $Y$ 的连续映射.}
+\handline{72}{265}{856}{\textbf{Prop.} $f:X\to Y$ 在 $p\in X$ 处连续.}
+\handline{72}{293}{856}{$\Leftrightarrow\forall\eps>0$，$\exists\delta=\delta(\eps,p)>0$，s.t. $d_X(x,p)<\delta$ 时 $d_Y(f(x),f(p))<\eps$.}
+\handline{72}{321}{856}{\textbf{Pf.} “$\Rightarrow$” 若 $\exists\eps_0>0$，$\forall\delta>0$，$\exists x\in X$，$d_X(x,p)<\delta$，$d_Y(f(x),f(p))\ge\eps_0$.}
+\handline{72}{350}{856}{取 $\delta=\frac1k$，$k\in\N$，$\exists x_k\in X$，$d_X(x_k,p)<\frac1k$，$d_Y(f(x_k),f(p))\ge\eps_0$.}
+\handline{72}{379}{856}{于是 $x_k\to p$，但 $f(x_k)\not\to f(p)$，矛盾！}
+\handline{72}{408}{856}{“$\Leftarrow$” 若 $x_k\to p$.}
+\handline{72}{437}{856}{$\forall\eps>0$，$\exists\delta>0$，$\exists k_0$，s.t. $k\ge k_0$：$d_X(x_k,p)<\delta$.}
+\handline{72}{466}{856}{$\therefore d_Y(f(x_k),f(p))<\eps$，$\therefore f(x_k)\to f(p)$，$\therefore f$ 在 $p$ 处连续.}
+\handline{72}{495}{856}{\textbf{Thm.} $f:X\to Y$，在 $X$ 上连续.}
+\handline{72}{524}{650}{$\Leftrightarrow\forall V\subseteq Y$ 为开集，$f^{-1}(V)$ 在 $X$ 中为开集.}
+\handline{72}{552}{650}{$\Leftrightarrow\forall C\subseteq Y$ 为闭集，$f^{-1}(C)$ 在 $X$ 中为闭集.}
+\handline{72}{582}{856}{\textbf{Pf.} “$\Rightarrow$” $\forall p\in f^{-1}(V)$，$f(p)\in V$，$\therefore\exists\eps>0$，s.t. $B_Y(f(p),\eps)\subseteq V$.}
+\handline{72}{612}{856}{由 $f$ 在 $p$ 连续 $\Rightarrow\exists\delta>0$，s.t. $d_X(x,p)<\delta$ 时，$d_Y(f(x),f(p))<\eps$.}
+\handline{72}{643}{856}{$\therefore\forall x\in B_X(p,\delta)$，$f(x)\in B_Y(f(p),\eps)\subseteq V\Rightarrow x\in f^{-1}(V)$.}
+\handline{72}{674}{856}{$\therefore B_X(p,\delta)\subseteq f^{-1}(V)$，$\therefore f^{-1}(V)$ 为 $X$ 中的开集.}
+\handline{72}{705}{856}{“$\Leftarrow$” $\forall p\in X$，$f(p)\in Y$，$\forall\eps>0$，考虑 $B_Y(f(p),\eps)$ 为开集.}
+\handline{72}{735}{856}{$f^{-1}(B_Y(f(p),\eps))$ 为 $X$ 中开集.}
+\handline{72}{766}{856}{$p\in f^{-1}(B_Y(f(p),\eps))$，$\exists\delta>0$ s.t. $B_X(p,\delta)\subseteq f^{-1}(B_Y(f(p),\eps))$.}
+\handline{72}{797}{856}{$\therefore f(B_X(p,\delta))\subseteq B_Y(f(p),\eps)$.}
+\handline{72}{828}{856}{即 $\forall x\in B_X(p,\delta)$，$d_X(x,p)<\delta$，$d_Y(f(p),f(x))<\eps$.}
+\handline{72}{859}{856}{$\therefore f$ 在 $p$ 处连续，$\therefore f$ 在 $X$ 上连续.}
+\handline[NoteRed]{72}{886}{856}{在这种表述中，未涉及到度量，故这种定义可推广到一般拓扑空间上.}
+\end{handpage}
+
+% SOURCE PAGE 021
+\begin{handpage}{21}
+\handline{72}{96}{856}{\textbf{Def.} $f:X\to Y$.}
+\handline{72}{126}{856}{若 $\forall\eps>0$，$\exists\delta=\delta(\eps)>0$，s.t. $\forall x,y\in X$，$d_X(x,y)<\delta$，$d_Y(f(x),f(y))<\eps$.}
+\handline[AnnotationBlue]{72}{155}{856}{则称 $f$ 一致连续.}
+\handline{72}{184}{856}{\textbf{Thm.} $f:X\to Y$ 是连续映射，$X$ 紧致，则 $f$ 一致连续.}
+\handline{72}{211}{856}{\textbf{Pf.} $\forall\eps>0$，$\forall p\in X$，$\exists\delta(\eps,p)>0$.}
+\handline{72}{240}{856}{s.t. $\forall x\in X$，$d_X(x,p)<\delta(\eps,p)$ 时，$d_Y(f(x),f(p))<\frac\eps2$.}
+\handline{72}{269}{856}{$\Rightarrow X=\bigcup_{p\in X}B(p,\frac12\delta_p)$，由紧 $\Rightarrow X=\bigcup_{k=1}^n B(p_k,\frac12\delta_k)$.}
+\handline{72}{298}{856}{令 $\delta=\min_{1\le k\le n}\frac12\delta_k$，则 $\delta>0$.}
+\handline{72}{327}{856}{$\forall x,y\in X$，$d_X(x,y)<\delta$.}
+\handline{72}{356}{856}{若 $x\in B(p_j,\frac12\delta_j)$，则 $d_X(y,p_j)\le d_X(x,y)+d_X(x,p_j)<\delta+\frac12\delta_j\le\delta_j$.}
+\handline{72}{384}{856}{$\therefore y\in B(p_j,\delta_j)$.}
+\handline{72}{413}{856}{$\therefore d_Y(f(x),f(y))\le d_Y(f(x),f(p))+d_Y(f(p),f(y))<\frac\eps2+\frac\eps2=\eps$.}
+\handline{72}{445}{856}{\textbf{Def.} $X,Y$ 为度量空间.}
+\handline{72}{473}{856}{若 $\exists f:X\to Y$，满足 \circled{1} $1$-$1$ \circled{2} 到上 \circled{3} 连续.}
+\handline{72}{503}{856}{且 $f^{-1}:Y\to X$ 也连续.}
+\handline{72}{532}{856}{则称 $X,Y$ 同胚，$f$ 称为 $X\to Y$ 的同胚映射. \ann{(homeomorphism)}}
+\handline[NoteRed]{72}{562}{856}{同胚保持开集结构，因此由开集得到的性质是被同胚映射下保持的.}
+\handline[NoteRed]{72}{592}{856}{还有一类映射将紧集拉回仍为紧集.}
+\handline[NoteRed]{72}{622}{856}{$g:X\to Y$，$\forall K\subseteq Y$ 为紧集，则 $g^{-1}(K)$ 为 $X$ 中紧集.}
+\handline[NoteRed]{72}{653}{856}{$g$ 称为 proper map，在复变中经常出现，全纯映射就是一类 proper map.}
+\handline[NoteRed]{72}{686}{856}{proper map 不一定是连续映射.}
+\handline[NoteRed]{72}{716}{856}{取 $X=\{0,1\}$，$Y=\{0,1\}$，$X$ 赋予平凡拓扑 $\{\varnothing,X\}$，$Y$ 赋予离散拓扑.}
+\handline[NoteRed]{72}{747}{856}{$f:X\to Y$ 为恒等映射，则 $f$ 是 proper map.}
+\handline[NoteRed]{72}{779}{856}{因为 $X$ 有限，故所有子集都是紧的.}
+\handline[NoteRed]{72}{813}{856}{但 $f^{-1}(\{0\})=\{0\}$ 不是开集，故 $f$ 不是连续映射.}
+\end{handpage}
+
+% SOURCE PAGE 022
+\begin{handpage}{22}
+\handline{72}{141}{856}{\textbf{Prop.} $(M,\rho)$ 是紧的度量空间，$C(M)$ 为 $M\to\R$ 的连续映射全体.}
+\handline{72}{170}{856}{$d(u,v):=\max_{x\in M}|u(x)-v(x)|$（$\forall u,v\in C(M)$）. 则 $(C(M),d)$ 为度量空间且完备.}
+\handline{72}{196}{856}{\textbf{Pf.} 正定性、对称性、三角不等式显然，只需证 $d(u,v)$ 是良定义的.}
+\handline{72}{222}{856}{即 $\forall u\in C(M)$，$\max_{x\in M}|u(x)|$ 存在.}
+\handline{72}{247}{856}{$M$ 是紧的 $\Leftrightarrow$ 列紧. $\forall\{y_n\}\subseteq u(M)$，$\exists\{x_n\}\subseteq M$ s.t. $u(x_n)=y_n$.}
+\handline{72}{273}{856}{$\exists$ 子列 $\{x_{n_k}\}$ s.t. $x_{n_k}\to x_0\in M$.}
+\handline{72}{300}{856}{由 $u$ 的连续性，$y_{n_k}=u(x_{n_k})\to u(x_0)$. 令 $y_0=u(x_0)$，则 $y_{n_k}\to y_0\in u(M)$.}
+\handline{72}{329}{856}{故 $u(M)$ 是自列紧的数集，故由 Heine--Borel 知 min 和 max 存在.}
+\handline{72}{354}{856}{从而 $\max_{x\in M}|u(x)|$ 存在.}
+\handline{72}{382}{856}{下证 $(C(M),d)$ 完备. 设 $\{x_n(t)\}\subseteq C(M)$ 为 Cauchy 列.}
+\handline{72}{410}{856}{\circled{1} $\forall\eps>0$，$\exists N\in\N$，$n,m>N$ 时，$d(x_n,x_m)=\max_{t\in M}|x_n(t)-x_m(t)|<\eps$.}
+\handline{72}{438}{856}{$\therefore\forall t\in M$，$|x_n(t)-x_m(t)|<\eps$. $\therefore\{x_n(t)\}\subseteq\R$ 是 Cauchy 列.}
+\handline{72}{465}{856}{$\therefore\exists x_0(t)\in\R$，s.t. $x_n(t)\to x_0(t)$.}
+\handline{72}{495}{856}{定义 $x_0:M\to\R:t\mapsto x_0(t)$.}
+\handline{72}{525}{856}{$\forall n,m>N$，$\forall t\in M$，$|x_n(t)-x_m(t)|<\eps$，令 $m\to\infty\Rightarrow |x_n(t)-x_0(t)|\leq\eps$.}
+\handline{72}{555}{856}{$\therefore d(x_n,x_0)\leq\eps$. $\therefore x_n\to x_0$.}
+\handline{72}{584}{856}{\circled{2} 最后证 $x_0\in C(M)$.}
+\handline{72}{615}{856}{$\forall t_0\in M$，$\forall\{t_n\}\subseteq M$，$t_n\to t_0$，下证 $x_0(t_n)\to x_0(t_0)$.}
+\handline{72}{647}{856}{$\forall m\in\N$，$|x_0(t_n)-x_0(t_0)|\leq |x_0(t_n)-x_m(t_n)|+|x_m(t_n)-x_m(t_0)|$}
+\handline{72}{678}{856}{$\leq 2d(x_0,x_m)+|x_m(t_n)-x_m(t_0)|.\qquad +|x_m(t_0)-x_0(t_0)|$}
+\handline{72}{707}{856}{$\forall\eps>0$，$\exists N\in\N$，s.t. $m>N$ 时，$d(x_0,x_m)<\frac\eps3$.}
+\handline{72}{738}{856}{固定 $m\in\N$，$x_m\in C(M)$. $\therefore x_m(t_n)\to x_m(t_0)$.}
+\handline{72}{768}{856}{$\exists N_1\in\N$，s.t. $n>N_1$ 时，$|x_m(t_n)-x_m(t_0)|<\frac\eps3$.}
+\handline{72}{799}{856}{$\therefore n>N_1$ 时，$|x_0(t_n)-x_0(t_0)|<\frac{2\eps}{3}+\frac\eps3=\eps$.}
+\handline{72}{831}{856}{$\therefore x_0\in C(M)$.}
+\end{handpage}
+
+% SOURCE PAGE 023
+\begin{handpage}{23}
+\handline{72}{107}{856}{\textbf{Def.} 设 $F\subseteq C(M)$. 若 $\exists M_1>0$，s.t. $\forall x\in M$，$\varphi\in F$，$|\varphi(x)|\leq M_1$，则称 $F$ 一致有界.}
+\handline{72}{136}{856}{若 $\forall\eps>0$，$\exists\delta(\eps)>0$，s.t. $\forall x_1,x_2\in M$，$\forall\varphi\in F$，$\rho(x_1,x_2)<\delta(\eps)$}
+\handline{72}{165}{856}{$|\varphi(x_1)-\varphi(x_2)|<\eps$，则称 $F$ 等度连续.}
+\handline{72}{194}{856}{\textbf{Thm.} \ann{(Arzel\`a--Ascoli)}}
+\handline{72}{224}{856}{$F\subseteq C(M)$ 是列紧集 $\Leftrightarrow F$ 一致有界且等度连续.}
+\handline{72}{252}{856}{\textbf{Pf.} $(C(M),d)$ 完备. 故列紧 $\Leftrightarrow$ 完全有界. 下证完全有界 $\Leftrightarrow$ 一致有界且等度连续.}
+\handline{72}{281}{856}{``$\Rightarrow$'' $F$ 完全有界 $\Rightarrow$ 有界 $\Rightarrow$ 一致有界.}
+\handline{72}{310}{856}{下证 $F$ 等度连续. $\forall\eps>0$，取有穷 $\frac\eps3$ 网. $N(\frac\eps3)=\{\varphi_1,\ldots,\varphi_n\}$.}
+\handline{72}{338}{856}{$M$ 紧，$\varphi_1,\ldots,\varphi_n\in C(M)\Rightarrow$ 一致连续. $\therefore\forall 1\leq k\leq n$，$\exists\delta_k>0$，$x_1,x_2\in M$，$\rho(x_1,x_2)<\delta_k$ 时，}
+\handline{72}{367}{856}{$|\varphi_k(x_1)-\varphi_k(x_2)|<\frac\eps3$.}
+\handline{72}{398}{856}{令 $\delta=\min_{1\leq k\leq n}\delta_k>0$，则 $\forall x_1,x_2\in M$，$\rho(x_1,x_2)<\delta$ 时，$|\varphi_k(x_1)-\varphi_k(x_2)|<\frac\eps3$（$\forall 1\leq k\leq n$）.}
+\handline{72}{428}{856}{$\forall\varphi\in F$，$\exists k$，$1\leq k\leq n$，s.t. $d(\varphi,\varphi_k)<\frac\eps3$.}
+\handline{72}{459}{856}{$\therefore\forall x_1,x_2\in M$，$\rho(x_1,x_2)<\delta$ 时，}
+\handline{72}{489}{856}{$|\varphi(x_1)-\varphi(x_2)|\leq |\varphi(x_1)-\varphi_k(x_1)|+|\varphi_k(x_1)-\varphi_k(x_2)|+|\varphi_k(x_2)-\varphi(x_2)|<3\times\frac\eps3=\eps$.}
+\handline{72}{519}{856}{$\therefore F$ 是等度连续的.}
+\handline{72}{549}{856}{``$\Leftarrow$'' 若 $F$ 一致有界且等度连续，$\forall\eps>0$，寻找有穷 $\eps$ 网.}
+\handline{72}{580}{856}{由等度连续，$\exists\delta>0$，s.t. $\forall\varphi\in F$，$\forall x_1,x_2\in M$，$\rho(x_1,x_2)<\delta$ 时，$|\varphi(x_1)-\varphi(x_2)|<\frac\eps3$.}
+\handline{72}{611}{856}{$(M,\rho)$ 紧 $\Leftrightarrow$ 列紧 $\Rightarrow$ 完全有界. $\exists$ 有穷 $\delta$ 网 $N(\delta)=\{x_1,x_2,\ldots,x_n\}$.}
+\handline{72}{641}{856}{作映射 $T:F\to\R^n$：$T\varphi:=(\varphi(x_1),\ldots,\varphi(x_n))$.}
+\handline{72}{672}{856}{记 $\widetilde F=T(F)$，$F$ 一致有界，$\forall\varphi\in F$，$|\varphi|\leq M_1$.}
+\handline{72}{705}{856}{$\Rightarrow |T\varphi|=\bigl(\sum_{i=1}^n|\varphi(x_i)|^2\bigr)^{\frac12}\leq\sqrt n M_1$. $\therefore\widetilde F$ 为 $\R^n$ 中有界集，故为列紧集. $\therefore\widetilde F$ 完全有界.}
+\handline{72}{739}{856}{取 $\widetilde F$ 的有穷 $\frac\eps3$ 网. $\widetilde N(\frac\eps3)=\{T\varphi_1,\ldots,T\varphi_m\}$.}
+\handline{72}{771}{856}{$\forall\varphi\in F$，$\exists\varphi_i$，s.t. $\rho_n(T\varphi,T\varphi_i)<\frac\eps3$. $1\leq i\leq m$.}
+\handline{72}{802}{856}{$\forall x\in M$，$\exists x_r$，s.t. $\rho(x,x_r)<\delta$，$1\leq r\leq n$.}
+\handline{72}{834}{856}{$\therefore |\varphi(x)-\varphi_i(x)|\leq |\varphi(x)-\varphi(x_r)|+|\varphi(x_r)-\varphi_i(x_r)|+|\varphi_i(x_r)-\varphi_i(x)|$}
+\handline{72}{865}{856}{$<\frac23\eps+\rho_n(T\varphi,T\varphi_i)<\eps$.}
+\handline{72}{900}{856}{$\therefore\{\varphi_1,\ldots,\varphi_m\}$ 是 $F$ 的有穷 $\eps$ 网. $\therefore F$ 完全有界.}
+\end{handpage}
+
+% SOURCE PAGE 024
+% SECTION: 1.7 | Normed linear spaces
+\begin{handpage}{24}
+\handtitle{72}{153}{856}{\S1.7 Normed linear spaces}
+\handline{72}{183}{856}{\textbf{Def.} $X$：$\C$ 上的线性空间，$\|\cdot\|:X\to\R_{\geq0}$.}
+\handline{72}{209}{856}{\circled{1} $\|x\|\geq0$，$\|x\|=0\Leftrightarrow x=0$；}
+\handline{72}{235}{856}{\circled{2} $\|cx\|=|c|\cdot\|x\|$，$c\in\C$；}
+\handline{72}{262}{856}{\circled{3} $\|x+y\|\leq\|x\|+\|y\|$.}
+\handline{72}{291}{856}{则称 $\|\cdot\|$ 是 $X$ 上的范数. $(X,\|\cdot\|)$ 称为赋范线性空间.}
+\handline[AnnotationBlue]{72}{324}{856}{Remark：范数可以诱导度量 $d(x,y):=\|x-y\|$，是 $X$ 上的度量.}
+\handline[AnnotationBlue]{72}{352}{856}{但度量不能诱导范数，只有当度量满足}
+\handline[AnnotationBlue]{72}{383}{856}{\circled{1} 平移不变性 $d(x+z,y+z)=d(x,y)$，\circled{2} 齐次性 $d(cx,cy)=|c|d(x,y)$ 时}
+\handline[AnnotationBlue]{72}{414}{856}{度量才能诱导范数，此时 $\|x\|:=d(x,0)$.}
+\handline[AnnotationBlue]{72}{445}{856}{而且只有在线性空间上才能谈论范数，但任意一个集合上都可以定义度量.}
+\handline[AnnotationBlue]{72}{478}{856}{由范数诱导度量从而产生的拓扑称为范数拓扑（norm topology）.}
+\handline{72}{511}{856}{\textbf{Def.} 完备赋范线性空间称为 Banach 空间.}
+\handline{72}{542}{856}{\textbf{Thm.} $(X,\|\cdot\|)$ 为赋范线性空间，则加法、数乘、$\|\cdot\|$ 是 $X$ 上连续函数.}
+\handline{72}{577}{856}{即 $x_n\to x$，$y_n\to y$，$c_n\to c$，$\{c_n\}\subseteq\C$，$c\in\C$，则}
+\handline{72}{612}{856}{$x_n+y_n\to x+y$，$c_nx_n\to cx$，$\|x_n\|\to\|x\|$.}
+\handline{72}{645}{856}{\textbf{Pf.} \circled{1} $\|x_n+y_n-x-y\|\leq\|x_n-x\|+\|y_n-y\|\to0$（$n\to\infty$）.}
+\handline{72}{681}{856}{\circled{2} $\|c_nx_n-cx\|\leq\|c_nx_n-c_nx\|+\|c_nx-cx\|$}
+\handline{72}{715}{856}{$\leq |c_n|\,\|x_n-x\|+|c_n-c|\,\|x\|\to0$（$n\to\infty$）.}
+\handline{72}{750}{856}{\circled{3} $\|x_n\|-\|x-x_n\|\leq\bigl|\|x_n\|-\|x-x_n\|\bigr|\leq\|x\|\leq\|x-x_n\|+\|x_n\|$}
+\handline{72}{786}{856}{$\Rightarrow\bigl|\|x\|-\|x_n\|\bigr|\leq\|x-x_n\|$.}
+\handline{72}{820}{856}{$\therefore\|x_n\|\to\|x\|$.}
+\end{handpage}
+
+% SOURCE PAGE 025
+\begin{handpage}{25}
+\handline{72}{135}{856}{\textbf{Def.} $(X,\|\cdot\|_X)$、$(Y,\|\cdot\|_Y)$ 为两个赋范线性空间.}
+\handline{72}{163}{856}{$\Lambda:X\to Y$. 若 $\forall\alpha,\beta\in\C$，$x,y\in X$，}
+\handline{72}{192}{856}{$\Lambda(\alpha x+\beta y)=\alpha\Lambda(x)+\beta\Lambda(y)$}
+\handline{72}{219}{856}{则称 $\Lambda$ 为线性算子 \ann{(linear operator)}.}
+\handline{72}{247}{856}{特别地，若 $Y=\R$ 或 $\C$，则称 $\Lambda$ 为线性泛函 \ann{(linear functional)}.}
+\handline[AnnotationBlue]{72}{277}{856}{一个自然的问题：线性算子在范数拓扑下是否为连续映射.}
+\handline{72}{308}{856}{事实上，线性算子一般不是连续的，如微分算子 $\frac{d}{dx}$.}
+\handline{72}{336}{856}{但有穷维空间中的线性算子都是连续的.}
+\handline{72}{369}{856}{\textbf{Def.} 若 $\sup\{\|\Lambda x\|_Y\mid\|x\|_X\leq1\}<\infty$，则称 $\Lambda$ 是有界的.}
+\handline{72}{399}{856}{其中 $\Lambda$ 为线性算子. $\|\Lambda\|:=\sup\{\|\Lambda x\|_Y\mid\|x\|_X\leq1\}$}
+\handline{72}{429}{856}{称为 $\Lambda$ 的算子范数 \ann{(operator norm)}.}
+\handline{72}{464}{856}{\textbf{Prop.} 若 $\Lambda$ 有界，则 $\|\Lambda x\|_Y\leq\|\Lambda\|\,\|x\|_X$.}
+\handline{72}{497}{856}{\textbf{Pf.} 由定义，$\|\Lambda\|\geq\bigl\|\Lambda\frac{x}{\|x\|_X}\bigr\|_Y$（$\forall x\in X$）.}
+\handline{72}{530}{856}{$\therefore\|\Lambda x\|_Y\leq\|\Lambda\|\,\|x\|_X$.}
+\handline{72}{563}{856}{\textbf{Thm.} $\Lambda:X\to Y$ 线性算子，TFAE}
+\handline{72}{593}{856}{\circled{1} $\Lambda$ 连续 \circled{2} $\Lambda$ 在 $0$ 处连续 \circled{3} $\Lambda$ 有界.}
+\handline{72}{626}{856}{\textbf{Pf.} \circled{1} $\Rightarrow$ \circled{2}：trivial.}
+\handline{72}{660}{856}{\circled{2} $\Rightarrow$ \circled{3}. $\forall\eps>0$，$\exists\delta>0$，s.t. $\|x\|_X<\delta$ 时，$\|\Lambda x\|_Y<\eps$.}
+\handline{72}{694}{856}{$\therefore\|x\|_X\leq1$ 时，$\|\frac\delta2 x\|_X=\frac\delta2\|x\|_X\leq\frac\delta2<\delta$.}
+\handline{72}{727}{856}{$\therefore\|\Lambda\frac\delta2 x\|_Y<\eps$.}
+\handline{72}{761}{856}{$\therefore\|\Lambda x\|_Y<\frac{2\eps}{\delta}$. $\therefore\|\Lambda\|<\infty$. $\Lambda$ 有界.}
+\handline{72}{795}{856}{\circled{3} $\Rightarrow$ \circled{1} 设 $x_n\to x$.}
+\handline{72}{830}{856}{则 $\|\Lambda x_n-\Lambda x\|_Y\leq\|\Lambda\|\cdot\|x_n-x\|_X\to0$.}
+\handline{72}{865}{856}{$\therefore\Lambda x_n\to\Lambda x$. $\therefore\Lambda$ 连续.}
+\end{handpage}
+
+% SOURCE PAGE 026
+\begin{handpage}{26}
+\handline{72}{147}{856}{\textbf{Def.} $\Lambda:X\to Y$ 有界线性算子.}
+\handline{72}{174}{856}{$\B(X,Y)=\{\Lambda\mid\Lambda:X\to Y\text{ 为有界线性算子}\}$.}
+\handline{72}{200}{856}{$X^*:=\B(X,\C)$，即 $Y=\C$.}
+\handline{72}{228}{856}{称为 $X$ 的对偶空间 \ann{(dual space)} 或共轭空间 \ann{(Conjugate space)}.}
+\handline[AnnotationBlue]{72}{257}{856}{注：\circled{1} 习题中会出现，有限维赋范线性空间上的线性泛函都是连续的.}
+\handline[AnnotationBlue]{72}{286}{856}{进而可证明从有限维赋范线性空间到任意一个赋范线性空间 \redann{(维数任意)}}
+\handline[AnnotationBlue]{72}{316}{856}{的线性算子都是连续的.}
+\handline[AnnotationBlue]{72}{346}{856}{\circled{2} 若 $X$ 是无限维线性空间，则可用选择公理证明，}
+\handline[AnnotationBlue]{72}{376}{856}{一定存在不连续线性泛函.}
+\handline{72}{404}{856}{\textbf{Thm.} $(\B(X,Y),\|\cdot\|)$ 是赋范线性空间，$\|\cdot\|$ 是算子范数.}
+\handline{72}{432}{856}{\textbf{Pf.} \circled{1} $\B(X,Y)$ 是线性空间.}
+\handline{72}{460}{856}{$\Lambda_1,\Lambda_2\in\B(X,Y)$，$\forall\alpha,\beta\in\C$. 显然，$\alpha\Lambda_1+\beta\Lambda_2$ 为线性算子.}
+\handline{72}{488}{856}{$\forall x\in X$，$\|x\|_X\leq1$.}
+\handline{72}{518}{856}{$\|(\alpha\Lambda_1+\beta\Lambda_2)(x)\|_Y=\|\alpha\Lambda_1x+\beta\Lambda_2x\|_Y\leq|\alpha|\cdot\|\Lambda_1x\|_Y+|\beta|\,\|\Lambda_2x\|_Y$}
+\handline{72}{547}{856}{$\leq|\alpha|\cdot\|\Lambda_1\|+|\beta|\,\|\Lambda_2\|<\infty$. $\therefore\alpha\Lambda_1+\beta\Lambda_2\in\B(X,Y)$.}
+\handline{72}{577}{856}{\circled{2} $\|\Lambda\|\geq0$ 显然.}
+\handline{72}{607}{856}{若 $\|\Lambda\|=0$，则 $\forall x\in X$，$\|\Lambda x\|_Y\leq\|\Lambda\|\cdot\|x\|_X=0$. $\therefore\Lambda x=0$.}
+\handline{72}{638}{856}{$\therefore\Lambda$ 为零映射. $\therefore\|\Lambda\|=0\Leftrightarrow\Lambda=0$.}
+\handline{72}{667}{856}{\circled{3} $\|c\Lambda\|=|c|\cdot\|\Lambda\|$.}
+\handline{72}{704}{856}{$\|c\Lambda\|=\sup\{\|c\Lambda x\|_Y\mid\|x\|_X\leq1\}=\sup\{|c|\cdot\|\Lambda x\|_Y\mid\|x\|_X\leq1\}$}
+\handline{72}{737}{856}{$=|c|\cdot\sup\{\|\Lambda x\|_Y\mid\|x\|_X\leq1\}=|c|\cdot\|\Lambda\|$.}
+\handline{72}{766}{856}{\circled{4} $\|\Lambda_1+\Lambda_2\|\leq\|\Lambda_1\|+\|\Lambda_2\|$.}
+\handline{72}{799}{856}{由 \circled{1}，令 $\alpha=\beta=1$ 即得}
+\handline{72}{832}{856}{$\forall\|x\|_X\leq1$，$\|(\Lambda_1+\Lambda_2)(x)\|_Y\leq\|\Lambda_1\|+\|\Lambda_2\|$.}
+\handline{72}{865}{856}{两边同时取 sup $\Rightarrow\|\Lambda_1+\Lambda_2\|\leq\|\Lambda_1\|+\|\Lambda_2\|$.}
+\end{handpage}
+
+% SOURCE PAGE 027
+\begin{handpage}{27}
+\handline{72}{137}{856}{\textbf{Thm.} $X$ 为赋范线性空间，$Y$ 为 Banach 空间，$T_n:X\to Y$ 有界线性算子，$n\in\N$.}
+\handline{72}{170}{856}{若 \circled{1} $\sup_n\|T_n\|=M<\infty$ \circled{2} $E$ 为 $X$ 稠子集，$\forall x\in E$，$\lim_{n\to\infty}T_nx$ 存在.}
+\handline{72}{199}{856}{则 \circled{1} $\forall x\in X$，$\lim_{n\to\infty}T_nx$ 存在.}
+\handline{72}{227}{856}{\circled{2} 定义 $Tx:=\lim_{n\to\infty}T_nx$，则 $T\in\B(X,Y)$.}
+\handline{72}{256}{856}{\circled{3} $\|T\|\leq\liminf_{n\to\infty}\|T_n\|$.}
+\handline{72}{286}{856}{\textbf{Pf.} \circled{1} $\forall x\in X$，$\forall\eps>0$，$\exists z\in E$，s.t. $\|z-x\|_X<\eps$.}
+\handline{72}{316}{856}{$\lim_{n\to\infty}T_nz$ 存在. $\therefore\exists n_0\in\N$，s.t. $\forall m,k\geq n_0$，}
+\handline{72}{345}{856}{$\|T_mz-T_kz\|_Y<\eps$.}
+\handline{72}{374}{856}{$\therefore\|T_mx-T_kx\|_Y\leq\|T_mx-T_mz\|_Y+\|T_mz-T_kz\|_Y+\|T_kz-T_kx\|_Y$}
+\handline{72}{404}{856}{$\leq\|T_m\|\cdot\|x-z\|_X+\eps+\|T_n\|\cdot\|x-z\|_X<(2M+1)\eps$.}
+\handline{72}{437}{856}{又由于 $Y$ 是 Banach 空间，$\therefore\lim_{n\to\infty}T_nx$ 存在.}
+\handline{72}{470}{856}{\circled{2} 先证线性，有界可由 \circled{3} 推出.}
+\handline{72}{508}{856}{$\forall x,y\in X$，$\alpha,\beta\in\C$.}
+\handline{72}{540}{856}{$T(\alpha x+\beta y)=\lim_{n\to\infty}T_n(\alpha x+\beta y)=\alpha\lim_{n\to\infty}T_nx+\beta\lim_{n\to\infty}T_ny=\alpha Tx+\beta Ty$.}
+\handline{72}{573}{856}{\circled{3} $\sup_n\|T_n\|=M<\infty\Rightarrow\liminf_{n\to\infty}\|T_n\|$ 存在且有限.}
+\handline{72}{607}{856}{$\therefore\exists$ 子列 $\{T_{n_j}\}$，s.t. $\lim_{j\to\infty}\|T_{n_j}\|=\liminf_{n\to\infty}\|T_n\|$.}
+\handline{72}{640}{856}{由范数连续性可知}
+\handline{72}{673}{856}{$\forall x\in X$，$\|Tx\|_Y=\lim_{j\to\infty}\|T_jx\|_Y\leq\lim_{j\to\infty}\|T_j\|\,\|x\|_X=\liminf_{n\to\infty}\|T_n\|\cdot\|x\|_X$.}
+\handline{72}{709}{856}{$\therefore\|T\|\leq\liminf_{n\to\infty}\|T_n\|<\infty$.}
+\handline{72}{744}{856}{进而 $T$ 是有界的. 结合 \circled{2} $\Rightarrow T\in\B(X,Y)$.}
+\end{handpage}
+
+% SOURCE PAGE 028
+\begin{handpage}{28}
+\handline{72}{136}{856}{\textbf{Thm.} $X$ 为赋范线性空间，$Y$ 为 Banach 空间，则 $\B(X,Y)$ 为 Banach 空间.}
+\handline[AnnotationBlue]{72}{165}{856}{特别地，取 $Y=\C$，则 $X^*=\B(X,\C)$ 是 Banach 空间.}
+\handline{72}{191}{856}{\textbf{Pf.} 设 $\{T_n\}\subseteq\B(X,Y)$ 是 Cauchy 列.}
+\handline{72}{218}{856}{$\forall\eps>0$，$\exists n_0\in\N$，$m,k\geq n_0$ 时，$\|T_m-T_k\|<\eps$.}
+\handline{72}{245}{856}{\circled{1} 取 $1>0$，$\exists n_0$，s.t. $\|T_m-T_{n_0}\|<1$（$m>n_0$）.}
+\handline{72}{272}{856}{$\therefore\forall n\in\N$，$\|T_n\|\leq\max\{\|T_1\|,\ldots,\|T_{n_0}\|,1+\|T_{n_0}\|\}=M<\infty$.}
+\handline{72}{300}{856}{$\therefore\sup_n\|T_n\|<\infty$.}
+\handline{72}{329}{856}{\circled{2} $\forall x\in X$，考虑 $\{T_nx\}\subseteq Y$.}
+\handline{72}{358}{856}{则 $\|T_mx-T_kx\|\leq\|T_m-T_k\|\,\|x\|_X<\eps\|x\|_X$.}
+\handline{72}{385}{856}{$\therefore\{T_nx\}$ 为 Cauchy 列. 而 $Y$ 完备，$\therefore\lim_{n\to\infty}T_nx$ 存在.}
+\handline{72}{416}{856}{于是，定义 $Tx=\lim_{n\to\infty}T_nx$，则 $T\in\B(X,Y)$.}
+\handline{72}{447}{856}{下证 $\lim_{n\to\infty}T_n=T$. 即 $\|T_n-T\|\to0$（$n\to\infty$）.}
+\handline{72}{478}{856}{固定 $m\in\N$. 考虑 $\{T_n-T_m\}_{n=1}^{\infty}\subseteq\B(X,Y)$.}
+\handline{72}{510}{856}{显然也为 Cauchy 列. 同理满足 \circled{1} \circled{2}.}
+\handline{72}{542}{856}{而 $\forall x\in X$，$\lim_{n\to\infty}(T_n-T_m)x=\lim_{n\to\infty}T_nx-T_mx=(T-T_m)x$}
+\handline{72}{575}{856}{$\therefore\|T-T_m\|\leq\liminf_{n\to\infty}\|T_n-T_m\|\to0$（$m\to\infty$）.}
+\handline{72}{607}{856}{$\therefore T_n\to T$（$n\to\infty$）.}
+\handline{72}{642}{856}{故 $\B(X,Y)$ 是 Banach 空间.}
+\handline[Teal]{72}{674}{856}{这里的 \circled{1} \circled{2} 是为了验证前一个定理的两个条件.}
+\handline[Teal]{72}{706}{856}{所以前一个定理可以视为这一定理的引理.}
+\handline[NoteRed]{72}{738}{856}{实际上，若 $X$ 不为零空间，}
+\handline[NoteRed]{72}{773}{856}{则 $\B(X,Y)$ 为 Banach 空间 $\Leftrightarrow Y$ 为 Banach 空间.}
+\handline[NoteRed]{72}{812}{856}{但 ``$\Rightarrow$'' 需要 Hahn--Banach 定理，在泛函分析中有.}
+\end{handpage}
+
+% SOURCE PAGE 029
+\begin{handpage}{29}
+\handline{72}{98}{856}{\textbf{Thm.} \ann{(Principle of Uniform Boundedness) (Banach-Steinhaus Theorem)}}
+\handline{72}{126}{856}{$X$：Banach 空间，$Y$：赋范线性空间.}
+\handline{72}{153}{856}{$\{T_\alpha\}_{\alpha\in\Lambda}$，$T_\alpha:X\to Y\in\B(X,Y)$，则}
+\handline{72}{180}{856}{要么 \circled{1} $\exists m>0$，s.t. $\|T_\alpha\|\le m,\quad\forall\alpha\in\Lambda$.}
+\handline{72}{208}{856}{要么 \circled{2} $\sup_{\alpha\in\Lambda}\|T_\alpha x\|=+\infty$，$\forall x\in E$，其中 $E$ 是 $X$ 中的稠密 $G_\delta$ 集.}
+\handline{72}{242}{856}{\textbf{Pf.} $X\xrightarrow{T_\alpha}Y\xrightarrow{\|\cdot\|_Y}\R_{\ge0}$.}
+\handline{72}{270}{856}{$T_\alpha,\ \|\cdot\|_Y$ 均连续，故 $h=\|\cdot\|_Y\circ T_\alpha:X\to\R_{\ge0}$ 也连续.}
+\handline{72}{298}{856}{令 $g(x)=\sup_\alpha\|T_\alpha x\|_Y$，断言：$g(x)$ 是下半连续函数.}
+\handline{72}{328}{856}{$\forall r\in\R$，设 $V_r=\{x\in X\mid g(x)>r\}$，下证 $V_r$ 是开集.}
+\handline{72}{358}{856}{$\forall p\in V_r,\quad g(p)=\sup_\alpha\|T_\alpha p\|_Y>r$.}
+\handline{72}{388}{856}{$\therefore\ \exists\alpha\in\Lambda,\ \text{s.t. }\|T_\alpha p\|_Y>r$.}
+\handline{72}{420}{856}{由 $h$ 的连续性 $\Rightarrow\exists\delta>0$，s.t. $\forall x\in B(p,\delta),\quad h(x)=\|T_\alpha x\|_Y>r$.}
+\handline{72}{452}{856}{$\therefore\ \forall x\in B(p,\delta),\quad\sup_\alpha\|T_\alpha x\|_Y\ge h(x)>r$，$\therefore\ x\in V_r$.}
+\handline{72}{483}{856}{$\therefore\ B(p,\delta)\subseteq V_r$，$\therefore\ V_r$ 是开集，$\therefore\ g(x)$ 下半连续.}
+\handline{72}{513}{856}{$\forall n\in\N$，考虑 $V_n$，则 $V_n$ 是开集.}
+\handline{72}{544}{856}{\redann{Case I:} 若 $\exists m\in\N$，s.t. $V_m$ 在 $X$ 不是稠密的.}
+\handline{72}{579}{856}{$\therefore\ \exists x_0\in X,\ \eta>0$，s.t. $V_m\cap B(x_0,\eta)=\varnothing$.}
+\handline{72}{612}{856}{$\therefore\ \forall x\in B(x_0,\eta),\quad x\notin V_m$，$\therefore\ g(x)\le m$，即 $\sup_{\alpha\in\Lambda}\|T_\alpha x\|_Y\le m$.}
+\handline{72}{645}{856}{$x\in B(x_0,\eta)\Leftrightarrow\|x-x_0\|_X<\eta$.}
+\handline{72}{679}{856}{若 $y\in X,\ \|y\|_X<\frac\eta2$，则 $y+x_0\in B(x_0,\eta)$.}
+\handline{72}{715}{856}{$\forall\alpha\in\Lambda,\quad\|T_\alpha y\|_Y=\|T_\alpha(y+x_0)-T_\alpha(x_0)\|_Y$.}
+\handline{72}{747}{856}{$\le\|T_\alpha(y+x_0)\|_Y+\|T_\alpha(x_0)\|_Y\le2m$.}
+\handline{72}{782}{856}{对于 $\forall x\in X,\ \|x\|_X\le1$，则 $\|\frac\eta2 x\|_X\le\frac\eta2$.}
+\handline{72}{821}{856}{$\therefore\ \forall\alpha\in\Lambda,\quad\|T_\alpha x\|_Y=\frac2\eta\|T_\alpha(\frac\eta2 x)\|_Y\le\frac2\eta\cdot2m=\frac{4m}\eta$.}
+\handline{72}{859}{856}{$\therefore\ \|T_\alpha\|\le\frac{4m}\eta,\quad\forall\alpha\in\Lambda$.}
+\handline{72}{897}{856}{从而 \circled{1} 成立.}
+\end{handpage}
+
+% SOURCE PAGE 030
+\begin{handpage}{30}
+\handline{72}{126}{856}{\redann{Case II:} 若 $\forall n\in\N$，$V_n$ 在 $X$ 中稠密，令 $V=\bigcap_{n=1}^\infty V_n$，为 $G_\delta$ 集.}
+\handline{72}{155}{856}{则由 Baire 纲定理，$V$ 在 $X$ 中稠密.}
+\handline{72}{188}{856}{$\forall x\in V,\ \Rightarrow g(x)>n,\ \forall n\in\N$，$\therefore\ g(x)=+\infty$.}
+\handline{72}{218}{856}{$\therefore\ \sup_{\alpha\in\Lambda}\|T_\alpha x\|_Y=+\infty$.}
+\handline[AnnotationBlue]{72}{248}{856}{Case I 和 Case II 恰为对立的两个条件.}
+\handline[AnnotationBlue]{72}{278}{856}{Case I $\Rightarrow$ \circled{1}，Case II $\Rightarrow$ \circled{2}，从而要么 \circled{1} 成立，要么 \circled{2} 成立.}
+\handline[AnnotationBlue]{72}{309}{856}{$X$ 为 Banach 空间这一条件用在了 Baire 纲定理中.}
+\handline[Teal]{72}{397}{856}{最后补充一点关于算子范数的定义.}
+\handline[Teal]{72}{428}{856}{事实上，$\Lambda:X\to Y$ 为有界线性算子.}
+\handline[Teal]{72}{462}{856}{$\|\Lambda\|=\underbrace{\sup\{\|\Lambda x\|_Y\mid\|x\|_X\le1\}}_{S_1}=\underbrace{\sup\{\|\Lambda x\|_Y\mid\|x\|_X=1\}}_{S_2}=\underbrace{\sup_{x\ne0}\frac{\|Tx\|_Y}{\|x\|_X}}_{S_3}$.}
+\handline[Teal]{72}{523}{856}{$S_2=S_3$ 显然.}
+\handline[Teal]{72}{557}{856}{下证 $S_1=S_2$，显然 $S_1\ge S_2$，下证 $S_2\ge S_1$.}
+\handline[Teal]{72}{591}{856}{$\forall x\in X,\ \|x\|_X\le1$，若 $x=0$，则 $\|\Lambda x\|_Y=0\le S_2$.}
+\handline[Teal]{72}{628}{856}{若 $x\ne0$，令 $u=\frac{x}{\|x\|_X}$，则 $\|u\|_X=1$，$\therefore\ \|\Lambda u\|_Y\le S_2$.}
+\handline[Teal]{72}{662}{856}{而 $\|\Lambda x\|_Y=\|\Lambda(\|x\|_X\cdot u)\|_Y=\|x\|_X\cdot\|\Lambda u\|_Y\le\|\Lambda u\|_Y\le S_2$.}
+\handline[Teal]{72}{695}{856}{取 $\sup\Rightarrow S_1\le S_2$，$\therefore\ S_1=S_2=S_3$.}
+\end{handpage}
+
+% SOURCE PAGE 031
+% CHAPTER: 2 | Topological Spaces
+% SECTION: 2.1 | Topological spaces
+\begin{handpage}{31}
+\handtitle{72}{100}{856}{Chapter 2 Topological Spaces}
+\handtitle{72}{131}{856}{\S2.1 Topological spaces}
+\handline{72}{161}{856}{\textbf{Def.} $X$：集合，$\T$：$X$ 的某些子集构成的集族.}
+\handline{72}{189}{856}{若 \circled{1} $\varnothing,X\in\T$，\circled{2} $\T$ 中集合的有限交仍在 $\T$ 中，\circled{3} $\T$ 中集合的任意并仍在 $\T$ 中.}
+\handline{72}{218}{856}{则称 $\T$ 是 $X$ 上的拓扑，$\T$ 中的元素称为 $X$ 的开子集. $(X,\T)$ 称为拓扑空间.}
+\handline{72}{246}{856}{\textbf{Ex.} \circled{1} $\T=\{\varnothing,X\}$ 称为平凡拓扑. \ann{(Indiscrete topology)}}
+\handline{72}{276}{856}{\circled{2} $\T=\mathcal P(X)$ 称为离散拓扑. \ann{(discrete topology)}}
+\handline{72}{307}{856}{\textbf{Def.} 若 $X$ 为度量空间，$d$ 为度量，则 $d$ 会诱导 $X$ 上的拓扑，称为度量拓扑 \ann{(Metric topology)}.}
+\handline[AnnotationBlue]{72}{337}{856}{于是可以问，是否所有的拓扑空间都可以由度量诱导. (metrizable).}
+\handline{72}{371}{856}{\textbf{Ex.} \circled{3} $\T=\{\varnothing,X\}$，$|X|>1$.}
+\handline{72}{402}{856}{则 $\T$ 不是度量拓扑. 设 $d$ 为 $X$ 上的任意一个度量.}
+\handline{72}{435}{856}{$p\ne q\in X,\quad d(p,q)>0$，令 $r_q=\frac12 d(p,q)$.}
+\handline{72}{466}{856}{则 $p\notin B(q,r_q)$，是开集.}
+\handline{72}{500}{856}{令 $U=\bigcup_{\substack{q\in X\\q\ne p}}B(q,r_q)$，则 $U$ 也是开集.}
+\handline{72}{555}{856}{但 $U=X\setminus\{p\}\notin\T$，$\therefore$ 平凡拓扑不是由度量诱导的.}
+\handline{72}{590}{856}{\circled{4} $\T=\mathcal P(X)$，$d(x,y)=\begin{cases}1,&x\ne y,\\0,&x=y,\end{cases}$ 则 $\T$ 是一个度量拓扑.}
+\handline[AnnotationBlue]{72}{622}{856}{$d(x,y)$ 是离散度量，这也解释了为什么 $\mathcal P(X)$ 称为离散拓扑.}
+\handline{72}{657}{856}{$\forall x\in X$，若 $r\in(0,1)$，则 $B(x,r)=\{x\}$.}
+\handline{72}{689}{856}{若 $r>1$，则 $B(x,r)=X$.}
+\handline[AnnotationBlue]{72}{722}{856}{$X$ 中的开球为单点集或全集 $X$.}
+\handline[AnnotationBlue]{72}{754}{856}{而由单点集和 $X$ 作为开球生成的拓扑即为 $\mathcal P(X)$.}
+\handline{72}{787}{856}{\circled{5} $\T=\{\varnothing\}\cup\{E\subseteq X\mid|X\setminus E|<\infty\}$ 称为余有限拓扑. \ann{(cofinite topology)}}
+\handline{72}{821}{856}{$\T=\{\varnothing\}\cup\{E\subseteq X\mid X\setminus E\text{ 至多可数}\}$ 称为余可数拓扑. \ann{(cocountable topology)}}
+\handline[Teal]{72}{855}{856}{在这两种拓扑中会有一些奇特的性质与度量空间大不相同.}
+\end{handpage}
+
+% SOURCE PAGE 032
+\begin{handpage}{32}
+\handline{72}{132}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$p\in S\subseteq X$.}
+\handline{72}{161}{856}{\circled{1} 若 $\exists U\in\T$，s.t. $p\in U\subseteq S$，则称 $S$ 是 $p$ 的邻域，$p$ 是 $S$ 的内点.}
+\handline{72}{187}{856}{\circled{2} $S$ 的内点全体构成的集合记为 $\Int(S)$，显然 $\Int(S)\subseteq S$.}
+\handline{72}{214}{856}{\textbf{Def.} $E\subseteq X$，若 $X\setminus E\in\T$ 则称 $E$ 是闭集.}
+\handline[AnnotationBlue]{72}{241}{856}{开集公理的逆叙述与下面3条等价，把它们作为 $\T$ 的闭集公理：}
+\handline[AnnotationBlue]{72}{268}{856}{\circled{1} $\varnothing,X$ 是闭集 \circled{2} 闭集的任意交是闭集 \circled{3} 闭集的有限交是闭集.}
+\handline{72}{296}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$S\subseteq X$ 是开集 $\Leftrightarrow\Int(S)=S$.}
+\handline{72}{324}{856}{\textbf{Pf.} ``$\Rightarrow$'' $\forall p\in S$，取 $U=S$ 则 $p\in U\subseteq S$，$U\in\T$，$\therefore\ p\in\Int(S)$.}
+\handline{72}{348}{856}{$\therefore\ S\subseteq\Int(S)$，$\therefore\ \Int(S)=S$.}
+\handline{72}{377}{856}{``$\Leftarrow$'' $\forall p\in S,\ \exists U_p\in\T$，s.t. $p\in U_p\subseteq S$.}
+\handline{72}{406}{856}{$\therefore\ S=\bigcup_{p\in S}U_p\in\T$，$S$ 是开集.}
+\handline{72}{434}{856}{\textbf{Prop.} $S\subseteq X$，则 $\Int(S)$ 是开集，即 $\Int(\Int(S))=\Int(S)$.}
+\handline{72}{463}{856}{\textbf{Pf.} $\forall p\in\Int(S),\ \exists U\in\T$，s.t. $p\in U\subseteq S$.}
+\handline{72}{493}{856}{而 $\forall x\in U$，$U\in\T$，$x\in U\subseteq S$，$\therefore\ x\in\Int(S)$，$\therefore\ U\subseteq\Int(S)$.}
+\handline{72}{524}{856}{$\therefore\ p\in U\subseteq\Int(S)$，$\therefore\ p\in\Int(\Int(S))$，$\therefore\ \Int(S)=\Int(\Int(S))$.}
+\handline{72}{554}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$S\subseteq X$，$p\in X$.}
+\handline{72}{586}{856}{\circled{1} $U$ 为 $p$ 的任意一个开邻域，$U\cap S\ne\varnothing$，则称 $p$ 为 $S$ 的接触点.}
+\handline{72}{619}{856}{\circled{2} $S$ 的接触点的全体构成的集合记为 $\overline S$，称为 $S$ 的闭包，显然 $S\subseteq\overline S$.}
+\handline{72}{648}{856}{\textbf{Prop.} $S\subseteq X$ 是闭集 $\Leftrightarrow S=\overline S$.}
+\handline{72}{679}{856}{\textbf{Pf.} ``$\Rightarrow$'' 只要证 $\overline S\subseteq S$，即证 $S^c\subseteq(\overline S)^c$.}
+\handline{72}{714}{856}{$\forall p\in S^c$，$S^c$ 为开集，$\therefore\ \exists U\in\T$，s.t. $p\in U\subseteq S^c$，$\therefore\ U\cap S=\varnothing$，$\therefore\ p\notin\overline S$，即 $p\in(\overline S)^c$.}
+\handline{72}{746}{856}{$\therefore\ S^c\subseteq(\overline S)^c\Rightarrow\overline S\subseteq S\Rightarrow S=\overline S$.}
+\handline{72}{776}{856}{``$\Leftarrow$'' 即证 $S^c$ 是开集，而 $S^c=(\overline S)^c$.}
+\handline{72}{811}{856}{$\forall p\in S^c\Rightarrow p\in(\overline S)^c$，$\therefore\ \exists U\in\T$，s.t. $p\in U$ 且 $U\cap S=\varnothing$.}
+\handline{72}{850}{856}{$\therefore\ p\in U\subseteq S^c$，$\therefore\ p\in\Int(S^c)$，$\therefore\ S^c\subseteq\Int(S^c)$，$\therefore\ S^c$ 是开集，$S$ 是闭集.}
+\end{handpage}
+
+% SOURCE PAGE 033
+\begin{handpage}{33}
+\handline{72}{130}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$S\subseteq X$，则 $\overline S$ 是闭集，即 $\overline{\overline S}=\overline S$.}
+\handline{72}{158}{856}{\textbf{Pf.} 即证 $(\overline S)^c$ 是开集，$\forall p\in(\overline S)^c$，$\exists U\in\T$，s.t. $p\in U$，$U\cap S=\varnothing$，$\therefore\ U\subseteq S^c$.}
+\handline{72}{186}{856}{$\forall x\in U$，但 $U\cap S=\varnothing$，$\therefore\ x$ 不是接触点，即 $x\in(\overline S)^c$.}
+\handline{72}{214}{856}{$\therefore\ U\subseteq(\overline S)^c$，$\therefore\ (\overline S)^c$ 是开集，$\overline S$ 是闭集.}
+\handline{72}{244}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$\{x_n\}\subseteq X$，$p\in X$.}
+\handline{72}{274}{856}{若 $p$ 的任意一个开邻域 $U$，$\exists n_0\in\N$，s.t. $n>n_0$ 时 $x_n\in U$.}
+\handline{72}{302}{856}{则称 $\{x_n\}$ 收敛到 $p$，记为 $x_n\to p$.}
+\handline{72}{335}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$S\subseteq X$.}
+\handline{72}{364}{856}{若 $\{x_n\}\subseteq S$，$x_n\to p$，则 $p\in\overline S$.}
+\handline{72}{394}{856}{\textbf{Pf.} $U$ 是 $p$ 的任意一个开邻域，$\exists n_0\in\N$，s.t. $x_{n_0}\in U$.}
+\handline{72}{425}{856}{$\therefore\ U\cap S\ne\varnothing$，$\therefore\ p$ 是 $S$ 的接触点，$\therefore\ p\in\overline S$.}
+\handline[AnnotationBlue]{72}{455}{856}{在度量空间中，$\exists\{x_n\}\subseteq S,\ x_n\to p\Leftrightarrow p\in\overline S$.}
+\handline[AnnotationBlue]{72}{487}{856}{但在一般的拓扑空间中，只有 ``$\Rightarrow$'' 成立，``$\Leftarrow$'' 不一定成立.}
+\handline[Teal]{72}{522}{856}{\textbf{Ex.} $([0,1],\T)$，$\T$ 是余可数拓扑，$S=[0,\frac12]$.}
+\handline[Teal]{72}{555}{856}{断言：$\overline S=[0,1]$.}
+\handline[Teal]{72}{590}{856}{$\forall\frac12<p\le1$，$U$ 是 $p$ 的任意一个开邻域，则 $U^c$ 是至多可数集.}
+\handline[Teal]{72}{625}{856}{但 $[0,\frac12]$ 为不可数集，$\therefore\ U\cap S\ne\varnothing$，否则 $S\subseteq U^c$，矛盾!}
+\handline[Teal]{72}{658}{856}{$\therefore\ \overline S=[0,1]$.}
+\handline[Teal]{72}{693}{856}{而对于 $\forall\frac12<p\le1$，设 $\{x_n\}\subseteq S=[0,\frac12]$.}
+\handline[Teal]{72}{728}{856}{令 $U=[0,1]\setminus\{x_1,\ldots,x_n,\ldots\}$，则 $U^c$ 为可数集，$\therefore\ U$ 是开集.}
+\handline[Teal]{72}{763}{856}{而 $(\frac12,1]\subseteq U$，$\therefore\ p\in U$，$\therefore\ U$ 是 $p$ 的开邻域.}
+\handline[Teal]{72}{800}{856}{但 $\forall n\in\N,\ x_n\notin U$，$\therefore\ x_n\not\to p$.}
+\end{handpage}
+
+% SOURCE PAGE 034
+\begin{handpage}{34}
+\handline{72}{134}{856}{\textbf{Def.} $(X,\T)$：拓扑空间.}
+\handline{72}{160}{856}{$S\subseteq X$，$p\in X$，$U$ 为 $p$ 的任意一个开邻域，$U\cap S\ne\varnothing$，$U\cap S^c\ne\varnothing$.}
+\handline{72}{188}{856}{则称 $p$ 是 $S$ 的边界点.}
+\handline{72}{217}{856}{$S$ 的边界点的全体记为 $\partial S$，显然 $\partial S=\overline S\cap\overline{(S^c)}$.}
+\handline{72}{248}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$S\subseteq X$，则 $\overline S=\Int(S)\sqcup\partial S$.}
+\handline{72}{279}{856}{\textbf{Pf.} $p\in\overline S$，$U$ 是 $p$ 的任意一个开邻域.}
+\handline{72}{310}{856}{\circled{1} 若 $\exists U$，s.t. $U\cap S^c=\varnothing$，则 $U\subseteq S\Rightarrow p\in\Int(S)$.}
+\handline{72}{341}{856}{\circled{2} 若 $\forall U,\ U\cap S^c\ne\varnothing$，则 $p\in\overline{S^c}$，$\therefore\ p\in\overline S\cap\overline{S^c}=\partial S$.}
+\handline[AnnotationBlue]{72}{369}{856}{由于 \circled{1}\circled{2} 两个条件对立，$\therefore\ \Int(S)\cap\partial S=\varnothing$.}
+\handline{72}{402}{856}{$\therefore\ \overline S\subseteq\Int(S)\sqcup\partial S$，而显然 $\Int(S),\partial S\subseteq\overline S$.}
+\handline{72}{434}{856}{$\therefore\ \overline S=\Int(S)\sqcup\partial S$.}
+\end{handpage}
+
+% SOURCE PAGE 035
+% SECTION: 2.2 | Subspaces
+\begin{handpage}{35}
+\handtitle{72}{103}{856}{\S2.2 Subspaces}
+\handline{72}{133}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$S\subseteq X$，$\mathcal S=\{U\cap S\mid U\in\T\}$.}
+\handline{72}{161}{856}{则 $(S,\mathcal S)$ 称为 $(X,\T)$ 的拓扑子空间，$\mathcal S$ 称为相对拓扑或子拓扑.}
+\handline[AnnotationBlue]{72}{190}{856}{注：子空间的开集、闭集不一定是原空间的开集闭集.}
+\handline{72}{220}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$(S,\mathcal S)$：拓扑子空间.}
+\handline{72}{249}{856}{则 $C\subseteq S$ 在 $S$ 中为闭集 $\Leftrightarrow C=F\cap S$，$F\subseteq X$ 为 $X$ 中的闭集.}
+\handline{72}{279}{856}{\textbf{Pf.} ``$\Rightarrow$'' $C\subseteq S$ 为 $S$ 中的闭集.}
+\handline{72}{308}{856}{$\therefore\ S\setminus C\in\mathcal S$，$\therefore\ \exists U\in\T$，s.t. $S\setminus C=U\cap S$.}
+\handline{72}{342}{856}{$\therefore\ C=S\setminus(S\setminus C)=S\setminus(U\cap S)=S\cap(X\setminus U)$，于是 $F=X\setminus U$.}
+\handline{72}{369}{856}{``$\Leftarrow$'' $C=F\cap S$，$F$ 为 $X$ 中闭集.}
+\handline{72}{400}{856}{首先 $C\subseteq S$，$S\setminus C=S\setminus(F\cap S)=S\cap(X\setminus F)$.}
+\handline{72}{430}{856}{而 $X\setminus F\in\T$，$\therefore\ S\setminus C\in\mathcal S\Rightarrow C$ 在 $S$ 中为 $S$ 中的闭集.}
+\handline{72}{460}{856}{\textbf{Thm.} $(X,\T)$：拓扑空间，$S\subseteq X$，$(S,\mathcal S)$：拓扑子空间.}
+\handline{72}{491}{856}{若 $E\subseteq S$ 则 $(\overline E)_S=(\overline E)_X\cap S$. \redann{（``$E\subseteq S$'' 不可省，反例在习题中）}}
+\handline{72}{522}{856}{\textbf{Pf.} 一方面，$\forall p\in(\overline E)_S$，取任意一个 $p$ 在 $X$ 中的开邻域 $U\in\T$.}
+\handline{72}{551}{856}{则 $U\cap S\in\mathcal S$ 且为 $p$ 在 $S$ 中的开邻域.}
+\handline{72}{586}{856}{$\therefore\ (U\cap S)\cap E\ne\varnothing$，而 $E\subseteq S$，$\therefore\ (U\cap S)\cap E=U\cap E\ne\varnothing$.}
+\handline{72}{618}{856}{$\therefore\ p\in(\overline E)_X$，而 $p\in(\overline E)_S\Rightarrow p\in S$，$\therefore\ p\in(\overline E)_X\cap S$.}
+\handline{72}{649}{856}{$\therefore\ (\overline E)_S\subseteq(\overline E)_X\cap S$.}
+\handline{72}{682}{856}{另一方面，$\forall p\in(\overline E)_X\cap S$，取任意个 $p$ 在 $S$ 中的开邻域 $U\in\mathcal S$.}
+\handline{72}{716}{856}{则 $\exists V\in\T$，s.t. $U=V\cap S$.}
+\handline{72}{750}{856}{$p\in(\overline E)_X$，$\therefore\ V\cap E\ne\varnothing$.}
+\handline{72}{783}{856}{$\therefore\ U\cap E=(V\cap S)\cap E=V\cap(S\cap E)=V\cap E\ne\varnothing$.}
+\handline{72}{818}{856}{$\therefore\ p\in(\overline E)_S$，$\therefore\ (\overline E)_X\cap S\subseteq(\overline E)_S$.}
+\handline{72}{853}{856}{$\therefore\ (\overline E)_S=(\overline E)_X\cap S$.}
+\handline{72}{894}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$E\subseteq X$，则 $\overline E$ 在 $\overline E$ 的相对拓扑下为开集.}
+\end{handpage}
+
+% SOURCE PAGE 036
+% SECTION: 2.3 | Continuous functions
+\begin{handpage}{36}
+\handtitle{72}{126}{856}{\S2.3 Continuous functions}
+\handline{72}{153}{856}{\textbf{Def.} $f:(X,\T_1)\to(Y,\T_2)$.}
+\handline{72}{181}{856}{\circled{1} 若 $\forall V\in\T_2$，$f^{-1}(V)\in\T_1$，则称 $f$ 为连续映射 \ann{（开集的原像也是开集）.}}
+\handline{72}{208}{856}{\circled{2} $p\in X$，若 $f(p)$ 的任意开邻域 $V\in\T_2$.}
+\handline{72}{235}{856}{$\exists p$ 的开邻域 $U\in\T_1$，s.t. $f(U)\subseteq V$，则称 $f$ 在 $p$ 点连续.}
+\handline{72}{264}{856}{\textbf{Prop.} $f:X\to Y$ 是连续映射.}
+\handline{72}{292}{856}{$\Leftrightarrow\forall p\in X$，$f$ 在 $p$ 处连续.}
+\handline{72}{320}{856}{\textbf{Pf.} “$\Rightarrow$” $\forall p\in X$，$V$ 是 $f(p)$ 的任意一个开邻域.}
+\handline{72}{348}{856}{由于 $f$ 连续，$\therefore f^{-1}(V)$ 是开集.}
+\handline{72}{377}{856}{而 $f(p)\in V$，$\therefore p\in f^{-1}(V)$，$\therefore\exists U\in\T_1$ s.t. $p\in U\subseteq f^{-1}(V)$.}
+\handline{72}{405}{856}{$\therefore f$ 在 $p$ 处连续.}
+\handline{72}{434}{856}{“$\Leftarrow$” $\forall V\in\T_2$，不妨设 $f^{-1}(V)\ne\varnothing$.}
+\handline{72}{462}{856}{$\forall x\in f^{-1}(V)$，$f(x)\in V$.}
+\handline{72}{491}{856}{由于 $f$ 在 $x$ 中连续，$\therefore\exists U\in\T_1$，$x\in U$，$f(U)\subseteq V$.}
+\handline{72}{519}{856}{$\therefore U\subseteq f^{-1}(V)$，$\therefore f^{-1}(V)\in\T_1$，$\therefore f$ 是连续映射.}
+\handline{72}{552}{856}{\textbf{Prop.} $X,Y,Z$ 为拓扑空间，$f:X\to Y$，$g:Y\to Z$，$f,g$ 均连续.}
+\handline{72}{582}{856}{则 $g\circ f:X\to Z$ 连续. \ann{（复合函数的连续性）}}
+\handline{72}{614}{856}{\textbf{Pf.} $\forall V\subseteq Z$ 是开集，则 $g^{-1}(V)$ 在 $Y$ 中是开集，$\therefore f^{-1}(g^{-1}(V))$ 在 $X$ 中是开集.}
+\handline{72}{647}{856}{即 $(g\circ f)^{-1}(V)=(f^{-1}\circ g^{-1})(V)=f^{-1}(g^{-1}(V))$ 在 $X$ 中是开集.}
+\handline{72}{677}{856}{$\therefore g\circ f:X\to Z$ 是连续的.}
+\handline{72}{712}{856}{\textbf{Def.} $X,Y$：拓扑空间.}
+\handline{72}{745}{856}{若 $\exists f:X\to Y$，满足：\circled{1} 连续 \circled{2} $1$-$1$ \circled{3} 到上 \circled{4} $f^{-1}$ 仍连续.}
+\handline{72}{776}{856}{则称 $X$ 与 $Y$ 同胚，$f$ 为同胚映射.}
+\handline{72}{808}{856}{\textbf{Def.} 在同胚映射下保持不变的性质称为拓扑性质，或拓扑不变量.}
+\handline[Teal]{72}{840}{856}{由于同胚映射双向连续.}
+\handline[Teal]{72}{875}{856}{故所有连续映射保持的性质都是拓扑性质.}
+\end{handpage}
+
+% SOURCE PAGE 037
+\begin{handpage}{37}
+\handline{72}{102}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$(Y,d)$：度量空间.}
+\handline{72}{131}{856}{$p\in X$，$f:X\to Y$，$f$ 在 $p$ 处连续.}
+\handline{72}{159}{856}{$\Leftrightarrow\forall\eps>0$，$\exists p$ 的开邻域 $U$，s.t. $\forall x\in U$，$d(f(x),f(p))<\eps$.}
+\handline[AnnotationBlue]{72}{186}{856}{证明可由连续的定义和 $(Y,d)$ 中的度量拓扑直接得出.}
+\handline{72}{216}{856}{\textbf{Thm.} $f_n:(X,\T)\to(Y,d)$.}
+\handline{72}{245}{856}{$f_n$ 一致收敛于 $f:X\to Y$.}
+\handline{72}{273}{856}{若 $f_n$ 连续，则 $f$ 也连续.}
+\handline{72}{301}{856}{\textbf{Pf.} $\forall\eps>0$，$\exists n_0\in\N$，s.t. $n\ge n_0$ 时.}
+\handline{72}{329}{856}{$\forall x\in X$，$d(f_n(x),f(x))<\eps/3$.}
+\handline{72}{357}{856}{$\forall p\in X$，$f_{n_0}$ 在 $p$ 处连续.}
+\handline{72}{386}{856}{$\therefore\exists p$ 的开邻域 $U$，s.t. $\forall x\in U$，$d(f_{n_0}(x),f_{n_0}(p))<\eps/3$.}
+\handline{72}{417}{856}{$\therefore\forall x\in U$，$d(f(x),f(p))\le d(f(x),f_{n_0}(x))+d(f_{n_0}(x),f_{n_0}(p))+d(f_{n_0}(p),f(p))$}
+\handline{72}{445}{856}{$<\eps/3+\eps/3+\eps/3=\eps$.}
+\handline{72}{473}{856}{$\therefore f$ 是连续的.}
+\handline{72}{506}{856}{\textbf{Def.} $f:X\to Y$，若 $\forall U\subseteq X$ 为开集，$f(U)$ 为开集，则称 $f$ 为开映射 \ann{(open mapping)}.}
+\handline{72}{535}{856}{若 $\forall F\subseteq X$ 为闭集，$f(F)$ 为闭集，则称 $f$ 为闭映射 \ann{(closed mapping)}.}
+\handline[Teal]{72}{567}{856}{当 $f$ 为双射时，开映射 $\Leftrightarrow$ 闭映射.}
+\handline{72}{602}{856}{\textbf{Def.} $f:X\to Y$ 为满射，若 $V\subseteq Y$ 为开集 $\Leftrightarrow f^{-1}(U)$ 为开集，则称 $f$ 为商映射.}
+\handline[Teal]{72}{636}{856}{连续开满射，连续闭满射均为商映射.}
+\handline[NoteRed]{72}{670}{856}{商映射不一定是开映射.}
+\handline[NoteRed]{72}{701}{856}{考虑 $[0,1]$，定义等价关系：只有 $0\sim1$.}
+\handline[NoteRed]{72}{733}{856}{则 $[0,1]/(0\sim1)\cong S^1$.}
+\handline[NoteRed]{72}{767}{856}{考虑 $\pi:[0,1]\to[0,1]/(0\sim1)$，赋予商拓扑，则 $\pi$ 是商映射.}
+\handline[NoteRed]{72}{801}{856}{但取 $V=[0,\frac12)$，它是 $[0,1]$ 中的开集.}
+\handline[NoteRed]{72}{834}{856}{但 $\pi(V)$ 不是 $S^1$ 中的开集.}
+\handline[NoteRed]{72}{870}{856}{因为 $\pi^{-1}(\pi(V))=[0,\frac12)\cup\{1\}$，不是 $[0,1]$ 中的开集.}
+\end{handpage}
+
+% SOURCE PAGE 038
+% SECTION: 2.4 | Base for a topology
+\begin{handpage}{38}
+\handtitle{72}{120}{856}{\S2.4 Base for a topology.}
+\handline{72}{146}{856}{\textbf{Def.} $(X,\T)$ 是一个拓扑空间.}
+\handline{72}{175}{856}{$\B$ 是一个开集族，若 $\forall U\in\T$，$\exists\{U_\lambda\}_{\lambda\in\Lambda}\subseteq\B$ s.t. $U=\bigcup_{\lambda\in\Lambda}U_\lambda$.}
+\handline{72}{202}{856}{则称 $\B$ 是一个拓扑基.}
+\handline{72}{233}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间.}
+\handline{72}{261}{856}{$\B$ 是一个拓扑基 $\Leftrightarrow\forall x\in X$，$x$ 的任意开邻域 $U$，$\exists W\in\B$ s.t. $x\in W\subseteq U$.}
+\handline{72}{290}{856}{\textbf{Pf.} “$\Rightarrow$” $\forall x\in X$，$U$ 是 $x$ 的任意一个开邻域.}
+\handline{72}{319}{856}{由于 $\B$ 是拓扑基，$\therefore\exists V_\alpha\in\B$ s.t. $U=\bigcup_{\alpha\in\Lambda}V_\alpha$.}
+\handline{72}{348}{856}{$x\in U\Rightarrow\exists\alpha\in\Lambda$ s.t. $x\in V_\alpha\subseteq U$.}
+\handline{72}{378}{856}{“$\Leftarrow$” $\forall U\in\T$，不妨设 $U\ne\varnothing$.}
+\handline{72}{407}{856}{$\forall p\in U$，$\exists V_p\in\B$ s.t. $p\in V_p\subseteq U$.}
+\handline{72}{438}{856}{$\therefore U=\bigcup_{p\in U}V_p$，$\therefore\B$ 是一个拓扑基.}
+\handline{72}{468}{856}{\textbf{Thm.} $\B$ 是 $X$ 的子集族，$\varnothing\in\B$.}
+\handline{72}{496}{856}{则 $\B$ 中子集在并运算下可以生成 $X$ 上的拓扑.}
+\handline{72}{524}{856}{$\Leftrightarrow$ \circled{1} $\forall x\in X$，$\exists U\in\B$ s.t. $x\in U$.}
+\handline{72}{554}{856}{\circled{2} $U,V\in\B$，$p\in U\cap V$，则 $\exists W_p\in\B$ s.t. $p\in W_p\subseteq U\cap V$.}
+\handline{72}{583}{856}{\textbf{Pf.} “$\Rightarrow$” \circled{1} $X\in\T$，$\therefore X=\bigcup_{\lambda\in\Lambda}U_\lambda$，$U_\lambda\in\B$.}
+\handline{72}{613}{856}{$\therefore\forall x\in X$，$\exists\lambda\in\Lambda$ s.t. $x\in U_\lambda$.}
+\handline{72}{646}{856}{\circled{2} $U\cap V\in\T$，$\therefore U\cap V=\bigcup_{\alpha\in\Lambda}W_\alpha$，$W_\alpha\in\B$.}
+\handline{72}{678}{856}{$p\in U\cap V\Rightarrow\exists\alpha\in\Lambda$ s.t. $p\in W_\alpha\subseteq U\cap V$.}
+\handline{72}{709}{856}{“$\Leftarrow$” 设 $\T=\{U\mid U=\bigcup_\alpha U_\alpha,\ U_\alpha\in\B\}$.}
+\handline{72}{742}{856}{下证 $\T$ 是 $X$ 上的拓扑.}
+\handline{72}{774}{856}{$(i)\ \varnothing,X\in\T$.}
+\handline{72}{807}{856}{$1^\circ\ \varnothing\in\B\Rightarrow\varnothing\in\T$.}
+\handline{72}{839}{856}{$2^\circ\ \forall x\in X$，$\exists U_x\in\B$ s.t. $x\in U_x$.}
+\handline{72}{875}{856}{$\therefore X=\bigcup_{x\in X}U_x\in\T$.}
+\end{handpage}
+
+% SOURCE PAGE 039
+\begin{handpage}{39}
+\handline{72}{118}{856}{$(ii)\ U_\alpha\in\T$，$\alpha\in\Lambda\Rightarrow\bigcup_{\alpha\in\Lambda}U_\alpha\in\T$.}
+\handline{72}{154}{856}{$U_\alpha\in\T\Rightarrow U_\alpha=\bigcup_{\beta\in\Lambda(\alpha)}V_{\alpha,\beta}$，$V_{\alpha,\beta}\in\B$.}
+\handline{72}{196}{856}{$\Rightarrow\bigcup_{\alpha\in\Lambda}U_\alpha=\bigcup_{\alpha\in\Lambda}\bigcup_{\beta\in\Lambda(\alpha)}V_{\alpha,\beta}\in\T$.}
+\handline{72}{232}{856}{$(iii)\ U_1,\cdots,U_m\in\T$，$m\in\N\Rightarrow U_1\cap\cdots\cap U_m\in\T$.}
+\handline{72}{261}{856}{只需证 $m=2$ 的情形：$U\in\T$，$V\in\T\Rightarrow U\cap V\in\T$.}
+\handline{72}{290}{856}{$\forall p\in U\cap V\Rightarrow p\in U$，$p\in V$，而 $U,V\in\T$.}
+\handline{72}{321}{856}{$\therefore\exists U_0,V_0\in\B$，s.t. $p\in U_0\subseteq U$，$p\in V_0\subseteq V$.}
+\handline{72}{351}{856}{$\therefore p\in U_0\cap V_0\subseteq U\cap V$.}
+\handline{72}{383}{856}{$\therefore\exists W_p\in\B$，s.t. $p\in W_p\subseteq U_0\cap V_0\subseteq U\cap V$.}
+\handline{72}{414}{856}{$\therefore U\cap V=\bigcup_{p\in U\cap V}W_p\in\T$.}
+\handline{72}{445}{856}{综上所述，$\T$ 是 $X$ 上的拓扑.}
+\handline{72}{474}{856}{\textbf{Ex.} $X=\{(x,y)\in\R^2\mid y\ge0\}$.}
+\handline{72}{507}{856}{$\B=\{\text{上半平面的开圆盘}\}\cup\{W(a;r)\mid a=(a,0),a\in\R,r>0\}\cup\{\varnothing\}$.}
+\handline{72}{539}{856}{其中 $W(a;r)=(D(a;r)\cap\{(x,y)\mid y>0\})\cup\{(a,0)\}$. \ann{（半圆盘并上圆心）}}
+\handline{72}{602}{535}{则 $\B$ 可生成 $X$ 上的拓扑 $\T$.}
+\handdiagram{650}{560}{245}{84}{\draw[->] (-1.5,0)--(1.6,0);\draw[AnnotationBlue,dashed] (1,0) arc (0:180:1);\fill (0,0) circle (.04);\foreach \x in {-.8,-.55,-.3,-.05,.2,.45,.7}{\draw[AnnotationBlue] (\x,.12)--(\x+.12,{sqrt(1-\x*\x)-.08});}\draw[AnnotationBlue,->] (.8,.8)--(1.35,1.1) node[right] {$W(a;r)$};\draw[AnnotationBlue] (0,-.1)--(0,-.2)--(1,-.2)--(1,-.1) node[midway,below] {$r$};}
+\handline[Teal]{72}{681}{856}{\circled{1} $F=\{(x,y)\mid-1<x<1\}$ 在此拓扑下是闭集.}
+\handline[Teal]{72}{714}{856}{\circled{2} $X$ 中任意单点集是闭集，是 $T_1$ 空间.}
+\handline[Teal]{72}{748}{856}{\circled{3} $X$ 不是 $T_3$ 空间，$\{1\}$ 与 $F$ 无法分离.}
+\handline[Teal]{72}{782}{856}{\circled{4} $X$ 是 $T_2$ 空间.}
+\end{handpage}
+
+% SOURCE PAGE 040
+\begin{handpage}{40}
+\handline{72}{151}{856}{\textbf{Def.} $(X,\T)$ 是拓扑空间，若有可数拓扑基，则称 $(X,\T)$ 是第二可数的.}
+\handline{72}{179}{856}{\textbf{Def.} \circled{1} $S\subseteq X$，若 $\overline S=X$，则称 $S$ 在 $X$ 中稠密.}
+\handline{72}{207}{856}{\circled{2} 若 $\exists X$ 的可数子集 $S$，$S$ 在 $X$ 中稠密，则称 $(X,\T)$ 是可分的.}
+\handline{72}{238}{856}{\textbf{Thm.} \ann{(Lindelöf)}}
+\handline{72}{266}{856}{若 $(X,\T)$ 是第二可数的，则 $X$ 的任意开覆盖存在可数子覆盖.}
+\handline{72}{295}{856}{\textbf{Thm.} $(X,\T)$ 是拓扑空间，若 $(X,\T)$ 是第二可数的，则 $(X,\T)$ 是可分的.}
+\handline[Teal]{72}{324}{856}{两个定理的证明可完全照搬度量空间的版本，作为练习.}
+\handline[AnnotationBlue]{72}{352}{856}{在度量空间中，第二可数 $\Leftrightarrow$ 可分.}
+\handline[AnnotationBlue]{72}{382}{856}{但在一般拓扑空间中，可分 $\not\Rightarrow$ 第二可数. \redann{（反例见本节课后习题）}}
+\handline[AnnotationBlue]{72}{412}{856}{于是可分，但不是第二可数的拓扑空间一定不可度量化.}
+\end{handpage}
+
+% SOURCE PAGE 041
+% SECTION: 2.5 | Separation axioms
+\begin{handpage}{41}
+\handtitle{72}{127}{856}{\S2.5 Separation axioms}
+\handline{72}{159}{856}{$(X,\T)$ 是拓扑空间.}
+\handline{72}{185}{856}{\textbf{Def.} 若 $\forall x\ne y\in X$，$\exists U\in\T$ s.t. $x\in U$，$y\notin U$.}
+\handline{72}{211}{856}{则称 $X$ 为 $T_1$ 空间 \ann{（用一个开集，分离两个点）.}}
+\handline{72}{240}{856}{\textbf{Prop.} $(X,\T)$ 是 $T_1$ 空间 $\Leftrightarrow$ 所有单点集都是闭集.}
+\handline{72}{268}{856}{\textbf{Pf.} “$\Rightarrow$”：$\forall\{x\}\subseteq X$，$X\setminus\{x\}$.}
+\handline{72}{298}{856}{$\forall y\in X\setminus\{x\}$，$\exists U_y\in\T$，s.t. $y\in U_y$，$x\notin U_y$.}
+\handline{72}{328}{856}{$\therefore X\setminus\{x\}=\bigcup_{y\in X\setminus\{x\}}U_y$ 为开集，$\therefore\{x\}$ 为闭集.}
+\handline{72}{358}{856}{“$\Leftarrow$” $\forall\{x\}\subseteq X$，$X\setminus\{x\}$ 是开集.}
+\handline{72}{388}{856}{$\therefore\forall y\ne x\in X$，$\exists U_y$ s.t. $y\in U_y\subseteq X\setminus\{x\}$，$\therefore x\notin U_y$.}
+\handline{72}{417}{856}{$\therefore(X,\T)$ 为 $T_1$ 空间.}
+\handline{72}{447}{856}{\textbf{Def.} 若 $\forall x\ne y\in X$，$\exists U,V\in\T$，$U\cap V=\varnothing$，$x\in U$，$y\in V$.}
+\handline{72}{476}{856}{则称 $(X,\T)$ 为 $T_2$ 空间 \ann{（也称 Hausdorff 空间）（用两个开集，分离两个点）.}}
+\handline{72}{508}{856}{\textbf{Def.} $\forall F\subseteq X$ 为闭集，$p\notin F$，$\exists U,V\in\T$，s.t. $U\cap V=\varnothing$，$F\subseteq U$，$p\in V$.}
+\handline{72}{540}{856}{则称 $(X,\T)$ 为正则空间. \ann{(regular space)（用二个开集，分离一点和一个闭集）}}
+\handline{72}{572}{856}{正则 $+\ T_1=T_3$ 空间.}
+\handline{72}{606}{856}{\textbf{Def.} $\forall E,F\subseteq X$ 为闭集，$E\cap F=\varnothing$.}
+\handline{72}{639}{856}{$\exists U,V\in\T$，s.t. $U\cap V=\varnothing$，$E\subseteq U$，$F\subseteq V$.}
+\handline{72}{671}{856}{则称 $(X,\T)$ 为正规空间 \ann{(normal space)（用两个开集，分离两个闭集）.}}
+\handline{72}{705}{856}{正规 $+\ T_1=T_4$ 空间.}
+\handline[Teal]{72}{739}{856}{Fact: $T_4\Rightarrow T_3\Rightarrow T_2\Rightarrow T_1$.}
+\end{handpage}
+
+% SOURCE PAGE 042
+\begin{handpage}{42}
+\handline{72}{134}{856}{\textbf{Thm.} 度量空间 $(X,d)$ 是 $T_4$ 空间.}
+\handline{72}{163}{856}{\textbf{Pf.} \circled{1} 设 $x\ne y\in X$，则 $d(x,y)>0$，设 $d=d(x,y)$.}
+\handline{72}{191}{856}{$\therefore x\in B(x,\frac d2)$，$y\in B(y,\frac12d)$，且 $B(x,\frac d2)\cap B(y,\frac d2)=\varnothing$.}
+\handline{72}{219}{856}{$\therefore X$ 是 $T_1$ 空间.}
+\handline{72}{248}{856}{\circled{2} 设 $E,F$ 是 $X$ 中的闭集，$E\cap F=\varnothing$.}
+\handline{72}{276}{856}{$x\in E\Rightarrow x\notin F$ 即 $x\in F^c$，$\therefore\exists B(x,r_x)\subseteq F^c$.}
+\handline{72}{304}{856}{即 $B(x,r_x)\cap F=\varnothing$.}
+\handline{72}{332}{856}{同理 $y\in F$，$\exists B(y,r_y)\cap E=\varnothing$.}
+\handline{72}{362}{856}{令 $U=\bigcup_{x\in E}B(x,\frac{r_x}2)$，$V=\bigcup_{y\in F}B(y,\frac{r_y}2)$.}
+\handline{72}{391}{856}{则 $U,V$ 为开集，$E\subseteq U$，$F\subseteq V$.}
+\handline{72}{420}{856}{若 $U\cap V\ne\varnothing$，$\exists p\in U\cap V$.}
+\handline{72}{449}{856}{则 $\exists x\in E$，$y\in F$ s.t. $p\in B(x,\frac{r_x}2)$，$p\in B(y,\frac{r_y}2)$.}
+\handline{72}{479}{856}{而 $d(x,y)\le d(x,p)+d(p,y)<\frac{r_x+r_y}2\le\max\{r_x,r_y\}$.}
+\handline{72}{508}{856}{不妨设 $r_x\ge r_y$，$\Rightarrow d(x,y)<r_x\Rightarrow y\in B(x,r_x)$.}
+\handline{72}{537}{856}{但 $y\in F$，与 $B(x,r_x)\cap F=\varnothing$ 矛盾.}
+\handline{72}{568}{856}{$\therefore U\cap V=\varnothing$，从而 $X$ 正规.}
+\handline{72}{598}{856}{$\therefore(X,d)$ 是 $T_4$ 空间.}
+\handline{72}{629}{856}{\textbf{Thm.} $(X,\T)$ 正规 $\Leftrightarrow E\subseteq X$ 为闭集，$V$ 为开集，$E\subseteq V$，则 $\exists U\subseteq X$ 为开集 s.t. $E\subseteq U\subseteq\overline U\subseteq V$.}
+\handline{72}{661}{856}{\textbf{Pf.} “$\Rightarrow$” $E\subseteq V$，$E$ 闭，$V$ 开，则 $V^c$ 为闭集且 $E\cap V^c=\varnothing$.}
+\handline{72}{692}{856}{$\therefore\exists U,W$ 为开集且 $U\cap W=\varnothing$，$E\subseteq U$，$V^c\subseteq W\Rightarrow W^c\subseteq V$.}
+\handline{72}{723}{856}{$W^c$ 是闭集，由于 $U\cap W=\varnothing\Rightarrow U\subseteq W^c\Rightarrow\overline U\subseteq W^c$.}
+\handline{72}{755}{856}{$\therefore E\subseteq U\subseteq\overline U\subseteq W^c\subseteq V$.}
+\handline{72}{789}{856}{“$\Leftarrow$” $E,F\subseteq X$ 为闭集，$E\cap F=\varnothing$.}
+\handline{72}{821}{856}{则 $E\subseteq F^c$，$F^c$ 为开集，$\therefore\exists$ 开集 $U$，s.t. $E\subseteq U\subseteq\overline U\subseteq F^c$.}
+\handline{72}{851}{856}{$\therefore F\subseteq(\overline U)^c$，其中 $(\overline U)^c$ 为开集.}
+\handline{72}{884}{856}{而 $U\cap(\overline U)^c=\varnothing$，$\therefore(X,\T)$ 为正规空间.}
+\end{handpage}
+
+% SOURCE PAGE 043
+\begin{handpage}{43}
+\handline{72}{144}{856}{\textbf{Thm.} \ann{(Urysohn Lemma)}}
+\handline{72}{173}{856}{$(X,\T)$：正规空间，$E\cap F=\varnothing$ 且为闭集.}
+\handline{72}{199}{856}{则 $\exists$ 连续映射 $f:X\to[0,1]$，s.t. $f|_E\equiv0$，$f|_F\equiv1$.}
+\handline{72}{225}{856}{\textbf{Pf.} $E\cap F=\varnothing$，$E,F$ 为闭集. 则 $E\subseteq F^c$，$F^c$ 为开集.}
+\handline{72}{251}{856}{$\therefore\exists U_{\frac12}\in\T$，s.t. $E\subseteq U_{\frac12}\subseteq\overline{U_{\frac12}}\subseteq F^c$.}
+\handline{72}{278}{856}{而 $E\subseteq U_{\frac12}$，$\overline{U_{\frac12}}\subseteq F^c$.}
+\handline{72}{305}{856}{$\therefore\exists U_{\frac14},U_{\frac34}\in\T$，s.t. $E\subseteq U_{\frac14}\subseteq\overline{U_{\frac14}}\subseteq U_{\frac12}$，$\overline{U_{\frac12}}\subseteq U_{\frac34}\subseteq\overline{U_{\frac34}}\subseteq F^c$.}
+\handline{72}{328}{856}{重复上述操作，得到，}
+\handline{72}{358}{856}{\circled{1} $\overline{U_r}\subseteq U_s$，$\forall 0<r<s<1$，$r,s$ 为 dyadic number.}
+\handline{72}{387}{856}{\circled{2} $E\subseteq U_r\subseteq F^c$，$\forall 0<r<1$，$r$ 为 dyadic number.}
+\handline{72}{415}{856}{下面构造 $f:X\to[0,1]$.}
+\handline{72}{443}{856}{令 $f(x)=\inf\bigl(\{r\mid x\in U_r\}\cup\{1\}\bigr)$.}
+\handline{72}{471}{856}{若 $\exists r\in(0,1)$，$x\in U_r$，则 $f(x)\leq r$}
+\handline{72}{500}{856}{若 $\forall r\in(0,1)$，$x\notin U_r$，则 $\{r\mid x\in U_r\}=\varnothing\Rightarrow f(x)=1$，$\Rightarrow 0\leq f(x)\leq1$.}
+\handline{72}{528}{856}{$\therefore$ 若 $x\in E\subseteq U_r$（$\forall r\in(0,1)$）$\Rightarrow f(x)=0$. $\therefore f|_E\equiv0$.}
+\handline{72}{557}{856}{$x\in F$ 而 $U_r\subseteq F^c$，$\forall r\in(0,1)$ $\Rightarrow x\notin U_r\Rightarrow f(x)=1$. $\therefore f|_F\equiv1$.}
+\handline{72}{585}{856}{下证 $f(x)$ 为连续函数.}
+\handline{72}{617}{856}{不妨设 $0<f(x)<1$.}
+\handline{72}{649}{856}{$\forall\eps>0$，由于 dyadic number 在 $[0,1]$ 中稠密，}
+\handline{72}{682}{856}{$\therefore\exists r,s>0$，s.t. $f(x)-\eps<r<f(x)<s<f(x)+\eps$.}
+\handline{72}{714}{856}{$f(x)>r\Rightarrow x\notin\overline{U_r}$；$f(x)<s\Rightarrow x\in U_s\Rightarrow x\in U_s\setminus\overline{U_r}$.}
+\handline{72}{747}{856}{令 $W=U_s/\overline{U_r}$，则 $W$ 为开集，为 $x$ 的开邻域.}
+\handline{72}{782}{856}{$\forall y\in W$，$y\notin U_r\Rightarrow f(y)>r$，$\Rightarrow |f(x)-f(y)|<\eps$}
+\handline{72}{813}{856}{$y\in U_s\Rightarrow f(y)\leq s$.}
+\handline{72}{846}{856}{$\therefore f$ 是连续函数.}
+\end{handpage}
+
+% SOURCE PAGE 044
+\begin{handpage}{44}
+\handline{72}{150}{856}{\textbf{Thm.} \ann{(Urysohn metrization theorem)}}
+\handline{72}{177}{856}{$(X,\T)$ 是 $T_3$、$C_2$ 空间，则 $X$ 可度量化. 即存在 $X$ 上度量 $d$，s.t. $\T_d=\T$.}
+\handline{72}{203}{856}{\textbf{Pf.} Step 1：$(X,\T)$ 是正规空间 \redann{(作为习题)}.}
+\handline{72}{230}{856}{Step 2：设 $\B=\{B_n\}_{n=1}^{\infty}$ 为可数拓扑基.}
+\handline{72}{256}{856}{考虑所有满足条件 $\overline{B_i}\subseteq B_j$ 的基对 $(B_i,B_j)$.}
+\handline{72}{282}{856}{由 Urysohn 引理，$\exists f_{ij}:X\to[0,1]$，s.t. $f_{ij}|_{\overline{B_i}}\equiv0$，$f_{ij}|_{B_j^c}\equiv1$.}
+\handline{72}{308}{856}{由于可数 $\Rightarrow$ 这些函数可记为 $\{f_i\}_{i=1}^{\infty}$.}
+\handline{72}{334}{856}{Step 3：$\forall x\in X$，$x\in U$，$U$ 为开集.}
+\handline{72}{360}{856}{由正则性及拓扑基定义，可选 $B_i,B_j$. \redann{(作为习题)}}
+\handline{72}{387}{856}{s.t. $x\in B_i\subseteq\overline{B_i}\subseteq B_j\subseteq U$ 对应 $f_{ij}(x)=0$，且 $\forall y\notin U$，$f(y)=1$.}
+\handline{72}{415}{856}{于是 $\forall x\in X$，$x\in U\in\T$，$\exists n\in\N$，s.t. $f_n(x)=0$，$f_n|_{U^c}\equiv1$.}
+\handline{72}{443}{856}{Step 4：定义 $d(x,y):=\sum_{n=1}^{\infty}\frac1{2^n}|f_n(x)-f_n(y)|$.}
+\handline{72}{470}{856}{由于 $0\leq|f_n(x)-f_n(y)|\leq2\Rightarrow$ 级数绝对一致收敛.}
+\handline{72}{499}{856}{非负性、对称性、三角不等式显然.}
+\handline{72}{528}{856}{下证正定性.}
+\handline{72}{559}{856}{$\forall x\ne y$，$x\in X\setminus\{y\}$ 是开集. $\therefore\exists f_n$，s.t. $f_n(x)=0$，$f_n|_{\{y\}}=1$ 即 $f_n(y)=1$.}
+\handline{72}{590}{856}{$\therefore d(x,y)\geq\frac1{2^n}>0$. $\therefore d(x,y)=0\Leftrightarrow x=y$.}
+\handline{72}{620}{856}{Step 5：最后证明 $\T_d=\T$.}
+\handline{72}{650}{856}{$\T_d\subseteq\T$：$\forall x\in X$，令 $g_n(y)=\frac1{2^n}|f_n(x)-f_n(y)|$，则 $g_n(y)$ 连续.}
+\handline{72}{681}{856}{由一致收敛 $\Rightarrow d(x,y)=\sum_{n=1}^{\infty}g_n(y)$ 也连续.}
+\handline{72}{712}{856}{$\therefore B_d(x,\eps)=\{y\in X\mid d(x,y)<\eps\}$ 是开集. $\therefore\T_d\subseteq\T$.}
+\handline{72}{744}{856}{$\T\subseteq\T_d$：$\forall U\in\T$，不妨设 $U\ne\varnothing$，$\forall x\in U$.}
+\handline{72}{776}{856}{$\exists f_n$，s.t. $f_n(x)=0$，$f_n|_{U^c}\equiv1$.}
+\handline{72}{808}{856}{$\therefore\forall y\notin U$，$d(x,y)\geq\frac1{2^n}|f_n(x)-f_n(y)|=\frac1{2^n}$.}
+\handline{72}{837}{856}{$\therefore B(x,\frac1{2^n})\subseteq U$，从而 $U$ 在度量 $d$ 诱导的拓扑下也是开集. $\therefore\T\subseteq\T_d$.}
+\handline{72}{860}{856}{$\therefore\T_d=\T$.}
+\handline[Teal]{72}{901}{856}{事实上上述过程将 $(X,\T)$ 嵌入了 Hilbert 立方体 $[0,1]^{\N}$ 中.（取乘积拓扑）.}
+\end{handpage}
+
+% SOURCE PAGE 045
+\begin{handpage}{45}
+\handline{72}{117}{856}{\textbf{Thm.} \ann{(Tietze extension theorem)}}
+\handline{72}{144}{856}{$(X,\T)$：正规空间，$E\subseteq X$ 闭，$f:E\to\R$，连续且有界.}
+\handline{72}{171}{856}{则 $\exists F:X\to\R$ 连续且有界，且 $F|_E=f$.}
+\handline{72}{199}{856}{且 $|F|$ 与 $|f|$ 的上确界相同，即 $\sup\{|f(x)|\mid x\in E\}=\sup\{|F(x)|\mid x\in X\}$.}
+\handline{72}{227}{856}{\textbf{Pf.} $f$ 有界，设 $c_0=\sup\{|f(x)|\mid x\in E\}<\infty$.}
+\handline{72}{254}{856}{不妨设 $c_0>0$. 则 $-c_0\leq f(x)\leq c_0$，$\forall x\in E$.}
+\handline{72}{280}{856}{令 $A=\{x\in E\mid f(x)\leq-\frac{c_0}3\}$，$B=\{x\in E\mid f(x)\geq\frac{c_0}3\}$.}
+\handline{72}{309}{856}{由于 $f$ 连续，且 $E$ 是闭集，$\therefore A,B$ 在 $X$ 上是闭集，且 $A\cap B=\varnothing$.}
+\handline[Teal]{72}{338}{856}{（$A=E\cap\{f\leq-\frac{c_0}3\}$，为两个闭集之交，仍为闭集）.}
+\handline{72}{370}{856}{由 Urysohn 引理，$\exists h:X\to[0,1]$，连续且 $h|_A\equiv0$，$h|_B\equiv1$.}
+\handline{72}{400}{856}{考虑 $\frac23c_0h$. 令 $g_1=\frac23c_0h-\frac13c_0$，则 $-\frac13c_0\leq g_1(x)\leq\frac13c_0$.}
+\handline{72}{429}{856}{$x\in A\Rightarrow g_1(x)=-\frac13c_0$，$-c_0\leq f(x)\leq-\frac13c_0\Rightarrow |f(x)-g_1(x)|\leq\frac23c_0$.}
+\handline{72}{459}{856}{$x\in B\Rightarrow g_1(x)=\frac13c_0$，$\frac13c_0\leq f(x)\leq c_0\Rightarrow |f(x)-g_1(x)|\leq\frac23c_0$.}
+\handline{72}{489}{856}{于是我们得到，\circled{1} $|g_1(x)|\leq\frac13c_0$，连续，且 $\frac13c_0$ 可以取到.}
+\handline{72}{519}{856}{\circled{2} $|f(x)-g_1(x)|\leq\frac23c_0$，$\forall x\in E$.}
+\handline{72}{550}{856}{对于 $f(x)-g_1(x)$ 重复上述过程.}
+\handline{72}{581}{856}{\circled{1} $\exists g_2$ 连续，$\forall x\in X$，$|g_2(x)|\leq\frac13\cdot\frac23c_0=\frac2{3^2}c_0$.}
+\handline{72}{611}{856}{\circled{2} $|f(x)-g_1(x)-g_2(x)|\leq\frac23\cdot\frac23c_0=\frac49c_0$，$\forall x\in E$.}
+\handline{72}{645}{856}{$\cdots\cdots$ $\{g_n\}_{n=1}^{\infty}$，$g_n$ 连续，且 $\forall x\in X$，$|g_n(x)|\leq\frac13\cdot(\frac23)^{n-1}c_0=\frac{2^{n-1}}{3^n}c_0$.}
+\handline{72}{679}{856}{$|f(x)-g_1(x)-\cdots-g_n(x)|\leq(\frac23)^nc_0$，$\forall x\in E$.}
+\handline{72}{714}{856}{令 $F=\sum_{n=1}^{\infty}g_n$. 则 $|F|\leq\sum_{n=1}^{\infty}|g_n|\leq\sum_{n=1}^{\infty}\frac{2^{n-1}}{3^n}c_0=c_0$. $\therefore\sum_{n=1}^{\infty}g_n$ 绝对一致收敛.}
+\handline{72}{748}{856}{$\therefore F$ 连续. 且 $|F|\leq c_0$.}
+\handline{72}{782}{856}{$\forall x\in E$，由于 $|f(x)-\sum_{k=1}^ng_k(x)|\leq(\frac23)^nc_0$，令 $n\to\infty\Rightarrow f(x)=F(x)$.}
+\handline{72}{815}{856}{$\therefore F|_E=f$.}
+\handline{72}{848}{856}{又由于 $|f|$ 在 $E$ 的上确界为 $c_0$，且 $|F|\leq c_0$.}
+\handline{72}{883}{856}{故 $|F|$ 的上确界也为 $c_0$.}
+\end{handpage}
+
+% SOURCE PAGE 046
+\begin{handpage}{46}
+\handline[AnnotationBlue]{72}{145}{856}{Urysohn 引理和 Tietze 扩张定理实际上是两个相反的想法.}
+\handline[AnnotationBlue]{72}{171}{856}{前者关于切割，后者关于延伸.}
+\handline[AnnotationBlue]{72}{197}{856}{切割：假如对于一个 $\R$ 上的函数 $f$，只想要在 $[a,b]$ 上的值.}
+\handline[AnnotationBlue]{72}{223}{856}{可以在 $[a,b]$ 之外取大一点点，$(a-\eps,b+\eps)$，$\eps>0$.}
+\handline[AnnotationBlue]{72}{250}{856}{考虑 $(-\infty,a-\eps]\cup[b+\eps,\infty)$.}
+\handline[AnnotationBlue]{72}{276}{856}{令 $E=[a,b]$，$F=(-\infty,a-\eps]\cup[b+\eps,\infty)$，则 $E\cap F=\varnothing$ 且为闭集.}
+\handline[AnnotationBlue]{72}{303}{856}{由 Urysohn 引理 $\exists$ 连续的 $g:\R\to[0,1]$，s.t. $g|_E\equiv1$，$g|_F\equiv0$.}
+\handline[AnnotationBlue]{72}{330}{856}{令 $\widetilde f=f\cdot g$，则基本可以达成目的.}
+\handline[AnnotationBlue]{72}{358}{566}{$\widetilde f$ 可以在 $(a-\eps,a)$ 和 $(b,b+\eps)$}
+\handline[AnnotationBlue]{72}{385}{566}{两侧快速连续地降为 $0$.}
+\handline[NoteRed]{72}{414}{566}{事实上利用 bump function，在 $\R^n$ 这个特殊的拓扑空间中}
+\handline[NoteRed]{72}{442}{566}{让 $g$ 不但是连续的，甚至 $C^\infty$，但没办法做到 $C^\omega$.}
+\handdiagram{656}{348}{272}{99}{
+  \draw[->,AnnotationBlue] (-.3,0)--(6.5,0);
+  \draw[AnnotationBlue,thick] plot[smooth] coordinates {(-.1,1.6)(.6,1.5)(1.5,2.1)(2.4,2.25)(3.4,2.05)(4.3,1.6)(5.3,1.5)(6.3,2)};
+  \draw[Teal,thick] plot[smooth] coordinates {(.9,0)(1.15,.35)(1.4,1.8)(1.5,2.1)(2.4,2.25)(3.4,2.05)(3.8,1.85)(4.1,.4)(4.6,.05)(4.8,0)};
+  \draw[dashed,Teal] (1.5,0)--(1.5,2.1) (3.8,0)--(3.8,1.85);
+  \draw[NoteRed] (.9,-.05)--(1.05,.25) (4.8,-.05)--(4.65,.25);
+  \node[below,NoteRed] at (.9,-.05) {$a-\eps$};
+  \node[below,NoteRed] at (1.6,-.05) {$a$};
+  \node[below,NoteRed] at (3.8,-.05) {$b$};
+  \node[below,NoteRed] at (4.9,-.05) {$b+\eps$};
+  \draw[->,AnnotationBlue] (4.5,1.65)--(4.9,2.45) node[right] {$f$};
+  \draw[->,Teal] (4.15,.9)--(5.1,1) node[right] {$\widetilde f$};
+}
+\handline[AnnotationBlue]{72}{480}{856}{对于延伸：\circled{1} 在 Tietze 扩张中 $E\subseteq X$ 为闭集很重要.}
+\handline[AnnotationBlue]{72}{510}{856}{比如，$f(x)=\sin\frac1x$，$E=(0,1]$，就无法连续地延拓到 $0$.}
+\handline[AnnotationBlue]{72}{541}{856}{\circled{2} 此定理只有存在性，延拓方式不一定唯一.}
+\handline[AnnotationBlue]{72}{572}{856}{\circled{3} 实际研究中，会有更多的要求.}
+\handline[AnnotationBlue]{72}{604}{856}{比如原来的 $f$ 是 $C^k$ 或 $C^\infty$，要求延拓之后的 $F$ 也保留 $C^k$ 和 $C^\infty$ 性质.}
+\handline[AnnotationBlue]{72}{636}{856}{此时对 $E$ 的形状要求也更高了.}
+\end{handpage}
+
+% SOURCE PAGE 047
+% SECTION: 2.6 | Compctness
+\begin{handpage}{47}
+\handtitle{72}{107}{856}{\S2.6 Compctness}
+\handline{72}{134}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$E\subseteq X$.}
+\handline{72}{159}{856}{若 $E$ 的任意开覆盖存在有限子覆盖，则称 $E$ 是紧集.}
+\handline{72}{185}{856}{\textbf{Prop.} $(X,\T)$：拓扑空间，$E_1,\ldots,E_m$ 是紧集，则 $\bigcup_{k=1}^mE_k$ 也是紧集.}
+\handline[AnnotationBlue]{72}{211}{856}{\circled{1} 若 $m=\infty$，则 $\bigcup_{k=1}^{\infty}E_k$ 不一定为紧集.}
+\handline[AnnotationBlue]{72}{238}{856}{如 $[0,k]$ 为紧集，$\bigcup_{k=1}^{\infty}[0,k]=[0,+\infty)$ 不是紧集.}
+\handline[AnnotationBlue]{72}{265}{856}{\circled{2} 若 $E_1,E_2$ 为紧集，$E_1\cap E_2$ 不一定为紧集. \redann{但在 $T_2$ 空间中紧集的任意交仍为紧集.}}
+\handline{72}{293}{856}{\textbf{Def.} $(X,\T)$：拓扑空间. 若 $X$ 的任意开覆盖存在有限子覆盖，则称 $X$ 是紧的拓扑空间.}
+\handline{72}{322}{856}{\textbf{Prop.} $(X,\T)$：紧拓扑空间，$E\subseteq X$ 为闭集，则 $E$ 是紧集.}
+\handline{72}{352}{856}{\textbf{Pf.} $E\subseteq\bigcup_{\alpha\in\Lambda}U_\alpha$，$U_\alpha\in\T$.}
+\handline{72}{381}{856}{而 $(\bigcup_{\alpha\in\Lambda}U_\alpha)\cup(X\setminus E)$ 是 $X$ 的开覆盖.}
+\handline{72}{411}{856}{$\therefore X=(\bigcup_{i=1}^mU_i)\cup(X\setminus E)$. $\therefore E\subseteq\bigcup_{i=1}^mU_i$. $\therefore E$ 是紧集.}
+\handline{72}{441}{856}{\textbf{Prop.} $(X,\T)$：Hausdorff 空间.}
+\handline{72}{470}{856}{$E\subseteq X$ 为紧集，则 $\forall p\notin E$，$\exists$ 开集 $U,V$，$U\cap V=\varnothing$，s.t. $E\subseteq U$，$p\in V$.}
+\handline{72}{500}{856}{\textbf{Pf.} $\forall x\in E$，由于 $(X,\T)$ 为 $T_2$ 空间，$\therefore\exists U_x,V_x\in\T$}
+\handline{72}{530}{856}{s.t. $x\in U_x$，$p\in V_x$，$U_x\cap V_x=\varnothing$.}
+\handline{72}{561}{856}{$\therefore E\subseteq\bigcup_{x\in E}U_x$. 存在子覆盖 $E\subseteq\bigcup_{j=1}^mU_{x_j}$. 令 $U=\bigcup_{j=1}^mU_{x_j}$.}
+\handline{72}{592}{856}{取相同下标的 $V_{x_j}$. 令 $V=\bigcap_{j=1}^mV_{x_j}$.}
+\handline{72}{622}{856}{则 $U,V$ 为开集且 $U\cap V=\varnothing$，$E\subseteq U$，$p\in V$.}
+\handline{72}{654}{856}{\textbf{Cor.} $X:T_2$. $E\subseteq X$ 为紧集，则 $E$ 是闭集.}
+\handline{72}{686}{856}{\textbf{Pf.} $\forall p\notin E$，$\exists V_p$ 是开集，s.t. $V_p\subseteq E^c$. $\therefore E^c=\bigcup_{p\notin E}V_p$ 为开集. $\therefore E$ 为闭集.}
+\handline{72}{717}{856}{\textbf{Thm.} $(X,\T)$：紧致 Hausdorff 空间，则 $X$ 是正规空间.}
+\handline{72}{749}{856}{\textbf{Pf.} $\forall E,F\subseteq X$ 为闭集，$E\cap F=\varnothing$. $\Rightarrow E,F$ 为紧集.}
+\handline{72}{780}{856}{$\forall y\in F$，$y\notin E$，$\exists$ 开集 $U_y,V_y$，$U_y\cap V_y=\varnothing$，s.t. $E\subseteq U_y$，$y\in V_y$.}
+\handline{72}{812}{856}{$\Rightarrow F\subseteq\bigcup_{y\in F}V_y$. 由紧性 $\Rightarrow F\subseteq\bigcup_{j=1}^mV_{y_j}$. 令 $V=\bigcup_{j=1}^mV_{y_j}\in\T$.}
+\handline{72}{844}{856}{取相同下标的 $U_{y_j}$. 令 $U=\bigcap_{j=1}^mU_{y_j}\in\T$. 则 $U\cap V=\varnothing$ 且 $E\subseteq U$.}
+\handline{72}{877}{856}{$\therefore X$ 为正规空间.}
+\handline[NoteRed]{72}{911}{856}{此定理表明紧 $T_2$ 空间中可以使用 Urysohn 引理和 Tietze 扩张定理.}
+\end{handpage}
+
+% SOURCE PAGE 048
+\begin{handpage}{48}
+\handline{72}{132}{856}{\textbf{Prop.} $f:X\to Y$ 连续映射，$(X,\T)$：紧拓扑空间，则 $f(X)\subseteq Y$ 为紧集.}
+\handline{72}{158}{856}{\textbf{Pf.} 设 $f(X)\subseteq\bigcup_{\alpha\in\Lambda}V_\alpha$，则 $X\subseteq\bigcup_{\alpha\in\Lambda}f^{-1}(V_\alpha)$. $f^{-1}(V_\alpha)\in\T$.}
+\handline{72}{184}{856}{$\therefore X\subseteq\bigcup_{j=1}^mf^{-1}(V_j)$. $\therefore f(X)\subseteq\bigcup_{j=1}^mV_j$. $\therefore f(X)$ 为紧集.}
+\handline{72}{211}{856}{\textbf{Thm.} $f:X\to Y$ 连续映射，$X$：紧，$Y:T_2$.}
+\handline{72}{237}{856}{若 $f$ 是一一映射，则 $X\overset f\cong f(X)$.}
+\handline{72}{263}{856}{\textbf{Pf.} $f:X\to f(X)$ 是 $1$-$1$、到上的映射.}
+\handline{72}{289}{856}{只需证 $f^{-1}$ 也连续，即 $f$ 是开映射 \ann{（把开集送出去仍是开集）}}
+\handline{72}{315}{856}{即证 $f$ 是闭映射 \ann{（把闭集送出去仍是闭集）}.}
+\handline{72}{344}{856}{$\forall E\subseteq X$ 为闭集，由 $X$ 紧 $\Rightarrow E$ 为紧集，而 $f$ 连续，$\therefore f(E)\subseteq Y$ 为紧集.}
+\handline{72}{374}{856}{而 $Y$ 是 $T_2$ 的，$\therefore f(E)$ 是闭集.}
+\handline[NoteRed]{72}{405}{856}{紧致 Hausdorff 是一个很刚性的性质，拓扑稍作修改，两个性质会丧失其中一个.}
+\handline{72}{436}{856}{\textbf{Def.} $(X,\T)$、$(X,\T_1)$，$\T,\T_1$ 均为 $X$ 上的拓扑.}
+\handline{72}{465}{856}{若 $\T\subseteq\T_1$，则称 $\T_1$ 比 $\T$ 强，$\T$ 比 $\T_1$ 弱.}
+\handline{72}{495}{856}{\textbf{Thm.} $(X,\T)$：紧 $\&$ $T_2$. 若 $\T_1\varsubsetneqq\T\varsubsetneqq\T_2$}
+\handline{72}{524}{856}{则 $(X,\T_1)$ 紧但不是 $T_2$，$(X,\T_2)$ $T_2$ 但不紧.}
+\handline{72}{554}{856}{\textbf{Pf.} \circled{1} $\forall\{U_\alpha\}\subseteq\T_1$，$X=\bigcup_{\alpha\in\Lambda}U_\alpha$，由于 $\T_1\subseteq\T$，$\therefore U_\alpha\in\T$. $\therefore X=\bigcup_{j=1}^mU_j$，$U_j\in\T_1$.}
+\handline{72}{585}{856}{$\therefore(X,\T_1)$ 紧.}
+\handline{72}{616}{856}{若 $(X,\T_1)$ 是 $T_2$ 的. 考虑 $f=\id:(X,\T)\to(X,\T_1)$.}
+\handline{72}{647}{856}{$\id$ 是一一映射，$\forall U\in\T_1$，$\id^{-1}(U)=U\in\T$，$\therefore\id$ 是连续映射.}
+\handline{72}{678}{856}{$\therefore(X,\T)\overset{\id}\cong(X,\T_1)$. $\therefore\T=\T_1$，矛盾！$\therefore(X,\T_1)$ 不是 $T_2$ 的.}
+\handline{72}{711}{856}{\circled{2} $\forall x\ne y\in X$，$\exists U,V\in\T\subseteq\T_2$，s.t. $U\cap V=\varnothing$，$x\in U$，$y\in V$.}
+\handline{72}{744}{856}{$\therefore(X,\T_2)$ 是 $T_2$ 空间.}
+\handline{72}{777}{856}{若 $(X,\T_2)$ 是紧的，考虑 $\id:(X,\T_2)\to(X,\T)$.}
+\handline{72}{810}{856}{同理可证 $(X,\T)\overset{\id}\cong(X,\T_1)$. $\therefore\T=\T_2$，矛盾！$\therefore(X,\T_2)$ 不是紧的.}
+\end{handpage}
+
+% SOURCE PAGE 049
+% SECTION: 2.7 | Locally compact spaces
+\begin{handpage}{49}
+\handtitle{72}{123}{856}{\S2.7 Locally compact spaces}
+\handline{72}{150}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，若 $\forall x\in X$，$\exists x$ 的开邻域 $U$，s.t. $\overline U$ 是紧集，称 $X$ 为局部紧.}
+\handline{72}{176}{856}{\textbf{Prop.} $X$：紧 $\&$ $T_2$. $\forall p\in X$，$X\setminus\{p\}$ 是局部紧 $T_2$ 空间.}
+\handline{72}{202}{856}{\textbf{Pf.} $\forall x\ne y\in X\setminus\{p\}\subseteq X$.}
+\handline{72}{228}{856}{$\therefore\exists U,V\in\T$，s.t. $x\in U$，$y\in V$，$U\cap V=\varnothing$.}
+\handline{72}{281}{856}{$\therefore X\setminus\{p\}$ 是 $T_2$ 空间.}
+\handline{72}{309}{856}{$\forall x\in X\setminus\{p\}$，$\exists U_x,U_p\in\T$，s.t. $U_x\cap U_p=\varnothing$，$x\in U_x$，$p\in U_p$.}
+\handline{72}{338}{856}{由 $X$ 紧 $\Rightarrow\overline{U_x}$ 是紧集.}
+\handline{72}{365}{856}{而 $\overline{U_x}\subseteq X\setminus U_p\subseteq X\setminus\{p\}$.}
+\handline{72}{394}{856}{$\therefore X\setminus\{p\}$ 是局部紧空间.}
+\handline[Teal]{72}{422}{856}{一个紧 $T_2$ 空间挖去一个点就是局部紧 $T_2$ 空间.}
+\handline[Teal]{72}{454}{856}{本节希望证明，局部紧 $T_2$ 空间可以由一个紧 $T_2$ 空间挖去若干个点得到.}
+\handline[Teal]{72}{486}{856}{而将局部紧 $T_2$ 空间加上若干点，还原为紧 $T_2$ 空间的过程称为紧致化（compactification）.}
+\handline{72}{518}{856}{\textbf{Ex.} \circled{1} $(0,1)$ 是一个局部紧空间.}
+\handline{72}{550}{856}{单点紧化：将 $0$ 和 $1$ 粘起来得到 $S^1$. $S^1$ 是紧 $T_2$ 空间.}
+\handline{72}{580}{856}{两点紧化：$[0,1]$ 是一个紧 $T_2$ 空间.}
+\handline{72}{613}{856}{\circled{2} $\R^n$、$\C^n$ 是局部紧的.}
+\handline{72}{644}{856}{在 $\R^{n+1}\setminus\{0\}$ 上定义关系}
+\handline{72}{679}{856}{``$\sim$''：$x\sim y\Leftrightarrow\exists\lambda\in\R^*$，s.t. $x=\lambda y$. 则 ``$\sim$'' 为一个等价关系.}
+\handline{72}{713}{856}{令 $\RP^n=\R^{n+1}\setminus\{0\}/\sim$，\ann{称为实投影空间.}}
+\handline{72}{745}{856}{$\RP^n$ 是一个紧 $T_2$ 空间.}
+\handline{72}{780}{856}{将 $\R^n$ 嵌入 $\RP^n$ 则可实现紧化，但加了不止一个点.}
+\end{handpage}
+
+% SOURCE PAGE 050
+\begin{handpage}{50}
+\handline{72}{123}{856}{\textbf{Thm.} $(X,\T)$：局部紧 $T_2$ 空间，$Y=X\cup\{\infty\}$.}
+\handline{72}{149}{856}{则存在 $Y$ 上的唯一拓扑，s.t. $Y$ 是一个紧 $T_2$ 空间.}
+\handline{72}{177}{856}{且 $\T$ 是它的子拓扑，即 $\T$ 可由 $\mathcal S$ 作限制诱导下来.}
+\handline{72}{205}{856}{\textbf{Pf.} 设 $\mathcal S$ 为 $Y$ 的子集族，包含：}
+\handline{72}{229}{856}{\circled{1} $X$ 中的开集 \circled{2} $U\subseteq Y$，$\infty\in U$ 且 $X\setminus U$ 在 $X$ 中为紧集.}
+\handline{72}{257}{856}{\ann{Step 1:} $\mathcal S$ 是 $Y$ 上的拓扑.}
+\handline{72}{283}{856}{$1^\circ\ \varnothing\in\mathcal S$.}
+\handline{72}{309}{856}{而 $\infty\in Y$，且 $X\setminus Y=\varnothing$ 在 $X$ 中紧，$\Rightarrow Y\in\mathcal S$.}
+\handline{72}{338}{856}{$2^\circ\ U=\bigcup_{\alpha\in\Lambda}V_\alpha,\quad V_\alpha\in\mathcal S$.}
+\handline{72}{363}{856}{(i) 若 $\forall\alpha\in\Lambda,\ V_\alpha\subseteq X$，则 $U\in\T\subseteq\mathcal S$.}
+\handline{72}{391}{856}{(ii) 若 $\exists\alpha_0$，s.t. $V_{\alpha_0}\not\subset X$，即 $\infty\in V_{\alpha_0}\subseteq U$.}
+\handline{72}{421}{856}{$X\setminus U=X\setminus(\bigcup_{\alpha\in\Lambda}V_\alpha)=\bigcap_{\alpha\in\Lambda}(X\setminus V_\alpha)=(X\setminus V_{\alpha_0})\cap\bigl(\bigcap_{\alpha\ne\alpha_0}(X\setminus V_\alpha)\bigr)$.}
+\handline{72}{451}{856}{若 $\infty\in V_\alpha$，则由定义，$X\setminus V_\alpha$ 为紧集，而 $X$ 为 $T_2$ 空间，$\therefore\ X\setminus V_\alpha$ 为闭集.}
+\handline{72}{480}{856}{若 $\infty\notin V_\alpha$，则 $V_\alpha\in\T$，$\therefore\ X\setminus V_\alpha$ 为闭集.}
+\handline{72}{509}{856}{$\therefore\ X\setminus U$ 为一个紧集与其他闭集之交仍为紧集.}
+\handline{72}{537}{856}{$\therefore\ U\in\mathcal S$.}
+\handline{72}{567}{856}{$3^\circ\ U=U_1\cap U_2\cdots\cap U_m,\quad U_j\in\mathcal S\quad(1\le j\le m)$.}
+\handline{72}{596}{856}{(i) 若 $\forall1\le j\le m,\ \infty\in U_j$，则 $\infty\in U$，$X\setminus U_j$ 为紧集.}
+\handline{72}{626}{856}{$X\setminus U=\bigcup_{j=1}^m(X\setminus U_j)$，而紧集的有限并仍为紧集，$\therefore\ U\in\mathcal S$.}
+\handline{72}{657}{856}{(ii) 若 $\exists1\le j\le m,\ \infty\notin U_j$，则 $\infty\notin U$.}
+\handline{72}{689}{856}{$U\subseteq U_j\subseteq X$，$\therefore\ U\in\T\subseteq\mathcal S$.}
+\handline{72}{721}{856}{\ann{Step 2} $(Y,\mathcal S)$ 是 $T_2$ 空间.}
+\handline{72}{753}{856}{$\forall p\ne q\in Y$，只需证明 $p\in X$，$q=\infty$ 的情形.}
+\handline{72}{786}{856}{由于 $X$ 局部紧，$\therefore\ \exists p$ 的开邻域 $V$，s.t. $\overline V$ 是 $X$ 中的紧集.}
+\handline{72}{819}{856}{$\overline V\subseteq X$，$\therefore\ \infty\notin\overline V$，令 $U=Y\setminus\overline V$，则 $\infty\in U$，即 $q\in U$.}
+\handline{72}{852}{856}{而 $Y\setminus U=\overline V$ 是 $X$ 中的紧集，$\therefore\ U\in\mathcal S$.}
+\handline{72}{889}{856}{而 $V\subseteq\overline V=Y\setminus U\Rightarrow U\cap V=\varnothing$，$\therefore\ (Y,\mathcal S)$ 是 $T_2$ 空间.}
+\end{handpage}
+
+% SOURCE PAGE 051
+\begin{handpage}{51}
+\handline{72}{121}{856}{\ann{Step 3} $(Y,\mathcal S)$ 是紧空间.}
+\handline{72}{149}{856}{若 $Y=\bigcup_{\alpha\in\Lambda}U_\alpha,\quad U_\alpha\in\mathcal S$.}
+\handline{72}{177}{856}{$\infty\in Y=\bigcup_{\alpha\in\Lambda}U_\alpha$，$\therefore\ \exists\alpha_0\in\Lambda$，s.t. $\infty\in U_{\alpha_0}$，$\therefore\ X\setminus U_{\alpha_0}$ 为 $X$ 中紧集.}
+\handline{72}{201}{856}{显然 $\bigcup_{\alpha\in\Lambda}(U_\alpha\cap X)$ 是 $X\setminus U_{\alpha_0}$ 的开覆盖.}
+\handline{72}{228}{856}{$\therefore\ X\setminus U_{\alpha_0}\subseteq\bigcup_{i=1}^m(U_{\alpha_i}\cap X)\subseteq\bigcup_{i=1}^m U_{\alpha_i}$.}
+\handline{72}{255}{856}{$\Rightarrow\ Y\subseteq U_{\alpha_0}\cup(X\setminus U_{\alpha_0})\subseteq U_{\alpha_0}\cup\bigl(\bigcup_{i=1}^m U_{\alpha_i}\bigr)$.}
+\handline{72}{281}{856}{\ann{Step 4} $\mathcal S$ 的唯一性.}
+\handline{72}{311}{856}{设 $(Y,\mathcal S')$，$\mathcal S'$ 是使得 $Y$ 为紧 $T_2$ 空间，以及 $\T$ 为其子拓扑的另一个拓扑.}
+\handline{72}{341}{856}{由于紧 $T_2$ 空间的刚性，只需证 $\mathcal S\subseteq\mathcal S'$ 即可得 $\mathcal S=\mathcal S'$.}
+\handline{72}{370}{856}{$Y$ 是 $T_2$ 空间 $\Rightarrow T_1$，$\therefore$ 单点集 $\{\infty\}$ 是 $\mathcal S'$-闭集，$X=Y\setminus\{\infty\}$ 是 $\mathcal S'$-开集.}
+\handline{72}{398}{856}{$1^\circ\ U\in\mathcal S,\ \infty\notin U$，即 $U\in\T$，是 $X$ 中的开集.}
+\handline{72}{426}{856}{由 $\T$ 是 $\mathcal S'$ 的子拓扑 $\Rightarrow\exists\widetilde U\in\mathcal S'$，s.t. $U=\widetilde U\cap X$.}
+\handline{72}{457}{856}{而 $\widetilde U,X\in\mathcal S'$，$\therefore\ U=\widetilde U\cap X\in\mathcal S'$.}
+\handline{72}{487}{856}{$2^\circ\ U\in\mathcal S,\ \infty\in U$，则 $X\setminus U$ 是 $X$ 中的紧集.}
+\handline{72}{517}{856}{$\therefore\ X\setminus U$ 在拓扑 $\mathcal S'$ 之下仍为紧集. \ann{$(*)$}}
+\handline{72}{547}{856}{由 $(Y,\mathcal S')$ 为 $T_2$ 空间 $\Rightarrow X\setminus U$ 为 $\mathcal S'$-闭集.}
+\handline{72}{579}{856}{由于 $\infty\in U$，$\therefore\ U=Y\setminus(X\setminus U)$，$\therefore\ U$ 为 $\mathcal S'$-开集，即 $U\in\mathcal S'$.}
+\handline{72}{608}{856}{$\therefore\ \mathcal S\subseteq\mathcal S'$.}
+\handline{72}{638}{856}{$\therefore\ \mathcal S=\mathcal S'$.}
+\handline{72}{666}{856}{\textbf{Lemma} \ann{$(*)$}.}
+\handline{72}{695}{856}{$(X,\T)$：拓扑空间，$Y$ 为子空间，则 $K\subseteq Y$ 为 $Y$ 中紧集 $\Leftrightarrow K$ 在 $X$ 中为紧集.}
+\handline{72}{727}{856}{\textbf{Pf.} ``$\Rightarrow$'' $K\subseteq\bigcup_{\alpha\in\Lambda}U_\alpha,\quad U_\alpha\in\T$，则 $K\subseteq\bigcup_{\alpha\in\Lambda}(U_\alpha\cap Y)$.}
+\handline{72}{761}{856}{$\therefore\ K\subseteq\bigcup_{j=1}^m(U_j\cap Y)\subseteq\bigcup_{j=1}^m U_j$，$\therefore\ K$ 在 $X$ 中紧.}
+\handline{72}{792}{856}{``$\Leftarrow$'' $K\subseteq\bigcup_{\alpha\in\Lambda}U_\alpha$，其中 $U_\alpha=V_\alpha\cap Y$，$V_\alpha\in\T$.}
+\handline{72}{829}{856}{$\therefore\ K\subseteq\bigcup_{\alpha\in\Lambda}V_\alpha\Rightarrow K\subseteq\bigcup_{j=1}^m V_j\Rightarrow K\subseteq\bigcup_{j=1}^m(V_j\cap Y)=\bigcup_{j=1}^m U_j$.}
+\handline{72}{865}{856}{$\therefore\ K$ 在 $Y$ 中紧.}
+\end{handpage}
+
+% SOURCE PAGE 052
+% SECTION: 2.8 | Connectedness
+\begin{handpage}{52}
+\handtitle{72}{117}{856}{\S2.8 Connectedness}
+\handline{72}{145}{856}{\textbf{Def.} $(X,\T)$：拓扑空间.}
+\handline{72}{172}{856}{若 $\exists U,V\in\T$，s.t. $X=U\cup V,\ U\cap V=\varnothing$.}
+\handline{72}{198}{856}{则称 $X$ 是不连通的. 若 $(X,\T)$ 不是不连通的，则称 $X$ 是连通的.}
+\handline{72}{225}{856}{即若 $U,V\in\T$，$X=U\cap V$，$U\cap V=\varnothing$，则 $U=\varnothing$ 或 $V=\varnothing$.}
+\handline{72}{252}{856}{\circled{1} 若 $X=U\sqcup V,\ U,V\in\T$，则 $U,V$ 既是开集又是闭集.}
+\handline{72}{279}{856}{\circled{2} $(X,\T)$ 连通 $\Leftrightarrow\T$ 中既开又闭的集合只有 $X$ 和 $\varnothing$.}
+\handline{72}{308}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$F\subseteq X$ 为非空闭集.}
+\handline{72}{336}{856}{若 $\forall F_1,F_2$ 闭，满足 $F\subseteq F_1\cup F_2\Rightarrow F\subseteq F_1$ 或 $F\subseteq F_2$，则称 $F$ 是一个不可约闭集.}
+\handline{72}{365}{856}{等价于 $F$ 不可以表示为两个真闭子集之并.}
+\handline{72}{393}{856}{即若 $F\subseteq A\cup B$，$A,B$ 为 $F$ 中的闭集 \ann{（取相对拓扑）}，则 $A=F$ 或 $B=F$.}
+\handline{72}{422}{856}{$F$ 不可约闭集 $\Leftrightarrow F$ 中任意两个非空开集 \ann{（取相对拓扑）} 都相交.}
+\handline{72}{451}{856}{\textbf{Prop.} 不可约闭集一定连通，即 $F\subseteq(X,\T)$，$F$ 在相对拓扑下是连通的.}
+\handline[NoteRed]{72}{480}{856}{但连通闭集不一定不可约：}
+\handline[NoteRed]{72}{509}{856}{$F=[0,1]\subseteq\R$，令 $A=[0,\frac12]$，$B=[\frac12,1]$，则 $F=A\cup B$，但 $A,B$ 均为 $F$ 中真闭子集.}
+\handline{72}{540}{856}{\textbf{Prop.} $T_2$ 空间中：不可约闭集 $\Leftrightarrow$ 单点集.}
+\handline{72}{570}{856}{\textbf{Pf.} 若 $F$ 为 $X$ 中的不可约闭集，且 $x\ne y,\ x,y\in F$.}
+\handline{72}{600}{856}{由 $T_2\Rightarrow\exists U,V\in\T$，s.t. $U\cap V=\varnothing$，$x\in U$，$y\in V$.}
+\handline{72}{634}{856}{而 $U\cap F,V\cap F$ 为 $F$ 中在相对拓扑下的开集，且 $x\in U\cap F,\ y\in V\cap F$，故非空.}
+\handline{72}{666}{856}{但 $(U\cap F)\cap(V\cap F)=\varnothing$，与不可约闭集矛盾!}
+\handline{72}{701}{856}{$\therefore\ F$ 中至多一个点，又 $F\ne\varnothing$，$\therefore\ F$ 为单点集.}
+\handline{72}{735}{856}{另一方面，$T_2\Rightarrow T_1$，$\therefore$ 单点集为闭集，且显然不可约.}
+\handline{72}{768}{856}{$\therefore\ F$ 为不可约闭集 $\Leftrightarrow F$ 为单点集.}
+\handline{72}{801}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$E\subseteq X$.}
+\handline{72}{837}{856}{若 $E$ 在相对拓扑下为连通的，则称 $E$ 是 $X$ 的连通子集.}
+\end{handpage}
+
+% SOURCE PAGE 053
+\begin{handpage}{53}
+\handline{72}{125}{856}{\textbf{Thm.} 连通性是拓扑不变量.}
+\handline{72}{153}{856}{\textbf{Pf.} $f:X\to Y$ 是同胚映射，$E\subseteq X$ 是连通的，要证 $f(E)$ 是连通的.}
+\handline{72}{181}{856}{由于同胚映射是双向连续映射，故只需证明 $f$ 是连续映射的版本.}
+\handline{72}{207}{856}{下设 $f:X\to Y$ 是连续映射，$E\subseteq X$ 连通，下证 $f(E)\subseteq Y$ 连通.}
+\handline{72}{235}{856}{若 $f(E)$ 不连通，故 $\exists U,V$ 为 $Y$ 中开集.}
+\handline{72}{263}{856}{s.t. $f(E)=(U\cap f(E))\cup(V\cap f(E))$，$U\cap f(E),V\cap f(E)$ 非空且不交.}
+\handline{72}{292}{856}{由于 $E\subseteq f^{-1}(f(E))$，$\therefore\ E\cap f^{-1}(f(E))=E$.}
+\handline{72}{321}{856}{考虑 $f^{-1}(U\cap f(E))=f^{-1}(U)\cap f^{-1}(f(E))$.}
+\handline{72}{350}{856}{而 $E\cap f^{-1}(U\cap f(E))=E\cap f^{-1}(f(E))\cap f^{-1}(U)=E\cap f^{-1}(U)$. \redann{$(*)$}}
+\handline{72}{379}{856}{由于 $f(E)\subseteq U\cup V\Rightarrow E\subseteq f^{-1}(f(E))\subseteq f^{-1}(U)\cup f^{-1}(V)$.}
+\handline{72}{408}{856}{$\therefore\ E=E\cap(f^{-1}(U)\cup f^{-1}(V))=(E\cap f^{-1}(U))\cup(E\cap f^{-1}(V))$.}
+\handline{72}{438}{856}{结合 \redann{$(*)$} 以及 $U\cap f(E),V\cap f(E)$ 非空不交 $\Rightarrow E\cap f^{-1}(U),E\cap f^{-1}(V)$ 非空不交.}
+\handline{72}{467}{856}{由 $f^{-1}(U),f^{-1}(V)$ 为 $X$ 中开集，$\therefore\ E\cap f^{-1}(U),E\cap f^{-1}(V)$ 为相对开集.}
+\handline{72}{496}{856}{从而 $E$ 不连通，矛盾!\quad$\therefore\ f(E)$ 连通.}
+\handline{72}{525}{856}{\textbf{Thm.} $(X,\T)$：拓扑空间，$\{E_\alpha\}_{\alpha\in\Lambda}$，$E_\alpha\subseteq X$ 连通 $(\forall\alpha\in\Lambda)$.}
+\handline{72}{555}{856}{若 $\forall\alpha\ne\beta,\ E_\alpha\cap E_\beta\ne\varnothing$，则 $\bigcup_{\alpha\in\Lambda}E_\alpha$ 是连通的.}
+\handline{72}{585}{856}{\textbf{Pf.} 若 $U,V\in\T$，$U\cap V=\varnothing$，令 $E=\bigcup_{\alpha\in\Lambda}E_\alpha$，$\widetilde U=U\cap E$，$\widetilde V=V\cap E$.}
+\handline{72}{614}{856}{$E=\widetilde U\cup\widetilde V$.}
+\handline{72}{646}{856}{固定一个 $\alpha\in\Lambda$，则 $E_\alpha=E_\alpha\cap E=E_\alpha\cap(\widetilde U\cup\widetilde V)=(E_\alpha\cap U)\cup(E_\alpha\cap V)$.}
+\handline{72}{677}{856}{而 $E_\alpha\cap U,E_\alpha\cap V$ 为 $E_\alpha$ 相对拓扑中的开集.}
+\handline{72}{710}{856}{由 $E_\alpha$ 连通 $\Rightarrow E_\alpha\cap U=\varnothing$ 或 $E_\alpha\cap V=\varnothing$，不妨设 $E_\alpha\cap V=\varnothing\Rightarrow E_\alpha\subseteq U$.}
+\handline{72}{744}{856}{$\forall\beta\ne\alpha\in\Lambda$，同理 $E_\beta\subseteq U$ 或 $E_\beta\subseteq V$.}
+\handline{72}{779}{856}{而 $E_\alpha\cap E_\beta\ne\varnothing\Rightarrow E_\beta\subseteq U$.}
+\handline{72}{813}{856}{$\Rightarrow E=\bigcup_{\alpha\in\Lambda}E_\alpha\subseteq U$，$\therefore\ V=\varnothing$.}
+\handline{72}{850}{856}{$\therefore\ E=\bigcup_{\alpha\in\Lambda}E_\alpha$ 是连通的.}
+\end{handpage}
+
+% SOURCE PAGE 054
+\begin{handpage}{54}
+\handline{72}{126}{856}{\textbf{Def.} $(X,\T)$：拓扑空间.}
+\handline{72}{152}{856}{$x\in X$，令 $\Lambda=\{E\subseteq X\mid E\text{ 连通且 }x\in E\}$，由于 $\{x\}\in\Lambda$ 故 $\Lambda$ 非空.}
+\handline{72}{179}{856}{令 $C(x):=\bigcup_{E\in\Lambda}E$ 称为 $x$ 的连通分支.}
+\handline[Teal]{72}{204}{856}{由于连通集的任意并仍连通，故 $C(x)$ 连通.}
+\handline[Teal]{72}{230}{856}{且 $C(x)$ 为包含 $x$ 的连通集在包含关系下的最大元.}
+\handline{72}{256}{856}{\textbf{Thm.} $x,y\in X$，$x\in C(x)$，$y\in C(y)$，则 $C(x)=C(y)$ 或 $C(x)\cap C(y)=\varnothing$.}
+\handline[Teal]{72}{282}{856}{连通分支要么相等，要么不交，与群作用的轨道类似.}
+\handline{72}{308}{856}{\textbf{Pf.} 若 $C(x)\ne C(y)$，下证 $C(x)\cap C(y)=\varnothing$.}
+\handline{72}{335}{856}{若 $C(x)\cap C(y)\ne\varnothing$，$\exists E\in C(x)\cap C(y)$.}
+\handline{72}{363}{856}{则 $E\cup C(x)$ 是连通集，且 $y\in E\cup C(x)$.}
+\handline{72}{390}{856}{$\therefore\ E\cup C(x)\subseteq C(y)$，即 $C(x)\subseteq C(y)$.}
+\handline{72}{418}{856}{同理 $C(y)\subseteq C(x)\Rightarrow C(x)=C(y)$，矛盾!\quad$\therefore\ C(x)\cap C(y)=\varnothing$.}
+\handline[AnnotationBlue]{72}{448}{856}{还可以从连通分支的最大性角度考虑.}
+\handline{72}{479}{856}{\textbf{Thm.} $(X,\T)$：拓扑空间，$W\subseteq X$ 是一个连通分支，则 $W$ 是闭集，即 $W=\overline W$.}
+\handline{72}{509}{856}{\textbf{Pf.} 只需证 $\overline W\subseteq W$.}
+\handline{72}{539}{856}{断言：$\overline W$ 也是连通的，从而由连通分支最大性可得 $\overline W\subseteq W$.}
+\handline{72}{570}{856}{若 $U,V$ 是 $\overline W$ 在相对拓扑下的开集，$\overline W=U\cup V$，且 $U\cap V=\varnothing$.}
+\handline{72}{601}{856}{$\therefore\ W=W\cap\overline W=W\cap(U\cup V)=(W\cap U)\cup(W\cap V)$.}
+\handline{72}{631}{856}{而 $U=U_1\cap\overline W$，$U_1\in\T$，$\therefore\ W\cap U=U_1\cap(W\cap\overline W)=U_1\cap W$.}
+\handline{72}{663}{856}{$\therefore\ W\cap U,W\cap V$ 是 $W$ 在相对拓扑下的开集.}
+\handline{72}{696}{856}{由于 $W$ 连通，不妨设 $W\cap U=\varnothing$.}
+\handline{72}{732}{856}{$U=U_1\cap\overline W$，下面考察 $U_1\cap W$，若 $U_1\cap W\ne\varnothing$.}
+\handline{72}{766}{856}{设 $p\in U_1$ 且 $p\in W$，而 $W\subseteq\overline W$，$\therefore\ p\in\overline W$，$\therefore\ p\in U_1\cap\overline W=U$.}
+\handline{72}{800}{856}{$\therefore\ p\in W\cap U$，与 $W\cap U=\varnothing$ 矛盾，$\therefore\ U_1\cap W=\varnothing$.}
+\handline{72}{834}{856}{$\therefore\ W\subseteq X\setminus U_1$，而 $X\setminus U_1$ 为闭集，$\therefore\ \overline W\subseteq X\setminus U_1$.}
+\handline{72}{867}{856}{$\therefore\ U_1\cap\overline W=\varnothing$，即 $U=\varnothing$.}
+\handline{72}{901}{856}{$\therefore\ \overline W$ 是连通的.}
+\end{handpage}
+
+% SOURCE PAGE 055
+\begin{handpage}{55}
+\handline{72}{127}{856}{\textbf{Ex.} $E=\{0\}\cup\{\frac1k\mid k\in\N_+\}$，视为 $(\R,d)$ 的子集，其中 $d$ 为绝对值.}
+\handline[NoteRed]{72}{153}{856}{问：$E$ 中每个元素的连通分支是什么?}
+\handline[AnnotationBlue]{72}{178}{856}{首先，$\forall k\in\N_+$，$\{\frac1k\}$ 在 $E$ 的相对拓扑之下为开集.}
+\handline[AnnotationBlue]{72}{202}{856}{因为取足够小的 $\eps>0$，可使 $\{\frac1k\}=E\cap(\frac1k-\eps,\frac1k+\eps)$.}
+\handline[AnnotationBlue]{72}{228}{856}{断言 $C(\frac1k)=\{\frac1k\}$.}
+\handline[AnnotationBlue]{72}{252}{856}{首先 $\frac1k\in C(\frac1k)$，其次若 $\exists n\ne k,\ n\in\N_+$，$\frac1n\in C(\frac1k)$.}
+\handline[AnnotationBlue]{72}{279}{856}{则由于 $\{\frac1k\},\{\frac1n\}$ 均为开集，$\therefore\ \{\frac1k,\frac1n\}$ 不连通，$\therefore\ C(\frac1k)=\{\frac1k\}$.}
+\handline[AnnotationBlue]{72}{307}{856}{下面要问 $C(0)$ 是什么?\quad 断言：$C(0)=\{0\}$.}
+\handline[AnnotationBlue]{72}{335}{856}{若 $C(0)=\{0,\frac1{n_1},\frac1{n_2},\ldots\}$，不妨设 $n_1$ 为所有 $n_k$ 中 $n_k$ 的最小值，则 $\frac1{n_k}$ 最大.}
+\handline[AnnotationBlue]{72}{366}{856}{$\{\frac1{n_k}\}$ 为开集，$\{0,\frac1{n_2},\ldots\}=E\cap(-\infty,\frac1{n_k}-\eps)$，\ $\eps$ 充分小，也为 $E$ 中开集.}
+\handline[AnnotationBlue]{72}{393}{856}{$\therefore$ 不连通，矛盾!\quad$\therefore\ C(0)=\{0\}$.}
+\handline[Teal]{72}{419}{856}{注意，$\{0\}$ 是 $E$ 中的闭集，因为 $\bigcup_{k=1}^\infty\{\frac1k\}$ 为 $E$ 中的开集.}
+\handline{72}{450}{856}{\textbf{Def.} $(X,\T)$：拓扑空间，$E\subseteq X$，若 $\forall p\in E$，$C(p)$ 为单点集，则称 $E$ 完全不连通 \ann{(totally disconnected)}.}
+\handline{72}{480}{856}{\textbf{Thm.} $\R$ 中的区间均为连通集.}
+\handline[AnnotationBlue]{72}{507}{856}{$([a,b],\ (a,b],\ [a,b),\ (a,b),\ (a,+\infty),\ [a,+\infty),\ (-\infty,a),\ (-\infty,a],\ (-\infty,+\infty))$}
+\handline{72}{536}{856}{\textbf{Pf.} 由于 $(0,1)=\bigcup_{n\ge2}^\infty[0+\frac1n,1-\frac1n]$，$[0,1)=\bigcup_{n\ge2}^\infty[0,1-\frac1n]$，$[0,+\infty)=\bigcup_{m=1}^\infty[0,m]$，$(-\infty,+\infty)=\bigcup_{m=1}^\infty[-m,m]$.}
+\handline{72}{566}{856}{且 $\forall a<b,\ a,b\in\R$，$[a,b]$ 与 $[0,1]$ 拓扑同胚，而连通性是拓扑不变量.}
+\handline{72}{596}{856}{故只需证 $[0,1]$ 是连通的.}
+\handline{72}{626}{856}{若 $E\subseteq[0,1]$ 既是开集又是闭集，不妨设 $1\notin E$，下证 $E=\varnothing$.}
+\handline{72}{657}{856}{若 $E\ne\varnothing$，则 $E\subseteq[0,1]$，由确界原理 $\Rightarrow s=\sup E$ 存在.}
+\handline{72}{689}{856}{由 $E$ 闭 $\Rightarrow s\in E$，由 $E$ 开 $\Rightarrow\exists\eps>0$，s.t. $[s,s+\eps)\subseteq E$.}
+\handline{72}{723}{856}{$\therefore\ s+\frac\eps2\in E$，$s+\frac\eps2>s$ 与 $s$ 为上确界矛盾!\quad$\therefore\ E=\varnothing$.}
+\handline{72}{754}{856}{$\therefore\ [0,1]$ 连通.}
+\handline[AnnotationBlue]{72}{786}{856}{在 Apostol 数分中，有对连通的另一种刻画，考虑 $f:E\to\{0,1\}$.}
+\handline[AnnotationBlue]{72}{817}{856}{$f$ 是连续映射，则 $f^{-1}(\{0\}),f^{-1}(\{1\})$ 的交集为空，且均为开集.}
+\handline[AnnotationBlue]{72}{850}{856}{$\therefore\ E=f^{-1}(\{0\})\sqcup f^{-1}(\{1\})$.}
+\handline[NoteRed]{72}{885}{856}{若这样的 $f$ 在 $E$ 上存在，则称 $E$ 不连通.}
+\end{handpage}
+
+% SOURCE PAGE 056
+% SECTION: 2.9 | Path connectedness
+\begin{handpage}{56}
+\handtitle{72}{144}{856}{\S2.9 Path connectedness}
+\handline{72}{172}{856}{\textbf{Def.} $(X,\T)$，$x_0,x_1\in X$，$\gamma:[0,1]\to X$，$\gamma(0)=x_0$，$\gamma(1)=x_1$，且 $\gamma$ 连续.}
+\handline{72}{197}{856}{则称 $\gamma$ 为从 $x_0$ 到 $x_1$ 的道路 \ann{(path)}.}
+\handline[Teal]{72}{222}{856}{$[0,1]$ 是紧集，$\gamma$ 连续 $\Rightarrow\gamma([0,1])$ 在 $X$ 中是紧集.}
+\handline{72}{248}{856}{\textbf{Lemma.} 在 $X$ 上定义关系 ``$\sim$''，$x_0\sim x_1\Leftrightarrow\exists$ 一条从 $x_0$ 到 $x_1$ 的道路.}
+\handline{72}{274}{856}{则 ``$\sim$'' 是 $X$ 上的等价关系.}
+\handline{72}{300}{856}{\textbf{Pf.} \circled{1} $x_0\sim x_0$，取 $\gamma(t)\equiv x_0$.}
+\handline{72}{327}{856}{\circled{2} $x_0\sim x_1\Rightarrow x_1\sim x_0$，$\exists\gamma:[0,1]\to X$ 连续，$\gamma(0)=x_0$，$\gamma(1)=x_1$.}
+\handline{72}{353}{856}{令 $\tau=\gamma(1-t)$，则 $\tau:[0,1]\to X$ 也连续，且 $\tau(0)=x_1$，$\tau(1)=x_0$.}
+\handline{72}{380}{856}{\circled{3} $x_0\sim x_1$，$x_1\sim x_2\Rightarrow x_0\sim x_2$.}
+\handline{72}{406}{856}{$\exists\gamma_1,\gamma_2:[0,1]\to X$ 连续，$\gamma_1(0)=x_0$，$\gamma_1(1)=x_1$，$\gamma_2(0)=x_1$，$\gamma_2(1)=x_2$.}
+\handline{72}{437}{856}{令 $\gamma(t)=\begin{cases}\gamma_1(2t),&0\le t\le\frac12,\\\gamma_2(2t-1),&\frac12<t\le1,\end{cases}$ 则 $\gamma:[0,1]\to X$ 连续，且 $\gamma(0)=x_0$，$\gamma(1)=x_2$.}
+\handline{72}{482}{856}{\textbf{Def.} $(X,\T)$，若 $\forall x_0,x_1\in X,\ x_0\sim x_1$，则称 $X$ 是道路连通的.}
+\handline{72}{510}{856}{$X/\sim$ 得到的等价类称为道路分支 \ann{(path components)}.}
+\handline[Teal]{72}{538}{856}{道路分支一定是连通分支.}
+\handline{72}{566}{856}{\textbf{Ex.} \ann{（拓扑学家的正弦曲线）} \redann{（不是道路连通的证明作为习题）}}
+\handline{72}{595}{856}{$E=\{(x,0)\mid-1\le x\le0\}\cup\{(x,\sin\frac1x)\mid0<x\le1\}\subseteq\R^2$，则 $E$ 连通但不道路连通.}
+\handline[Teal]{72}{624}{856}{考虑 $(1,\sin1)$ 的连通分支，$0$ 是 $\{(x,\sin\frac1x)\}$ 的聚点，$\therefore\ 0\in\overline{\{(x,\sin\frac1x)\}}\subseteq C((1,\sin1))$.}
+\handline{72}{653}{856}{而闭区间 $[-1,0]\times\{0\}$ 一定连通，且 $0\in([-1,0]\times\{0\})\cap C((1,\sin1))$. \redann{（连通分支要么不交要么相同）}}
+\handline{72}{684}{856}{$\therefore\ C([-1,0]\times\{0\})=C((1,\sin1))$，$\therefore\ E=C((1,\sin1))$，$\therefore\ E$ 是连通的.}
+\handline{72}{713}{856}{\textbf{Thm.} 道路连通的空间一定连通.}
+\handline{72}{741}{856}{\textbf{Pf.} 固定 $x_0\in X$，$\forall x\in X,\ \exists\gamma_x:[0,1]\to X$，$\gamma_x$ 是从 $x_0$ 到 $x$ 的道路.}
+\handline{72}{772}{856}{则 $\gamma_x([0,1])$ 在 $X$ 中连通，$\therefore\ X=\bigcup_{x\in X}\gamma_x([0,1])$ 是连通的.}
+\handline{72}{801}{856}{\textbf{Cor.} $(X,\T)$：拓扑空间，$X$ 中的连通分支是道路分支的并.}
+\handline{72}{829}{856}{\textbf{Thm.} $f:X\to Y$，连续，则 $f(X)$ 道路连通. 进而由同胚的双向连续性称其为拓扑性质.}
+\handline{72}{859}{856}{\textbf{Pf.} $\forall y_1,y_2\in f(X),\ \exists x_1,x_2\in X$，s.t. $y_1=f(x_1)$，$y_2=f(x_2)$.}
+\handline{72}{884}{856}{由于 $X$ 道路连通，$\therefore\ \exists\tau:[0,1]\to X$，连续，$\tau(0)=x_1$，$\tau(1)=x_2$.}
+\handline{72}{916}{856}{令 $\sigma=f\circ\tau$ 则 $\sigma$ 连续，且 $\sigma(0)=f(x_1)=y_1$，$\sigma(1)=f(x_2)=y_2$，$\therefore\ f(X)$ 道路连通.}
+\end{handpage}
+
+% SOURCE PAGE 057
+% SECTION: 2.10 | Finite product spaces
+\begin{handpage}{57}
+\handtitle{72}{149}{856}{\S2.10 Finite product spaces}
+\handline{72}{177}{856}{\textbf{Def.} $(X_1,\T_1),\cdots,(X_n,\T_n)$ 为拓扑空间.}
+\handline{72}{205}{856}{$X=X_1\times\cdots\times X_n$，则 $\B=\{U_1\times U_2\times\cdots\times U_n\mid U_i\in\T_i,\ 1\le i\le n\}$ 是一个拓扑基.}
+\handline{72}{232}{856}{这种拓扑称为乘积拓扑 \ann{（或 Tychonoff 拓扑）.}}
+\handline[Teal]{72}{259}{856}{依据拓扑基判据，要验证 $\forall U,V\in\B$，$\exists W\in\B$，s.t. $W\subseteq U\cap V$.}
+\handline[Teal]{72}{287}{856}{而 $(U_1\times\cdots\times U_n)\cap(V_1\times\cdots\times V_n)=(U_1\cap V_1)\times\cdots\times(U_n\cap V_n)$.}
+\handline[Teal]{72}{315}{856}{取 $W_i\in\T_i$，$W_i\subseteq U_i\cap V_i$，$1\le i\le$，$W=W_1\times\cdots\times W_n$ 即可.}
+\handline[Teal]{72}{345}{856}{故 $\B$ 是 $X$ 的一个拓扑基.}
+\handline[AnnotationBlue]{72}{373}{856}{$X$ 中的拓扑当然不止这一种，但我们希望用最自然的方式.}
+\handline[AnnotationBlue]{72}{402}{856}{用 $X_i$ 中的拓扑来生成 $X$ 的拓扑，并希望有一些性质可以传递到 $X$ 上.}
+\handline{72}{434}{856}{\textbf{Def.} \circled{1} $\pi_j:X\to X_j$：$(x_1,\cdots,x_n)\mapsto x_j$，$1\le j\le n$，称为投影映射 \ann{(projection)}.}
+\handline{72}{463}{856}{\circled{2} 固定 $x_1,x_2,\cdots,x_{j-1},x_{j+1},\cdots,x_n$（$x_i\in X_i$，$i\ne j$，$1\le i\le n$）.}
+\handline{72}{492}{856}{$h_j:X_j\to X$：$x_j\mapsto(x_1,\cdots,x_j,\cdots,x_n)$ 称为嵌入映射 \ann{(embedding)}.}
+\handline{72}{524}{856}{\textbf{Prop.} $\pi_j,h_j$ 是连续映射.}
+\handline{72}{553}{856}{\textbf{Pf.} $\pi_j$：$\forall U_j\subseteq X_j$ 为开集，$\pi_j^{-1}(U_j)=X_1\times\cdots\times U_j\times\cdots\times X_n\in\B$.}
+\handline{72}{581}{856}{$\therefore\pi_j$ 是连续的.}
+\handline{72}{609}{856}{$h_j$：$\forall U=U_1\times\cdots\times U_j\times\cdots\times U_n\subseteq X$.}
+\handline{72}{639}{856}{$h_j^{-1}(U)=U_j$ 为 $X_j$ 中开集，$\therefore h_j$ 连续.}
+\handline[Teal]{72}{672}{856}{实际上 $h_j$ 不是满射，$\im(h_j)=\{x_1\}\times\{x_2\}\times\cdots\times X_j\times\cdots\times\{x_n\}$，称为切片 \ann{(slice)}.}
+\handline[Teal]{72}{704}{856}{若将 $\pi_j$ 限制在切片上，则 $\pi_j\big|_{\im(h_j)}=h_j^{-1}$.}
+\handline[Teal]{72}{735}{856}{由于连续映射作限制仍为连续映射，$\therefore\pi_j\big|_{\im(h_j)}=h_j^{-1}$ 连续.}
+\handline[Teal]{72}{766}{856}{$\therefore h_j$：$1$-$1$，到上，双向连续.}
+\handline[Teal]{72}{797}{856}{$\therefore X_j\overset{h_j}{\cong}\im(h_j)$.}
+\end{handpage}
+
+% SOURCE PAGE 058
+\begin{handpage}{58}
+\handline{72}{116}{856}{\textbf{Thm.} 乘积拓扑是 $X$ 上使得 $\pi_j$（$1\le j\le n$）连续的最小拓扑.}
+\handline{72}{145}{856}{\textbf{Pf.} 设 $\T$ 为 $X$ 上的拓扑，且 $\pi_j$ 连续.}
+\handline{72}{173}{856}{$\forall1\le j\le n$，$U_j\in\T_j$，$\pi_j^{-1}(U_j)=X_1\times\cdots\times U_j\times\cdots\times X_n$ 是开集，$\in\T$.}
+\handline{72}{202}{856}{$\therefore\bigcap_{j=1}^n\pi_j^{-1}(U_j)=U_1\times U_2\times\cdots\times U_n$ 为开集的有限交，故也必须为开集.}
+\handline{72}{230}{856}{$\therefore\forall1\le j\le n$，$\forall U_j\in\T_j$，$U_1\times\cdots\times U_n\in\T$.}
+\handline{72}{258}{856}{从而乘积拓扑是使得 $\pi_j$（$1\le j\le n$）连续的最小拓扑.}
+\handline{72}{288}{856}{\textbf{Prop.} $\pi_j$ 是从 $X$ 到 $X_j$ 的开映射.}
+\handline{72}{318}{856}{\textbf{Pf.} $\forall U\in\B$，$U=U_1\times\cdots\times U_n$，则 $\pi_j(U)=U_j$ 为 $X_j$ 中开集.}
+\handline{72}{347}{856}{$\therefore\pi_j$ 是开映射.}
+\handline{72}{379}{856}{\textbf{Thm.} $Y$：拓扑空间，$f:Y\to X=X_1\times\cdots\times X_n$.}
+\handline{72}{409}{856}{$f$ 连续 $\Leftrightarrow\pi_j\circ f:Y\to X_j$ 连续（$\forall1\le j\le n$）.}
+\handline{72}{439}{856}{\textbf{Pf.} “$\Rightarrow$”：trivial.}
+\handline{72}{468}{856}{“$\Leftarrow$”：$\forall U=U_1\times\cdots\times U_n\in\B$.}
+\handline{72}{500}{856}{$f^{-1}(U)=f^{-1}(\bigcap_{j=1}^n\pi_j^{-1}(U_j))=\bigcap_{j=1}^n(\pi_j\circ f)^{-1}(U_j)$.}
+\handline{72}{530}{856}{为有限个开集之交，$\therefore f^{-1}(U)$ 为开集，$\therefore f$ 连续.}
+\handline[Teal]{72}{563}{856}{下面来看哪些性质可以保留到乘积空间当中，设 $X=X_1\times\cdots\times X_n$.}
+\handline{72}{595}{856}{\textbf{Thm.} 若 $X_i$ 为 $T_2$ 空间，$1\le i\le n$，则 $X$ 是 $T_2$ 空间.}
+\handline{72}{626}{856}{\textbf{Pf.} 若 $a=(a_1,\cdots,a_n)$，$b=(b_1,\cdots,b_n)$，$a\ne b\in X$.}
+\handline{72}{659}{856}{不妨设 $a_1\ne b_1\in X_1$.}
+\handline{72}{692}{856}{则 $\exists U,V\in\T_1$ s.t. $a_1\in U$，$b_1\in V$，$U\cap V=\varnothing$.}
+\handline{72}{725}{856}{于是 $a\in\pi_1^{-1}(U)$，$b\in\pi_1^{-1}(V)$，$\pi_1^{-1}(U),\pi_1^{-1}(V)$ 为开集且不交.}
+\handline{72}{758}{856}{$\therefore X$ 为 $T_2$ 空间.}
+\end{handpage}
+
+% SOURCE PAGE 059
+\begin{handpage}{59}
+\handline{72}{152}{856}{\textbf{Thm.} 若 $X_i$ 是道路连通的，则 $X$ 也是道路连通的.}
+\handline{72}{179}{856}{\textbf{Pf.} $a=(a_1,\cdots,a_n)$，$b=(b_1,\cdots,b_n)\in X$.}
+\handline{72}{207}{856}{$\forall a_j,b_j\in X_j$，$\exists\gamma_j:[0,1]\to X_j$ 连续，s.t. $\gamma_j(0)=a_j$，$\gamma_j(1)=b_j$.}
+\handline{72}{234}{856}{定义 $\gamma:[0,1]\to X$.}
+\handline{72}{261}{856}{$t\mapsto(\gamma_1(t),\gamma_2(t),\cdots,\gamma_n(t))$.}
+\handline{72}{289}{856}{则 $\gamma(0)=a$，$\gamma(1)=b$.}
+\handline{72}{317}{856}{而要证明 $\gamma$ 连续 $\Leftrightarrow\pi_j\circ\gamma$ 连续，$\forall1\le j\le n$.}
+\handline{72}{345}{856}{而 $\pi_j\circ\gamma=\gamma_j$ 为连续映射，$\therefore\gamma$ 连续，$\therefore X$ 道路连通.}
+\handline{72}{374}{856}{\textbf{Thm.} 若 $X_i$ 是连通的，则 $X$ 也是连通的.}
+\handline{72}{402}{856}{\textbf{Pf.} 设 $E\subseteq X$，既开又闭，且 $E\ne\varnothing$，下面要证 $E=X$.}
+\handline{72}{430}{856}{$\forall z=(z_1,\cdots,z_n)\in E$.}
+\handline{72}{459}{856}{$X_1$ 与 $X_1\times\{z_2\}\times\cdots\times\{z_n\}$ 同胚.}
+\handline{72}{488}{856}{令 $\widetilde X_1=X_1\times\{z_2\}\times\cdots\times\{z_n\}\subseteq X$.}
+\handline{72}{518}{856}{由于 $E$ 既开又闭，$\therefore E\cap\widetilde X_1$ 在 $\widetilde X_1$ 的相对拓扑下既开又闭.}
+\handline{72}{547}{856}{由于连通性是拓扑性质，$\therefore\widetilde X_1$ 与 $X_1$ 同胚，也连通.}
+\handline{72}{576}{856}{而 $z\in E\cap\widetilde X_1\Rightarrow E\cap\widetilde X_1\ne\varnothing$，$\therefore E\cap\widetilde X_1=\widetilde X_1\Rightarrow\widetilde X_1\subseteq E$.}
+\handline{72}{605}{856}{$\therefore\forall x_1\in X_1$，$(x_1,z_2,\cdots,z_n)\in\widetilde X_1\subseteq E$.}
+\handline{72}{635}{856}{同理 $\{x_1\}\times X_2\times\{z_3\}\times\cdots\times\{z_n\}\subseteq E$.}
+\handline{72}{666}{856}{由 $x_1$ 任意性 $\Rightarrow X_1\times X_2\times\{z_3\}\times\cdots\times\{z_n\}\subseteq E$.}
+\handline{72}{696}{856}{$\cdots\ \cdots$ 重复上面的过程.}
+\handline{72}{727}{856}{$\Rightarrow X_1\times\cdots\times X_n=X\subseteq E$，$\therefore E=X$，从而 $X$ 是连通的.}
+\handline[Teal]{72}{759}{856}{下面来证明紧致性也可以保留，这称为 Tychonoff 定理.}
+\handline[Teal]{72}{790}{856}{本节介绍有限乘积版本，事实上对无穷乘积空间也成立.}
+\handline[Teal]{72}{821}{856}{而无穷乘积空间有很多不一样的性质，比如不能用“开集的有限交是开集”.}
+\handline[Teal]{72}{854}{856}{来证明一个映射的连续性，且除了乘积拓扑，还可赋予箱拓扑 \ann{(box topology)}.}
+\handline[Teal]{72}{887}{856}{事实上这两种拓扑在有限乘积空间中等价，但在无穷乘积空间差异很大.}
+\end{handpage}
+
+% SOURCE PAGE 060
+\begin{handpage}{60}
+\handline{72}{129}{856}{\textbf{Lemma.} $(X,\T)$，$\B$ 为拓扑基，若 $X$ 的任意由 $\B$ 中开集组成的开覆盖.}
+\handline{72}{156}{856}{都存在有限子覆盖，则 $(X,\T)$ 紧致.}
+\handline{72}{184}{856}{\textbf{Pf.} 设 $\{U_\alpha\}_{\alpha\in\Lambda}$ 为 $X$ 的开覆盖.}
+\handline{72}{211}{856}{$\forall x\in X$，$\exists\alpha\in\Lambda$，s.t. $x\in U_\alpha$，$\therefore\exists V_x\in\B$ s.t. $x\in V_x\subseteq U_\alpha$.}
+\handline{72}{240}{856}{将每个 $V_x$ 与 $U_\alpha$ 对应起来，记 $U_\alpha=U_{\alpha(x)}$.}
+\handline{72}{270}{856}{则 $X=\bigcup_{x\in X}V_x\Rightarrow X=\bigcup_{j=1}^n V_j\subseteq\bigcup_{j=1}^n U_{\alpha_j}$，$\therefore X$ 紧致.}
+\handline[Teal]{72}{299}{856}{要验证 $X$ 是否紧致，只需要从 $\B$ 中取开覆盖来检验.}
+\handline{72}{329}{856}{\textbf{Thm.} \ann{(Tychonoff's Theorem，有限乘积版)}}
+\handline{72}{360}{856}{若 $X_i$ 紧致，则 $X$ 紧致.}
+\handline{72}{389}{856}{\textbf{Pf.} 由于 $X=X_1\times\cdots\times X_n=(X_1\times\cdots\times X_{n-1})\times X_n$，故只需证 $n=2$ 的情形.}
+\handline{72}{420}{856}{$X=X_1\times X_2$，考虑如下形式的开覆盖.}
+\handline{72}{452}{856}{$X=\bigcup_{\alpha\in\Lambda}(U_\alpha\times V_\alpha)$，$U_\alpha\in\T_1$，$V_\alpha\in\T_2$，$(U_\alpha\times V_\alpha)\in\B$.}
+\handline{72}{482}{856}{显然，$X_1\subseteq\bigcup_{\alpha\in\Lambda}U_\alpha$，固定 $x_2\in X_2$.}
+\handline{72}{513}{856}{则 $X_1\times\{x_2\}\cong X_1$，$\therefore X_1\times\{x_2\}$ 也紧致.}
+\handline{72}{545}{856}{$X_1\times\{x_2\}\subseteq X=\bigcup_{\alpha\in\Lambda}(U_\alpha\times V_\alpha)$.}
+\handline{72}{577}{856}{$\therefore\exists U_1,\cdots,U_m,V_1,\cdots,V_m$ s.t. $X_1\times\{x_2\}\subseteq\bigcup_{j=1}^m(U_j\times V_j)$.}
+\handline{72}{611}{856}{$\therefore x_2\in V_j$，$\forall1\le j\le m$，$\Rightarrow x_2\in V_1\cap V_2\cdots\cap V_j=V_{x_2}$ 为开集.}
+\handline{72}{643}{856}{且 $\pi_2^{-1}(V_{x_2})\subseteq\bigcup_{j=1}^m(U_j\times V_j)$.}
+\handline{72}{677}{856}{$X_2\subseteq\bigcup_{x\in X_2}V_{x_2}\Rightarrow X_2=\bigcup_{k=1}^l V_{2,k}$.}
+\handline{72}{712}{856}{$\therefore X\subseteq\pi_2^{-1}(X_2)=\bigcup_{k=1}^l\pi_2^{-1}(V_{2,k})\subseteq\bigcup_{k=1}^l\bigl(\bigcup_{j_k=1}^{m_k}(U_{k,j_k}\times V_{k,j_k})\bigr)$.}
+\handline{72}{745}{856}{$\therefore X$ 是紧致的.}
+\end{handpage}
+
+% SOURCE PAGE 061
+% SECTION: 2.11 | Set Theory and Zorn's Lemma
+\begin{handpage}{61}
+\handtitle{72}{128}{856}{\S2.11 Set Theory and Zorn's Lemma}
+\handline{72}{154}{856}{\textbf{Def.} $S$：集合，“$\le$”是 $S$ 上的关系，满足.}
+\handline{72}{181}{856}{$(i)\ x\le x$，$\forall x\in S$；$(ii)\ x\le y,\ y\le x\Rightarrow x=y$；$(iii)\ x\le y,\ y\le z\Rightarrow x\le z$.}
+\handline{72}{208}{856}{则称“$\le$”为一个偏序关系，$(S,\le)$ 称为偏序集.}
+\handline{72}{237}{856}{\textbf{Def.} $(S,\le)$ 是一个偏序集，$E\subseteq S$，$x\in S$.}
+\handline{72}{266}{856}{\circled{1} 若 $\forall y\in E$，$y\le x$，则称 $x$ 是 $E$ 的上界.}
+\handline{72}{294}{856}{\circled{2} 若 $\forall p,q\in E$，$p\le q$ 或 $q\le p$，则称 $E$ 为全序集.}
+\handline{72}{322}{856}{\circled{3} 若 $x\in E$，$\forall y\in E$，若 $x\le y$ 则 $x=y$，则称 $x$ 为 $E$ 的极大元 \ann{(maximal element)}.}
+\handline{72}{350}{856}{\circled{4} 若 $x\in S$，$\forall y\in S$，$y\le x$，则称 $x$ 为 $S$ 的最大元 \ann{(greatest element)}.}
+\handline[Teal]{72}{378}{856}{对于 $S$ 来说，最大元一定是极大元，但反之不成立.}
+\handline[Teal]{72}{407}{856}{即使 $x$ 为 $S$ 的极大元，$x$ 也不一定和任意一元素可比较大小.}
+\handline[Teal]{72}{436}{856}{而最大元要求 $x$ 比任意其他元素要大，故 $x$ 不一定是最大元.}
+\handline{72}{465}{856}{Zorn's Lemma:}
+\handline{72}{495}{856}{$(S,\le)$ 是一个偏序集，若 $S$ 的任意全序子集 \ann{（即链）}都存在 $S$ 中的上界.}
+\handline{72}{525}{856}{则 $S$ 有一个极大元.}
+\handline{72}{555}{856}{\textbf{Ex.} $X$：集合，$(\mathcal P(X),\subseteq)$.}
+\handline{72}{587}{856}{$\forall E\subseteq\mathcal P(X)$，$E\subseteq X$，故 $X$ 为上界，$\therefore\mathcal P(X)$ 有极大元.}
+\handline{72}{617}{856}{而 $\mathcal P(X)$ 中的极大元即为 $X$.}
+\handline[Teal]{72}{649}{856}{下面是 Zorn 引理的一个应用：任意线性空间都有一组基.}
+\handline[Teal]{72}{680}{856}{对于有限维空间，可见高等代数，对于无限维空间需要使用 Zorn 引理.}
+\handline[Teal]{72}{711}{856}{在此之前，先要定义无限维空间的基是什么样的.}
+\handline[Teal]{72}{743}{856}{$V$ 为 $\mathbb K$-线性空间，$\{v_\alpha\}_{\alpha\in\Lambda}\subseteq V$.}
+\handline[Teal]{72}{775}{856}{若 $\forall u\in V$，$\exists N$ 个 $\{v_\alpha\}_{\alpha\in\Lambda}$ 中的向量，s.t. $u=\sum_{k=1}^N a_kv_k$，$a_k\in\mathbb K$.}
+\handline[Teal]{72}{806}{856}{且 $\{v_\alpha\}_{\alpha\in\Lambda}$ 线性无关，即 $\forall n\in\N$，$v_{\alpha_1},\cdots,v_{\alpha_n}\in\{v_\alpha\}_{\alpha\in\Lambda}$.}
+\handline[Teal]{72}{837}{856}{$b_1v_{\alpha_1}+\cdots+b_nv_{\alpha_n}=0\Rightarrow b_1=\cdots=b_n=0$.}
+\handline[Teal]{72}{869}{856}{则称 $\{v_\alpha\}$ 是 $V$ 的一组基. \redann{（事实上这是一种代数意义下的基，称为 Hamel 基，}}
+\handline[NoteRed]{72}{901}{856}{任意向量 $v$ 只能写成基中向量的有限线性组合）.}
+\end{handpage}
+
+% SOURCE PAGE 062
+\begin{handpage}{62}
+\handline{72}{113}{856}{\textbf{Thm.} 任意域 $\mathbb K$ 上的线性空间都存在基 \ann{（Hamel 基）.}}
+\handline{72}{142}{856}{\textbf{Pf.} 设 $\mathcal P$ 表示 $V$ 的所有线性无关集的集合构成的集族.}
+\handline{72}{170}{856}{则 $(\mathcal P,\subseteq)$ 是一个偏序集.}
+\handline{72}{198}{856}{设 $\mathcal D\subseteq\mathcal P$ 是一个全序子集.}
+\handline{72}{227}{856}{设 $S=\bigcup_{U\in\mathcal D}U$，下证 $S$ 是 $\mathcal D$ 在 $\mathcal P$ 中的上界.}
+\handline{72}{255}{856}{首先 $\forall U\in\mathcal D$，$U\subseteq S$.}
+\handline{72}{284}{856}{故只需证 $S$ 是一个线性无关集即可.}
+\handline{72}{313}{856}{设 $v_1,\cdots,v_m\in S$，$m\in\N$，$a_1v_1+\cdots+a_mv_m=0$.}
+\handline{72}{342}{856}{$\forall1\le j\le m$，$v_j\in S\Rightarrow\exists U_j\in\mathcal D$ s.t. $v_j\in U_j$.}
+\handline{72}{372}{856}{由于 $\mathcal D$ 是全序集，$\therefore\exists j_0$ s.t. $\forall1\le j\le m$，$U_j\subseteq U_{j_0}$.}
+\handline{72}{403}{856}{$\Rightarrow v_1,\cdots,v_m\in U_{j_0}$，而 $U_{j_0}\in\mathcal P\Rightarrow$ 线性无关 $\Rightarrow a_1=a_2=\cdots=a_m=0$.}
+\handline{72}{433}{856}{$\therefore S$ 线性无关，$\therefore S\in\mathcal P$，从而 $S$ 是 $\mathcal D$ 的上界.}
+\handline{72}{464}{856}{由 Zorn 引理，$(\mathcal P,\subseteq)$ 有极大元 $\mathcal A$.}
+\handline{72}{495}{856}{下证 $\mathcal A$ 是一个基.}
+\handline{72}{526}{856}{$\forall v\in V$.}
+\handline{72}{555}{856}{$1^\circ\ v\in\mathcal A$，done.}
+\handline{72}{585}{856}{$2^\circ\ v\notin\mathcal A$，由于 $\mathcal A$ 是极大元，$\therefore\mathcal A\cup\{v\}$ 线性相关.}
+\handline{72}{618}{856}{$\therefore\exists v_1,\cdots,v_k\in\mathcal A\cup\{v\}$ 线性相关，且 $\exists1\le j\le k$ s.t. $v_j=v$.}
+\handline{72}{650}{856}{不妨设 $v_1=v$.}
+\handline{72}{682}{856}{$\exists\beta_1,\cdots,\beta_k$ s.t. $\beta_1v_1+\cdots+\beta_kv_k=0$，且 $\beta_1,\cdots,\beta_k$ 不全为零.}
+\handline{72}{714}{856}{若 $\beta_1=0$，则 $\beta_2v_2+\cdots+\beta_kv_k=0$，而 $v_2,\cdots,v_k\in\mathcal A$，线性无关.}
+\handline{72}{747}{856}{$\therefore\beta_2=\cdots=\beta_k=0$ 与 $\beta_1,\cdots,\beta_k$ 不全为 $0$ 矛盾！}
+\handline{72}{778}{856}{$\therefore\beta_1\ne0\Rightarrow v=-\bigl(\frac{\beta_2}{\beta_1}v_2+\cdots+\frac{\beta_k}{\beta_1}v_k\bigr)$.}
+\handline{72}{810}{856}{$\therefore\mathcal A$ 是 $V$ 的一个基.}
+\handline[NoteRed]{72}{841}{856}{注意这个证明不是构造性的，只证明了存在性，一般来说.}
+\handline[NoteRed]{72}{873}{856}{涉及存在性的定理往往会与 Zorn 引理有联系.}
+\handline[NoteRed]{72}{906}{856}{再比如：环中必存在极大理想.}
+\end{handpage}
+
+% SOURCE PAGE 063
+% SECTION: 2.12 | Infinite product spaces
+\begin{handpage}{63}
+\handtitle{72}{90}{856}{\S2.12 Infinite product spaces}
+\handline{72}{119}{856}{\textbf{Def.} $\Lambda$：指标集，$X=\prod_{\alpha\in\Lambda}X_\alpha$，定义乘积拓扑.}
+\handline{72}{148}{856}{基本开集：$\{x\in\prod_{\alpha\in\Lambda}X_\alpha\mid x(\alpha_j)\in U_{\alpha_j},\ 1\le j\le m,\ U_{\alpha_j}\in\T_{\alpha_j}\}$.}
+\handline{72}{176}{856}{这些开集构成了 $X$ 的一个拓扑基 $\B$，称为乘积拓扑.}
+\handline[Teal]{72}{204}{856}{\circled{1} 由于 $\Lambda$ 可以是不可数集，这时不可采用有穷数值的观点来看待 $X$ 中的点.}
+\handline[Teal]{72}{232}{856}{我们采用映射的观点：对于 $\forall x\in X$，实际上就是定义了 $\Lambda$ 上的一个映射.}
+\handline[Teal]{72}{260}{856}{$x:\Lambda\to\bigcup_{\alpha\in\Lambda}X_\alpha$，而 $x=y$，即为两个映射相同.}
+\handline[Teal]{72}{288}{856}{$\alpha\mapsto x(\alpha)$ \redann{（其中 $x(\alpha)\in X_\alpha$）.}}
+\handline[Teal]{72}{316}{856}{此观点也可用于解释有限乘积空间.}
+\handline[Teal]{72}{345}{856}{如 $(a,b)\in\R^2\Leftrightarrow x:\{1,2\}\to\R$，$x(1)=a$，$x(2)=b$.}
+\handline[Teal]{72}{375}{856}{\circled{2} $\B$ 中的开集是有限个开集以及剩下的所有全空间的笛卡尔积.}
+\handline[Teal]{72}{406}{856}{即 $\forall B\in\B$，$B=\prod_{\alpha\in\Lambda}U_\alpha$，$U_\alpha\in\T_\alpha$，只有有限个 $\alpha$ 可使得 $U_\alpha\ne X_\alpha$.}
+\handline[Teal]{72}{436}{856}{\circled{3} $X$ 上还可以定义箱拓扑.}
+\handline[Teal]{72}{466}{856}{$\B_{\mathrm{box}}=\{\prod_{\alpha\in\Lambda}U_\alpha\mid U_\alpha\in\T_\alpha\}$，$\B_{\mathrm{box}}$ 也构成一个拓扑基.}
+\handline[Teal]{72}{497}{856}{它的开集比乘积拓扑多得多，它允许无穷个真开集的乘积.}
+\handline[Teal]{72}{526}{856}{而乘积拓扑只允许有限多个.}
+\handline[AnnotationBlue]{72}{558}{856}{例如取 $\Lambda=\N$，$X_j=\R$，$X=\prod_{n=1}^\infty\R$.}
+\handline[AnnotationBlue]{72}{589}{856}{在箱拓扑中，$\prod_{j=1}^\infty(0,1)_j$ 是开集.}
+\handline[AnnotationBlue]{72}{620}{856}{若 $\prod_{j=1}^\infty(0,1)_j$ 也是乘积拓扑中的开集，$\prod_{j=1}^\infty(0,1)_j=\bigcup_\beta W_\beta$，$W_\beta\in\B$.}
+\handline[AnnotationBlue]{72}{652}{856}{$\therefore\forall\beta$，$W_\beta\subseteq\prod_{j=1}^\infty(0,1)_j$.}
+\handline[AnnotationBlue]{72}{684}{856}{$\forall x\in W_\beta$，$\exists j_1,j_2,\cdots,j_{m_0}$，s.t. $x(j_k)\in U_{j_k}$，$U_{j_k}\subseteq\R$ 是开集.}
+\handline[AnnotationBlue]{72}{715}{856}{但根据 $\B$ 的定义，当 $j\ne j_k$，$1\le k\le m_0$ 时，$x(j)$ 可以遍历整个 $\R$.}
+\handline[AnnotationBlue]{72}{746}{856}{而 $(0,1)\subsetneq\R$，与 $W_\beta\subseteq\prod_{j=1}^\infty(0,1)_j$ 矛盾！$\therefore\prod_{j=1}^\infty(0,1)_j$ 不是乘积拓扑中的开集.}
+\handline[NoteRed]{72}{778}{856}{但为什么我们选取乘积拓扑，而不是箱拓扑？}
+\handline[NoteRed]{72}{809}{856}{因为箱拓扑中的开集更多，是比乘积拓扑更细的拓扑.}
+\handline[NoteRed]{72}{841}{856}{拓扑越细，开覆盖越多，紧致性更难以满足.}
+\handline[NoteRed]{72}{872}{856}{而本节主定理 Tychonoff 定理考虑的是乘积拓扑，而非箱拓扑.}
+\handline[NoteRed]{72}{904}{856}{而此定理也无法推广到箱拓扑，比如 $[0,1]^{\N}$ 在箱拓扑下不是紧空间.}
+\end{handpage}
+
+% SOURCE PAGE 064
+\begin{handpage}{64}
+\handline{72}{106}{856}{\textbf{Def.} $\pi_j:\prod_{\alpha\in\Lambda}X_\alpha\to X_j:x\mapsto x(j)$ 称为投影映射.}
+\handline{72}{133}{856}{\textbf{Thm.} 乘积拓扑是使得 $\forall\alpha\in\Lambda$，$\pi_\alpha$ 连续的最小拓扑.}
+\handline{72}{160}{856}{\textbf{Thm.} $Y$：拓扑空间，$f:Y\to\prod_{\alpha\in\Lambda}X_\alpha$}
+\handline{72}{187}{856}{$f$ 连续 $\Leftrightarrow\pi_\alpha\circ f$ 连续，$\forall\alpha\in\Lambda$.}
+\handline[AnnotationBlue]{72}{213}{856}{这两个定理的证明与有限情形一致.}
+\handline{72}{243}{856}{\textbf{Def.} $\mathcal F$：开集族. 若 $\mathcal F$ 中集合的有限交生成了 $X$ 的拓扑基，则称 $\mathcal F$ 为次基 \ann{(subbase)}.}
+\handline[Teal]{72}{273}{856}{$\{\pi_\alpha^{-1}(U_\alpha)\mid\alpha\in\Lambda,\ U_\alpha\in\T_\alpha\}$ 为 $X=\prod_{\alpha\in\Lambda}X_\alpha$ 的一组次基.}
+\handline[Teal]{72}{303}{856}{因为 $\pi_\alpha^{-1}(U_\alpha)=\{x\in\prod_{\alpha\in\Lambda}X_\alpha\mid x(\alpha)\in U_\alpha\}$ 为一个开集，$U_\alpha$ 与其他全空间的笛卡尔积.}
+\handline[Teal]{72}{332}{856}{故有限交恰好形成了乘积拓扑的基 $\B$.}
+\handline{72}{361}{856}{\textbf{Thm.} \ann{(Alexander subbase theorem)}}
+\handline{72}{389}{856}{$(X,\T)$：拓扑空间，$\mathcal F$：次基.}
+\handline{72}{418}{856}{若关于 $X$ 的由 $\mathcal F$ 中的开集构成的开覆盖都有有限子覆盖，则 $X$ 是紧致的.}
+\handline{72}{446}{856}{\textbf{Pf.} 若 $X$ 不是紧的，$\exists$ 一个开覆盖 $\mathcal E$，s.t. $\mathcal E$ 没有有限子覆盖.}
+\handline{72}{477}{856}{\ann{Step 1：}令 $\mathcal P=\{\mathcal D\}$，$\mathcal D$ 是 $X$ 的开覆盖，}
+\handline{72}{506}{856}{且满足 \circled{1} $\mathcal E\subseteq\mathcal D$ \circled{2} $\mathcal D$ 没有有限子覆盖.}
+\handline{72}{537}{856}{由于 $\mathcal E\in\mathcal P$，$\therefore\mathcal P$ 非空. $(\mathcal P,\subseteq)$ 是一个偏序集.}
+\handline{72}{568}{856}{设 $\{\mathcal D_\beta\}_{\beta\in\Lambda}$ 是 $\mathcal P$ 的一个全序子集. 令 $\widetilde{\mathcal D}=\bigcup_{\beta\in\Lambda}\mathcal D_\beta$.}
+\handline{72}{600}{856}{则 $\forall\beta\in\Lambda$，$\mathcal D_\beta\subseteq\widetilde{\mathcal D}$. 且 $\widetilde{\mathcal D}$ 是 $X$ 的开覆盖.}
+\handline{72}{631}{856}{要证明 $\widetilde{\mathcal D}\in\mathcal P$，由于 $\mathcal E\subseteq\mathcal D_\beta\subseteq\widetilde{\mathcal D}$，故只需证 $\widetilde{\mathcal D}$ 没有有限子覆盖.}
+\handline{72}{663}{856}{若 $\widetilde{\mathcal D}$ 有有限子覆盖，$U_1,\ldots,U_m\in\widetilde{\mathcal D}$，s.t. $X=\bigcup_{j=1}^mU_j$.}
+\handline{72}{695}{856}{$\forall1\leq j\leq m$，$\exists\beta_j\in\Lambda$，s.t. $U_j\in\mathcal D_{\beta_j}$.}
+\handline{72}{726}{856}{由于 $\{\mathcal D_\beta\}_{\beta\in\Lambda}$ 为全序子集，故 $\mathcal D_{\beta_1},\ldots,\mathcal D_{\beta_m}$ 中存在最大元，不妨设为 $\mathcal D_{\beta_1}$.}
+\handline{72}{758}{856}{$\therefore\forall1\leq j\leq m$，$\mathcal D_{\beta_j}\subseteq\mathcal D_{\beta_1}$. $\therefore\forall1\leq j\leq m$，$U_j\in\mathcal D_{\beta_1}$.}
+\handline{72}{790}{856}{从而 $\mathcal D_{\beta_1}$ 存在有限子覆盖，矛盾！$\therefore\widetilde{\mathcal D}$ 没有有限子覆盖. $\therefore\widetilde{\mathcal D}\in\mathcal P$.}
+\handline{72}{821}{856}{$\therefore\widetilde{\mathcal D}$ 是 $\{\mathcal D_\beta\}_{\beta\in\Lambda}$ 在 $\mathcal P$ 中的上界.}
+\handline{72}{854}{856}{由 Zorn 引理，$\mathcal P$ 有极大元 $\mathcal G$，$\mathcal G$ 是 $X$ 的开覆盖且满足}
+\handline{72}{887}{856}{\circled{1} $\mathcal E\subseteq\mathcal G$，\circled{2} $\mathcal G$ 没有有限子覆盖.}
+\end{handpage}
+
+% SOURCE PAGE 065
+\begin{handpage}{65}
+\handline{72}{112}{856}{\ann{Step 2} 考虑 $\mathcal G\cap\mathcal F$.}
+\handline{72}{139}{856}{下证 \circled{1} $\mathcal G\cap\mathcal F$ 是一个开覆盖 \circled{2} $\mathcal G\cap\mathcal F$ 没有有限子覆盖.}
+\handline{72}{165}{856}{\circled{2} 是 trivial 的，因为 $\mathcal G\cap\mathcal F\subseteq\mathcal G$.}
+\handline{72}{192}{856}{若 $\mathcal G\cap\mathcal F$ 有有限子覆盖，则 $\mathcal G$ 也一定有有限子覆盖.}
+\handline{72}{219}{856}{只需证 $\mathcal G\cap\mathcal F$ 是一个开覆盖.}
+\handline{72}{247}{856}{即 $\forall p\in X$，$\exists$ 开集 $V\in\mathcal G\cap\mathcal F$，s.t. $p\in V$.}
+\handline{72}{274}{856}{由于 $\mathcal G$ 是开覆盖，$\therefore\exists U\in\mathcal G$，s.t. $p\in U$.}
+\handline{72}{302}{856}{$\mathcal F$ 是次基，$\therefore\exists V_1,\ldots,V_m\in\mathcal F$，s.t. $p\in V_1\cap V_2\cdots\cap V_m\subseteq U$.}
+\handline{72}{331}{856}{\ann{Step 3.} 下面只需证 $\exists1\leq j\leq m$，s.t. $V_j\in\mathcal G$，从而 $p\in V_j\in\mathcal G\cap\mathcal F$.}
+\handline{72}{360}{856}{若 $\forall1\leq j\leq m$，$V_j\notin\mathcal G$，考虑 $\mathcal G\cup\{V_j\}$.}
+\handline{72}{390}{856}{则 $\mathcal G\cup\{V_j\}$ 是一个开覆盖. $\mathcal G$ 是极大元，$\therefore\mathcal G\cup\{V_j\}$ 有有限子覆盖.}
+\handline{72}{420}{856}{且 $V_j$ 一定在这个子覆盖中.}
+\handline{72}{451}{856}{$\therefore\exists W_{j,1},W_{j,2},\ldots,W_{j,n_j}\in\mathcal G$，s.t. $X=(\bigcup_{k=1}^{n_j}W_{j,k})\cup V_j$.}
+\handline{72}{481}{856}{$\forall x\in X$，若 $x\notin V_1\cap V_2\cap\cdots\cap V_m$，即 $\exists1\leq j\leq m$，s.t. $x\notin V_j$.}
+\handline{72}{511}{856}{于是 $x\in(\bigcup_{k=1}^{n_j}W_{j,k})$.}
+\handline{72}{548}{856}{$\therefore X=(\bigcup_{\substack{1\leq j\leq m\\1\leq k\leq n_j}}W_{j,k})\cup(V_1\cap V_2\cap\cdots\cap V_m)$.}
+\handline{72}{604}{856}{即 $\{W_{j,k}\}_{\substack{1\leq j\leq m\\1\leq k\leq n_j}}$ 及 $V_1\cap V_2\cdots\cap V_m$ 构成 $X$ 的开覆盖.}
+\handline{72}{641}{856}{而 $V_1\cap V_2\cdots\cap V_m\subseteq U\in\mathcal G$，且 $W_{j,k}\in\mathcal G$，$1\leq j\leq m$，$1\leq k\leq n_j$.}
+\handline{72}{675}{856}{故它们是 $\mathcal G$ 的有限子覆盖，矛盾！}
+\handline{72}{709}{856}{\ann{Step 4} $\mathcal G\cap\mathcal F$ 构成 $X$ 的开覆盖，但没有有限子覆盖.}
+\handline{72}{743}{856}{而 $\mathcal G\cap\mathcal F\subseteq\mathcal F$，与条件矛盾！}
+\handline{72}{779}{856}{$\therefore X$ 是紧致的.}
+\end{handpage}
+
+% SOURCE PAGE 066
+\begin{handpage}{66}
+\handline{72}{118}{856}{\textbf{Thm.} \ann{(Tychonoff)}}
+\handline{72}{147}{856}{$X_\alpha$：紧. 则 $X=\prod_{\alpha\in\Lambda}X_\alpha$ 在乘积拓扑下也紧致.}
+\handline{72}{176}{856}{\textbf{Pf.} $\mathcal F=\{\pi_\alpha^{-1}(U_\alpha)\mid\alpha\in\Lambda,\ U_\alpha\in\T_\alpha\}$ 是一个次基.}
+\handline{72}{204}{856}{由亚历山大次基定理，只需证明，$\mathcal F$ 中的任意开覆盖都有有限子覆盖.}
+\handline{72}{232}{856}{改证它的逆否命题. 设 $\mathcal C$ 为 $\mathcal F$ 中的开集构成的集族.}
+\handline{72}{260}{856}{若 $\mathcal C$ 中任意有限个开集的并不能覆盖 $X$，则 $\mathcal C$ 不能覆盖 $X$.}
+\handline{72}{289}{856}{$\mathcal C=\{\text{some }\pi_\alpha^{-1}(U_\alpha)\mid U_\alpha\in\T_\alpha\}$.}
+\handline{72}{318}{856}{固定 $\beta\in\Lambda$. $\mathcal C_\beta=\{\pi_\beta^{-1}(U_\beta)\in\mathcal C\mid U_\beta\in\T_\beta\}$.}
+\handline{72}{350}{856}{下证 $\bigcup_{\pi_\beta^{-1}(U_\beta)\in\mathcal C_\beta}U_\beta\varsubsetneqq X_\beta$.}
+\handline{72}{405}{856}{若否，则 $\bigcup U_\beta$ 是 $X_\beta$ 的开覆盖，而 $X_\beta$ 紧致，}
+\handline{72}{437}{856}{故存在 $U_{\beta_1},\ldots,U_{\beta_k}$，s.t. $X_\beta=\bigcup_{j=1}^kU_{\beta_j}$.}
+\handline{72}{469}{856}{则 $\pi_\beta^{-1}(U_{\beta_1})\cup\pi_\beta^{-1}(U_{\beta_2})\cdots\cup\pi_\beta^{-1}(U_{\beta_k})=X$.}
+\handline{72}{502}{856}{而 $\pi_\beta^{-1}(U_{\beta_j})$，$1\leq j\leq k$ 是 $\mathcal C$ 中有限个开集，与假设矛盾！}
+\handline{72}{538}{856}{$\therefore\bigcup_{\pi_\beta^{-1}(U_\beta)\in\mathcal C_\beta}U_\beta\varsubsetneqq X_\beta$. $\therefore\exists x(\beta)\in X_\beta\setminus(\bigcup U_\beta)$.}
+\handline{72}{595}{856}{令 $\beta$ 遍历指标集 $\Lambda$.}
+\handline{72}{631}{856}{则 $\exists x\in\prod_{\alpha\in\Lambda}X_\alpha$，s.t. $\forall\alpha\in\Lambda$，$x(\alpha)\in X_\alpha\setminus(\bigcup U_\alpha)$.}
+\handline{72}{668}{856}{$\therefore\mathcal C$ 不能覆盖 $x$，从而无法覆盖 $X$.}
+\handline{72}{701}{856}{$\therefore X$ 是紧致的.}
+\handline[AnnotationBlue]{72}{742}{856}{事实上，无限版本 Tychonoff 定理与 Zorn 引理等价.}
+\end{handpage}
+
+% SOURCE PAGE 067
+% SECTION: 2.13 | Quotient Space
+\begin{handpage}{67}
+\handtitle{72}{110}{856}{\S2.13 Quotient Space}
+\handline{72}{139}{856}{\textbf{Def.} \circled{1} $X$：拓扑空间. $\sim$：$X$ 上等价关系，$x\in X$，$[x]$：$x$ 所在等价类.}
+\handline{72}{166}{856}{$\{[x]\}=X/{\sim}$ 称为商空间.}
+\handline{72}{193}{856}{\circled{2} $\pi:X\to X/{\sim}$ 称为自然投影映射.}
+\handline{72}{220}{856}{$x\mapsto[x]$.}
+\handline{72}{247}{856}{\circled{3} $U\subseteq X/{\sim}$，$U$ 为开集 $\Leftrightarrow\pi^{-1}(U)\in\T$.}
+\handline{72}{274}{856}{这样定义的开集构成的拓扑称为商拓扑.}
+\handline[AnnotationBlue]{72}{302}{856}{在商拓扑下，$\pi$ 自动成为连续映射.}
+\handline[AnnotationBlue]{72}{330}{856}{且商拓扑是使得 $\pi$ 为连续映射的最大拓扑.}
+\handline[AnnotationBlue]{72}{358}{856}{更进一步，在商拓扑下，$\pi$ 也自动成为商映射.}
+\handline{72}{387}{856}{\textbf{Thm.} $f:X/{\sim}\to Y$，$f$ 连续 $\Leftrightarrow f\circ\pi$ 连续.}
+\handline{72}{415}{856}{\textbf{Pf.} ``$\Rightarrow$'' trivial.}
+\handline{72}{443}{856}{``$\Leftarrow$'' $f\circ\pi$ 连续. $\forall U\subseteq Y$ 为开集，}
+\handline{72}{472}{856}{$(f\circ\pi)^{-1}(U)\subseteq X$ 为开集.}
+\handline{72}{501}{856}{$(f\circ\pi)^{-1}(U)=\pi^{-1}(f^{-1}(U))$ 为开集 $\Leftrightarrow f^{-1}(U)$ 为开集. $\therefore f$ 连续.}
+\handline{72}{531}{856}{\textbf{Thm.} $f:X\to Y$ 连续，定义关系 $\sim$：$x\sim y\Leftrightarrow f(x)=f(y)$ \ann{（商拓扑的泛性质）}}
+\handline{72}{560}{856}{则 ``$\sim$'' 是一个等价关系，存在唯一连续映射 $g:X/{\sim}\to Y$，s.t. $f=g\circ\pi$.}
+\handline{72}{590}{856}{\textbf{Pf.} $g:X/{\sim}\to Y$，显然 $g(x)$ 是良定的，不依赖于代表元选取.}
+\handline{72}{619}{856}{$[x]\mapsto f(x)$.}
+\handline{72}{651}{856}{且 $f=g\circ\pi$，而 $f$ 是连续的，故由泛性质可知 $g$ 也连续.}
+\handline{72}{683}{856}{若 $g_1,g_2$ 均满足 $f=g_1\circ\pi=g_2\circ\pi$ 且连续，}
+\handline{72}{716}{856}{则 $\forall[x]\in X/{\sim}$，$g_1([x])=g_1\circ\pi(x)=f(x)=g_2\circ\pi(x)=g_2([x])$.}
+\handline{72}{752}{856}{$\therefore g_1=g_2$.}
+\handline[AnnotationBlue]{72}{795}{566}{是一个交换图.}
+\handdiagram{666}{778}{262}{134}{
+  \node[AnnotationBlue] (X) at (0,3) {$X$};
+  \node[AnnotationBlue] (Y) at (3,3) {$Y$};
+  \node[AnnotationBlue] (Q) at (0,0) {$X/{\sim}$};
+  \draw[->,AnnotationBlue,thick] (X)--node[above] {$f$}(Y);
+  \draw[->,AnnotationBlue,thick] (X)--node[left] {$\pi$}(Q);
+  \draw[->,AnnotationBlue,thick] (Q)--node[right] {$g$}(Y);
+  \draw[->,AnnotationBlue] (1.2,2.5) arc (120:290:.5);
+}
+\end{handpage}
+
+% SOURCE PAGE 068
+\begin{handpage}{68}
+\handline{72}{140}{856}{\textbf{Thm.} \ann{（商映射定理）}可视为拓扑空间版本的第一同构定理.}
+\handline{72}{168}{856}{$X$：紧，$Y:T_2$，$f:X\to Y$ 为连续满射.}
+\handline{72}{196}{856}{定义关系 $x\sim y\Leftrightarrow f(x)=f(y)$，则 $\sim$ 为等价关系，则 $X/{\sim}\overset g\cong Y$，其中 $f=g\circ\pi$.}
+\handline{72}{225}{856}{\textbf{Pf.} 由商拓扑的泛性质，$\exists$ 唯一连续映射 $g:X/{\sim}\to Y$，s.t. $f=g\circ\pi$.}
+\handline{72}{253}{856}{\circled{1} 若 $g([x])=g([y])$，则 $f(x)=f(y)\Rightarrow x\sim y$. $\therefore[x]=[y]$.}
+\handline{72}{280}{856}{$\therefore g$ 为单射.}
+\handline{72}{308}{856}{\circled{2} $\forall y\in Y$，由于 $f$ 为满射，$\therefore\exists x\in X$，s.t. $y=f(x)$. $\therefore g([x])=f(y)$.}
+\handline{72}{335}{856}{$\therefore g$ 为满射.}
+\handline{72}{365}{856}{$\therefore g$ 是 $1$-$1$、到上的连续映射.}
+\handline{72}{394}{856}{由于 $X$ 紧，$\pi$ 连续，$\therefore X/{\sim}=\pi(X)$ 也紧致.}
+\handline{72}{424}{856}{而由于 $Y$ 是 $T_2$，且 $Y=f(X)=g\circ\pi(X)=g(X/{\sim})$.}
+\handline{72}{455}{856}{$\therefore X/{\sim}\overset g\cong g(X/{\sim})=Y$.}
+\handline[Teal]{72}{485}{856}{度量空间的完备化也是一个商空间.}
+\handline[Teal]{72}{515}{856}{很多原空间的性质无法传递到商空间，有一部分可以 \redann{（见习题）}.}
+\handline{72}{548}{856}{\textbf{Def.} 在 $\R^{n+1}\setminus\{0\}$ 上定义等价关系 $\sim$，$x\sim y\Leftrightarrow\exists\lambda\in\R^*$，s.t. $x=\lambda y$.}
+\handline{72}{579}{856}{$\RP^n:=\R^{n+1}\setminus\{0\}/{\sim}$，称为实射影空间 \redann{(Real Projective Space)}.}
+\handline[AnnotationBlue]{72}{609}{856}{在考虑投影映射时，由于过原点的直线一定穿过单位球面 $S^n$，且有两个交点，互为}
+\handline[AnnotationBlue]{72}{641}{856}{于是无需考虑整个 $\R^{n+1}\setminus\{0\}$，只需考虑 $S^n$.}
+\handline[AnnotationBlue]{72}{674}{856}{$\pi:S^n\to\RP^n$，而 $S^n$ 紧致，$\pi$ 连续，$\therefore\RP^n=\pi(S^n)$ 也紧致.}
+\handline{72}{706}{856}{同理可定义复射影空间，$\CP^n$.}
+\handline{72}{740}{856}{可考虑 $\C^{n+1}$ 中的单位球面 $S^{2n+1}$，$\pi:S^{2n+1}\to\CP^n$.}
+\handline{72}{774}{856}{则 $\CP^n=\pi(S^{2n+1})$ 也紧致.}
+\handline[AnnotationBlue]{72}{807}{856}{但要注意，此时若 $x\sim y$，$x,y$ 与原点共一条复直线，这条复直线}
+\handline[AnnotationBlue]{72}{839}{856}{与 $S^{2n+1}$ 的交点不止两个，而是一个圆圈.}
+\handline[NoteRed]{72}{873}{856}{当 $n=1$ 时，$\CP^1\cong S^2$ 黎曼面.}
+\handline[NoteRed]{72}{906}{856}{是一个一维紧致复流形，在复变中很重要.}
+\end{handpage}
+
+\end{document}
